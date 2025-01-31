@@ -1,0 +1,15 @@
+<div {{ attributes  }}>
+    <!-- component html -->
+    <input
+        type="search"
+        data-model="norender|query"
+        data-action="keydown.enter->live#action"
+        data-live-action-param="searching"
+    >
+    <button
+        type="submit"
+        data-action="live#action"
+        data-live-action-param="searching"
+    >Apply</button>
+
+</div>

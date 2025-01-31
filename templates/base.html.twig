@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        {% block stylesheets %}
+
+        {% endblock %}
+
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body class="bg-neutral-100">
+        <header class="w-full bg-gray-900">
+            <nav class="py-4">
+                <ul class="flex flex-row justify-center text-neutral-200">
+                    <li>Home</li>
+                    <li>Shipping</li>
+                    <li>Buy</li>
+                    <li>Contact us</li>
+                </ul>
+            </nav>
+
+            <div class="flex items-center justify-between px-4">
+                <a href="{{ path('homepage')  }}">
+                    <img src="{{ asset('images/logo.png') }}" alt="Менеджер задач"/>
+                </a>
+
+                <fieldset>
+                    <div class="bg-gray-700"></div>
+
+                </fieldset>
+
+                <div class="">
+                    <a href="">Log in</a><a href="">Shopping cart</a>
+                </div>
+            </div>
+        </header>
+
+            {% block sidebar %}
+                <div id="sidebar">
+                    <ul>
+                        <li>Servers</li>
+                        <li>Storage</li>
+                        <li>Network Equipment</li>
+                        <li>Components</li>
+                        <li>Others</li>
+                    </ul>
+                </div>
+            {% endblock %}
+
+        <div id="content">
+            {% block content %}
+
+            {% endblock %}
+        </div>
+    </body>
+</html>

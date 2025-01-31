@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+<div>
+    <input type="text" id="external-input" data-controller="live" data-action="input->live#update">
+</div>
+
+{{ dump(app.request.query.get('name')) }}
+
+{# Live component #}
+<div >
+    <twig:RandomNumber/>.
+</div>
+
+<twig:ProductSearch/>
+
+{# <div class="" {{ stimulus_controller('hello') }}>
+    <button data-action="click->hello#toggleMode">Greet</button>
+</div> #}
+
+<twig:Search/>
+
+
+
+{% endblock %}
