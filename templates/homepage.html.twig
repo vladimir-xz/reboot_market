@@ -1,25 +1,28 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout.html.twig' %}
 
-{% block content %}
-<div>
-    <input type="text" id="external-input" data-controller="live" data-action="input->live#update">
+{% block page_contents %}
+<div class="pl-4 w-3/4">
+    <a href="{{ path('homepage')  }}">
+        <img src="{{ asset('images/carousel/Delivery-GREY.jpg') }}" alt="Менеджер задач"/>
+    </a>
+    <div>
+        <input type="text" id="external-input" data-controller="live" data-action="input->live#update">
+    </div>
+    
+    {{ dump(app.request.query.get('name')) }}
+    
+    {# Live component #}
+    <div >
+        <twig:RandomNumber/>.
+    </div>
+    
+    <twig:ProductSearch/>
+    
+    {# <div class="" {{ stimulus_controller('hello') }}>
+        <button data-action="click->hello#toggleMode">Greet</button>
+    </div> #}
+    
+    <twig:Search/>
 </div>
-
-{{ dump(app.request.query.get('name')) }}
-
-{# Live component #}
-<div >
-    <twig:RandomNumber/>.
-</div>
-
-<twig:ProductSearch/>
-
-{# <div class="" {{ stimulus_controller('hello') }}>
-    <button data-action="click->hello#toggleMode">Greet</button>
-</div> #}
-
-<twig:Search/>
-
-
 
 {% endblock %}
