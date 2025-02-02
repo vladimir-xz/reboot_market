@@ -3,19 +3,16 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [ "slide", "button" ]
   static values = {
-    index: { type: Number, default: 0},
-    refreshInterval: Number,
+    refreshInterval: {type: Number, default: 2500}
   }
 
   initialize() {
-    console.log(this.indexTarget)
     this.count = this.slideTargets.length
     this.showCurrentSlide()
     this.startRefreshing()
   }
 
   next() {
-    // console.log(this.indexTarget.value)
     this.indexValue++
     if (this.indexValue >= this.count) {
       this.indexValue = 0
@@ -30,7 +27,6 @@ export default class extends Controller {
   }
 
   showCurrentSlide() {
-    console.log(this.indexValue)
     this.slideTargets.forEach((element, index) => {
       element.hidden = index !== this.indexValue
     })
