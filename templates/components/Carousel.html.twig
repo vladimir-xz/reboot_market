@@ -1,0 +1,20 @@
+<div {{ attributes.defaults(stimulus_controller('carousel', { refreshInterval: 2500 })) }}>
+        <button data-action="carousel#previous"> ← </button>
+        <button data-action="carousel#nextForce"> → </button>
+      
+        <div data-carousel-target="slide">
+            <a href="">
+                <img src="{{ asset('images/carousel/Delivery-GREY.jpg') }}" alt="Менеджер задач"/>
+            </a>
+        </div>
+        <div data-carousel-target="slide">
+            <a href="">
+                <img src="{{ asset('images/carousel/First-FGREY.jpg') }}" alt="Менеджер задач"/>
+            </a>
+        </div>
+        <div data-carousel-target="slide">
+            <a href="">
+                <img src="{{ asset('images/carousel/Second-GREY.jpg') }}" alt="Менеджер задач"/>
+            </a>
+        </div>
+</div>
