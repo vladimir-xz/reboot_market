@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = [ "slide" ]
+  static targets = [ "slide", "button" ]
   static values = {
     index: { type: Number, default: 0},
     refreshInterval: Number,
@@ -24,9 +24,8 @@ export default class extends Controller {
   }
 
   switch(event) {
-    const selectedSlide = event.params.index;
     this.restartRefreshing()
-    this.indexValue = selectedSlide
+    this.indexValue = event.params.index
     this.showCurrentSlide()
   }
 
@@ -34,6 +33,9 @@ export default class extends Controller {
     console.log(this.indexValue)
     this.slideTargets.forEach((element, index) => {
       element.hidden = index !== this.indexValue
+    })
+    this.buttonTargets.forEach((element, index) => {
+      index === this.indexValue ? element.classList.add("carousel__button") : element.classList.remove("carousel__button")
     })
   }
 
@@ -46,5 +48,15 @@ export default class extends Controller {
   restartRefreshing() {
     clearInterval(this.refreshTimer)
     this.startRefreshing()
+  }
+
+  prolong() {
+    this.refreshIntervalValue *= 2
+    this.restartRefreshing()
+  }
+
+  shorten() {
+    this.refreshIntervalValue /= 2
+    this.restartRefreshing()
   }
 }
