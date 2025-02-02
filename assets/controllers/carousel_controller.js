@@ -3,6 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [ "slide", "button" ]
   static values = {
+    index: { type: Number, default: 0},
     refreshInterval: {type: Number, default: 2500}
   }
 
