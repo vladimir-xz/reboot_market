@@ -3,32 +3,36 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [ "slide" ]
   static values = {
+    index: { type: Number, default: 0},
     refreshInterval: Number,
   }
 
   initialize() {
-    this.index = 0
+    console.log(this.indexTarget)
     this.count = this.slideTargets.length
     this.showCurrentSlide()
     this.startRefreshing()
   }
 
   next() {
-    this.index++
-    if (this.index >= this.count) {
-      this.index = 0
+    // console.log(this.indexTarget.value)
+    this.indexValue++
+    if (this.indexValue >= this.count) {
+      this.indexValue = 0
     }
     this.showCurrentSlide()
   }
 
-  nextForce() {
+  switch() {
     this.restartRefreshing()
-    this.next()
+    this.indexValue = this.newValue
+    this.showCurrentSlide()
   }
 
   showCurrentSlide() {
+    console.log(this.indexValue)
     this.slideTargets.forEach((element, index) => {
-      element.hidden = index !== this.index
+      element.hidden = index !== this.indexValue
     })
   }
 

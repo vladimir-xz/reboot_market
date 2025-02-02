@@ -2,5 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-}
+@layer components {
+    .carousel__button {
+        @apply bg-teal-900 translate-x-6;
+    }
+    /* ... */
+  }
