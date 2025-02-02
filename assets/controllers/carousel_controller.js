@@ -23,9 +23,10 @@ export default class extends Controller {
     this.showCurrentSlide()
   }
 
-  switch() {
+  switch(event) {
+    const selectedSlide = event.params.index;
     this.restartRefreshing()
-    this.indexValue = this.newValue
+    this.indexValue = selectedSlide
     this.showCurrentSlide()
   }
 
