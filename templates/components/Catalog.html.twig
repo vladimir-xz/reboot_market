@@ -3,26 +3,11 @@
             <ul data-action="click->catalog#onClick" class="text-base leading-[3.5rem]">
                 {% for category in this.catalog %}
                     <li>
-                        <button class="w-full pl-4 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300">
+                        <button class="w-full flex justify-between items-center pl-3 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300">
                             {{ category.name }}
                         </button>
                         {% if category.children is defined %}
-                            <div class="hidden bg-stone-100">
-                                {% for category in category.children %}
-                                    <button class="w-full pl-4 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300">
-                                        {{ category.name }}
-                                    </button>
-                                    {% if category.children is defined %}
-                                        <div class="hidden">
-                                            {% for category in category.children %}
-                                                <button class="w-full pl-4 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300">
-                                                    {{ category.name }}
-                                                </button>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
+                            <twig:NavMenu :categories="category.children" offset="6" />
                         {% endif %}
                     </li>
                 {% endfor %}

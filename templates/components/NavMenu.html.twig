@@ -1,3 +1,10 @@
-<div{{ attributes }}>
-    <!-- component html -->
+<div class="hidden bg-stone-100" {{ attributes }}>
+        {% for category in categories %}
+            <button class="w-full flex justify-between items-center pl-{{ offset }} transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300">
+                {{ category.name }}
+            </button>
+            {% if category.children is defined %}
+                <twig:NavMenu :categories="category.children" offset="{{ offset + 3 }}"/>
+            {% endif %}
+        {% endfor %}
 </div>
