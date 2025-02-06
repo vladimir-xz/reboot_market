@@ -6,32 +6,38 @@ class CatalogBuilder
 {
     public function build(array $rawCatalog): array
     {
-        $treeForChildren = [];
-        $treeForParents = [];
+        $treeOfChildren = [];
+        $treeOfParents = [];
         $mainNode = [];
         foreach ($rawCatalog as $index => $data) {
             $parentId = $data['parent_id'];
             if ($parentId === null) {
                 $mainNode[] = $index;
             } else {
-                $treeForChildren[$parentId][] = $index;
-                $treeForParents[$index] = $parentId;
+                $treeOfChildren[$parentId][] = $index;
+                $treeOfParents[$index] = $parentId;
             }
         }
 
-        $buildCatalog = function ($array) use ($rawCatalog, $treeForChildren, &$buildCatalog) {
-            return array_map(function ($index) use ($rawCatalog, $treeForChildren, $buildCatalog) {
+        $buildCatalog = function ($array) use ($rawCatalog, $treeOfChildren, &$buildCatalog) {
+            return array_map(function ($index) use ($rawCatalog, $treeOfChildren, $buildCatalog) {
                 $result = $rawCatalog[$index];
                 $result['id'] = $index;
 
-                if (array_key_exists($index, $treeForChildren)) {
-                    $result['children'] = $buildCatalog($treeForChildren[$index]);
+                if (array_key_exists($index, $treeOfChildren)) {
+                    $result['children'] = $buildCatalog($treeOfChildren[$index]);
                 }
 
                 return $result;
             }, $array);
         };
 
-        return $buildCatalog($mainNode);
+        $treeToDisplay = $buildCatalog($mainNode);
+
+        return [
+            'children' => $treeOfChildren,
+            'parents' => $treeOfParents,
+            'catalog' => $treeToDisplay
+        ];
     }
 }

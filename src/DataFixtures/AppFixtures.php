@@ -138,7 +138,7 @@ class AppFixtures extends Fixture
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
             $product->setAmount(mt_rand(1, 10));
-            $category4->addProduct($product);
+            $category10->addProduct($product);
             $manager->persist($product);
         }
 

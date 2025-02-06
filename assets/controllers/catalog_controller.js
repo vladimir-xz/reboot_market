@@ -33,4 +33,11 @@ export default class extends Controller {
             this.activeCategories.includes(Number(element.id)) ? element.classList.add("category__active") : element.classList.remove("category__active")
         })
     }
+
+    redraw(event) {
+        this.nodeTargets.forEach((element) => {
+            console.log(element.id)
+            Number(element.id) in event.detail.activeCategories ? element.classList.add("category__active") : element.classList.remove("category__active")
+        })
+    }
 }

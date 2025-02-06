@@ -1,4 +1,4 @@
-<div {{ attributes.defaults(stimulus_controller('catalog')) }} class="w-1/4" data-action="product:search@window->catalog#renew">
+<div {{ attributes.defaults(stimulus_controller('catalog')) }} class="w-1/4" data-action="catalog:redraw->catalog#redraw">
         <nav class="inline-block w-full bg-stone-200 border border-neutral-300 rounded-md shadow-xl">
             <ul data-action="click->catalog#onClick" class="text-base leading-[3.5rem]">
                 {% for category in this.catalog %}

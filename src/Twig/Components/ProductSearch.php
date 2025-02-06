@@ -37,8 +37,11 @@ class ProductSearch extends AbstractController
     {
         $this->products = $this->productRepository->findByNameField($query);
         $categories = $this->productRepository->getCategoriesFromSearch($query);
-        $this->dispatchBrowserEvent('product:search', [
-            'activeCategories' => $categories,
+        // $this->dispatchBrowserEvent('product:search', [
+        //     'activeCategories' => $categories,
+        // ]);
+        $this->emit('redraw', [
+            'newCatalogs' => $categories,
         ]);
     }
 
