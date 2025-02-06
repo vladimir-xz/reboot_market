@@ -14,9 +14,13 @@ export default class extends Controller {
     }
 
     onClick(event) {
-        const nextElement = event.target.nextElementSibling
-        if (nextElement && nextElement.tagName === 'DIV') {
-            nextElement.classList.toggle("hidden")
+        if (event.target.tagName === 'P') {
+            this.component.action('updateCatalogSearch', { id: event.target.parentElement.id });
+        } else {
+            const nextElement = event.target.nextElementSibling
+            if (nextElement && nextElement.tagName === 'DIV') {
+                nextElement.classList.toggle("hidden")
+            }
         }
     }
 

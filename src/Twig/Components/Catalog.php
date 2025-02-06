@@ -7,6 +7,7 @@ use App\Repository\CategoryRepository;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveListener;
 use Symfony\UX\LiveComponent\Attribute\LiveArg;
+use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\ComponentToolsTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
@@ -49,6 +50,13 @@ final class Catalog
 
         $this->dispatchBrowserEvent('catalog:renew', [
             'activeCategories' => $activeCategories,
+        ]);
+    }
+
+    public function updateCatalogSearch(#[LiveArg] int $id)
+    {
+        $this->emit('redraw', [
+            'newCatalogs' => [$id],
         ]);
     }
 }

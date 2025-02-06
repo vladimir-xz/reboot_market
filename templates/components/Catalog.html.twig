@@ -7,7 +7,7 @@
                             class="w-full flex justify-between items-center pl-3 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300"
                             id="{{category.id}}" data-catalog-target="node" 
                         >
-                            {{ category.name }}
+                        <p class="hover:underline">{{ category.name }}</p>
                         </button>
                         {% if category.children is defined %}
                             <twig:NavMenu :categories="category.children" offset="6" />

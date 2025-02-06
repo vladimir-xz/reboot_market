@@ -20,11 +20,13 @@ class ProductRepository extends ServiceEntityRepository
     /**
     * @return Product[] Returns an array of Product objects
     */
-    public function findByNameField($value): array
+    public function findByNameField(string $value, array $cat): array
     {
         return $this->createQueryBuilder('p')
             ->andWhere('LOWER(p.name) LIKE :val')
+            ->andWhere('p.category IN :val2')
             ->setParameter('val', strtolower('%' . $value . '%'))
+            ->setParameter('val2', $cat)
             ->getQuery()
             ->getResult()
         ;
