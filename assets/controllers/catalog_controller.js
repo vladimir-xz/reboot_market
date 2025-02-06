@@ -15,7 +15,8 @@ export default class extends Controller {
 
     onClick(event) {
         if (event.target.tagName === 'P') {
-            this.component.action('updateCatalogSearch', { id: event.target.parentElement.id });
+            console.log('attempt');
+            this.component.action('save', { id: event.target.parentElement.id });
         } else {
             const nextElement = event.target.nextElementSibling
             if (nextElement && nextElement.tagName === 'DIV') {

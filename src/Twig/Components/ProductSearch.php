@@ -23,6 +23,7 @@ class ProductSearch extends AbstractController
     public string $currentProducts = '';
 
     public string $query = '';
+    public array $newCatalogs = [];
     public array $categories = [];
 
     /** @var Product[] */
@@ -35,8 +36,15 @@ class ProductSearch extends AbstractController
     #[LiveListener('search')]
     public function getSearch(#[LiveArg] string $query = '', #[LiveArg] array $newCatalogs = [])
     {
-        $this->products = $this->productRepository->findByNameField($query, $newCatalogs);
-        $categories = $this->productRepository->getCategoriesFromSearch($query);
+        if ($query) {
+            $this->query = $query;
+        }
+        if ($newCatalogs) {
+            $this->newCatalogs = $newCatalogs;
+        }
+
+        $this->products = $this->productRepository->findByNameField($this->query, $this->newCatalogs);
+        $categories = $this->productRepository->getCategoriesFromSearch($this->query, $this->newCatalogs);
         // $this->dispatchBrowserEvent('product:search', [
         //     'activeCategories' => $categories,
         // ]);

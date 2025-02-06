@@ -53,9 +53,12 @@ final class Catalog
         ]);
     }
 
-    public function updateCatalogSearch(#[LiveArg] int $id)
+    #[LiveAction]
+    public function save(#[LiveArg] int $id)
     {
-        $this->emit('redraw', [
+        error_log("Save action triggered with arg1: $id");
+
+        $this->emit('search', [
             'newCatalogs' => [$id],
         ]);
     }

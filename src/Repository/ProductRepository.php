@@ -22,25 +22,35 @@ class ProductRepository extends ServiceEntityRepository
     */
     public function findByNameField(string $value, array $cat): array
     {
-        return $this->createQueryBuilder('p')
+        $query = $this->createQueryBuilder('p')
             ->andWhere('LOWER(p.name) LIKE :val')
-            ->andWhere('p.category IN :val2')
             ->setParameter('val', strtolower('%' . $value . '%'))
-            ->setParameter('val2', $cat)
-            ->getQuery()
-            ->getResult()
         ;
+
+        if ($cat) {
+            $query
+            ->andWhere('p.category IN (:val2)')
+            ->setParameter('val2', $cat);
+        }
+
+        return $query->getQuery()->getResult();
     }
 
-    public function getCategoriesFromSearch($value): array
+    public function getCategoriesFromSearch($value = '', $cat = []): array
     {
-        return $this->createQueryBuilder('p')
+        $query = $this->createQueryBuilder('p')
             ->select('DISTINCT c.id')
             ->join('p.category', 'c')
             ->where('LOWER(p.name) LIKE :val')
             ->setParameter('val', strtolower('%' . $value . '%'))
-            ->getQuery()
-            ->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN)
         ;
+
+        if ($cat) {
+            $query
+            ->andWhere('p.category IN (:val2)')
+            ->setParameter('val2', $cat);
+        }
+
+        return $query->getQuery()->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
     }
 }
