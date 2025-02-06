@@ -2,8 +2,11 @@
         <nav class="inline-block w-full bg-stone-200 border border-neutral-300 rounded-md shadow-xl">
             <ul data-action="click->catalog#onClick" class="text-base leading-[3.5rem]">
                 {% for category in this.catalog %}
-                    <li id="cat-{{category.id}}">
-                        <button class="w-full flex justify-between items-center pl-3 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300">
+                    <li >
+                        <button 
+                            class="w-full flex justify-between items-center pl-3 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300"
+                            id="{{category.id}}" data-catalog-target="node" 
+                        >
                             {{ category.name }}
                         </button>
                         {% if category.children is defined %}

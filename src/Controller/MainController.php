@@ -26,7 +26,7 @@ class MainController extends AbstractController
 
         $rawArr = $categoryRepository->getRawTree();
         $catalog = $builder->build($rawArr);
-        $prod = $productRepository->findByNameField('prod');
+        $prod = $productRepository->getCategoriesFromSearch('prod');
 
         return $this->render('homepage.html.twig', [
             'prod' => $prod,

@@ -1,7 +1,10 @@
 <div class="hidden bg-stone-100" {{ attributes }}>
     {% for category in categories %}
-        <div id="cat-{{ category.id }}">
-            <button class="w-full flex justify-between items-center pl-{{ offset }} transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300">
+        <div>
+            <button 
+                class="w-full flex justify-between items-center pl-{{ offset }} transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300"
+                id="{{category.id}}" data-catalog-target="node"
+                >
                 {{ category.name }}
             </button>
             {% if category.children is defined %}

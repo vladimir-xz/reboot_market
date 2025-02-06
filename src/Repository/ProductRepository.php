@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Product;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -26,6 +27,18 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('val', strtolower('%' . $value . '%'))
             ->getQuery()
             ->getResult()
+        ;
+    }
+
+    public function getCategoriesFromSearch($value): array
+    {
+        return $this->createQueryBuilder('p')
+            ->select('DISTINCT c.id')
+            ->join('p.category', 'c')
+            ->where('LOWER(p.name) LIKE :val')
+            ->setParameter('val', strtolower('%' . $value . '%'))
+            ->getQuery()
+            ->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN)
         ;
     }
 }

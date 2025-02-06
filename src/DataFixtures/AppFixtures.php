@@ -105,7 +105,7 @@ class AppFixtures extends Fixture
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
             $product->setAmount(mt_rand(1, 10));
-            $category1->addProduct($product);
+            $category17->addProduct($product);
             $manager->persist($product);
         }
 
@@ -116,7 +116,7 @@ class AppFixtures extends Fixture
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
             $product->setAmount(mt_rand(1, 10));
-            $category2->addProduct($product);
+            $category18->addProduct($product);
             $manager->persist($product);
         }
 
@@ -127,7 +127,7 @@ class AppFixtures extends Fixture
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
             $product->setAmount(mt_rand(1, 10));
-            $category3->addProduct($product);
+            $category19->addProduct($product);
             $manager->persist($product);
         }
 
@@ -150,6 +150,28 @@ class AppFixtures extends Fixture
             $product->setWeight(mt_rand(100, 1000));
             $product->setAmount(mt_rand(1, 10));
             $category16->addProduct($product);
+            $manager->persist($product);
+        }
+
+        for ($i = 50; $i < 60; $i++) {
+            $product = new Product();
+            $product->setName('product ' . $i);
+            $product->setCondition('used');
+            $product->setPrice(mt_rand(10, 100));
+            $product->setWeight(mt_rand(100, 1000));
+            $product->setAmount(mt_rand(1, 10));
+            $category11->addProduct($product);
+            $manager->persist($product);
+        }
+
+        for ($i = 50; $i < 60; $i++) {
+            $product = new Product();
+            $product->setName('product ' . $i);
+            $product->setCondition('used');
+            $product->setPrice(mt_rand(10, 100));
+            $product->setWeight(mt_rand(100, 1000));
+            $product->setAmount(mt_rand(1, 10));
+            $category14->addProduct($product);
             $manager->persist($product);
         }
 

@@ -21,6 +21,16 @@ export default class extends Controller {
     }
 
     renew(event) {
-        console.log(event.detail.product);
+        this.activeCategories = event.detail.activeCategories
+        this.activate()
+    }
+
+    activate() {
+        console.log(this.activeCategories.includes('17'))
+        console.log(this.activeCategories)
+        this.nodeTargets.forEach((element) => {
+            console.log(element.id)
+            this.activeCategories.includes(Number(element.id)) ? element.classList.add("category__active") : element.classList.remove("category__active")
+        })
     }
 }
