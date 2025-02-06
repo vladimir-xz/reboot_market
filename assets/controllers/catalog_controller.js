@@ -20,24 +20,32 @@ export default class extends Controller {
         }
     }
 
+    open(nextElement) {
+        if (nextElement && nextElement.tagName === 'DIV') {
+            nextElement.classList.remove("hidden")
+        }
+    }
+
+    close(nextElement) {
+        if (nextElement && nextElement.tagName === 'DIV') {
+            nextElement.classList.add("hidden")
+        }
+    }
+
+    // renew(event) {
+    //     this.activeCategories = event.detail.activeCategories
+    //     this.activate()
+    // }
+
     renew(event) {
-        this.activeCategories = event.detail.activeCategories
-        this.activate()
-    }
-
-    activate() {
-        console.log(this.activeCategories.includes('17'))
-        console.log(this.activeCategories)
         this.nodeTargets.forEach((element) => {
-            console.log(element.id)
-            this.activeCategories.includes(Number(element.id)) ? element.classList.add("category__active") : element.classList.remove("category__active")
-        })
-    }
-
-    redraw(event) {
-        this.nodeTargets.forEach((element) => {
-            console.log(element.id)
-            Number(element.id) in event.detail.activeCategories ? element.classList.add("category__active") : element.classList.remove("category__active")
+            if (Number(element.id) in event.detail.activeCategories) {
+                element.classList.add("category__active")
+                this.open(element.nextElementSibling)
+            } else {
+                element.classList.remove("category__active")
+                this.close(element.nextElementSibling)
+            }
         })
     }
 }

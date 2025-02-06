@@ -47,7 +47,7 @@ final class Catalog
             }
         }
 
-        $this->dispatchBrowserEvent('catalog:redraw', [
+        $this->dispatchBrowserEvent('catalog:renew', [
             'activeCategories' => $activeCategories,
         ]);
     }
