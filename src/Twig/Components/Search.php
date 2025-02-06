@@ -2,6 +2,7 @@
 
 namespace App\Twig\Components;
 
+use App\Repository\ProductRepository;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 use Symfony\UX\LiveComponent\ComponentToolsTrait;
@@ -21,7 +22,7 @@ final class Search
     public function searching()
     {
         $this->emit('search', [
-            'product' => $this->query,
+            'query' => $this->query,
         ]);
     }
 }

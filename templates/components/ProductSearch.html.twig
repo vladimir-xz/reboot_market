@@ -1,4 +1,6 @@
-<div {{ attributes }}>
-
-    <strong>{{  this.products    }}</strong>
+<div {{ attributes.defaults(stimulus_controller('product')) }}>
+    {{ dump(this.products)}}
+    {%  for product in this.products %}
+        <strong>{{  product.name    }}</strong>
+    {% endfor %}
 </div>

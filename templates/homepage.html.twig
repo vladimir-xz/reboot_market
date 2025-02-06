@@ -3,15 +3,9 @@
 {% block page_contents %}
 <main class="w-3/4">
 
-    {{  dump(catalog)   }}
-
-    {% for product in products %}
-        <h4>{{  product.name  }}</h4>
-    {% endfor %}
+    <twig:ProductSearch />
 
     <twig:Carousel />
-    
-    <twig:ProductSearch />
     
 </main>
 

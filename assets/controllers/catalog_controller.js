@@ -19,4 +19,8 @@ export default class extends Controller {
             nextElement.classList.toggle("hidden")
         }
     }
+
+    renew(event) {
+        console.log(event.detail.product);
+    }
 }
