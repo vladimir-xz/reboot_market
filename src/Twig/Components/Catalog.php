@@ -20,6 +20,7 @@ final class Catalog
     public array $catalog;
     public array $children;
     public array $parents;
+    public array $activeCategories;
 
     public function __construct(
         CatalogBuilder $builder,
@@ -47,6 +48,7 @@ final class Catalog
                 $activeCategories[$index] = $index;
             }
         }
+        $this->activeCategories = $activeCategories;
 
         $this->dispatchBrowserEvent('catalog:renew', [
             'activeCategories' => $activeCategories,
@@ -54,12 +56,25 @@ final class Catalog
     }
 
     #[LiveAction]
-    public function save(#[LiveArg] int $id)
+    public function updateCategories(#[LiveArg] int $newId)
     {
-        error_log("Save action triggered with arg1: $id");
+        $children = $this->children;
+        $getLastNodes = function ($id) use ($children, &$getLastNodes) {
+            if (!array_key_exists($id, $children)) {
+                return [$id];
+            }
+
+            $result = array_map(function ($id) use ($children, $getLastNodes) {
+                return $getLastNodes($id);
+            }, $children[$id]);
+
+            return [...$result];
+        };
+
+        $newCatalogs = $getLastNodes($newId);
 
         $this->emit('search', [
-            'newCatalogs' => [$id],
+            'newCatalogs' => $newCatalogs,
         ]);
     }
 }
