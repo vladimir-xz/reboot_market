@@ -4,7 +4,10 @@ namespace App\DataFixtures;
 
 use App\Entity\Product;
 use App\Entity\Category;
-use App\Entity\MainCategory;
+use App\Entity\Server;
+use App\Entity\Storage;
+use App\Entity\NetworkEquipment;
+use App\Entity\Component;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -99,7 +102,7 @@ class AppFixtures extends Fixture
         $manager->persist($category20);
 
         for ($i = 0; $i < 10; $i++) {
-            $product = new Product();
+            $product = new Server();
             $product->setName('product ' . $i);
             $product->setCondition('used');
             $product->setPrice(mt_rand(10, 100));
@@ -110,7 +113,7 @@ class AppFixtures extends Fixture
         }
 
         for ($i = 10; $i < 20; $i++) {
-            $product = new Product();
+            $product = new Server();
             $product->setName('product ' . $i);
             $product->setCondition('used');
             $product->setPrice(mt_rand(10, 100));
@@ -121,7 +124,7 @@ class AppFixtures extends Fixture
         }
 
         for ($i = 20; $i < 30; $i++) {
-            $product = new Product();
+            $product = new Server();
             $product->setName('product ' . $i);
             $product->setCondition('used');
             $product->setPrice(mt_rand(10, 100));
@@ -132,7 +135,7 @@ class AppFixtures extends Fixture
         }
 
         for ($i = 30; $i < 40; $i++) {
-            $product = new Product();
+            $product = new NetworkEquipment();
             $product->setName('product ' . $i);
             $product->setCondition('used');
             $product->setPrice(mt_rand(10, 100));
@@ -154,7 +157,7 @@ class AppFixtures extends Fixture
         }
 
         for ($i = 50; $i < 60; $i++) {
-            $product = new Product();
+            $product = new Component();
             $product->setName('product ' . $i);
             $product->setCondition('used');
             $product->setPrice(mt_rand(10, 100));
@@ -165,7 +168,7 @@ class AppFixtures extends Fixture
         }
 
         for ($i = 50; $i < 60; $i++) {
-            $product = new Product();
+            $product = new Component();
             $product->setName('product ' . $i);
             $product->setCondition('used');
             $product->setPrice(mt_rand(10, 100));

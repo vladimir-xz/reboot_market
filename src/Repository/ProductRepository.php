@@ -22,7 +22,10 @@ class ProductRepository extends ServiceEntityRepository
     */
     public function findByNameField(string $value, array $cat): array
     {
+        $em = $this->getEntityManager();
         $query = $this->createQueryBuilder('p')
+            ->andWhere('p INSTANCE OF :type')
+            ->setParameter('type', $em->getClassMetadata('App\Entity\Server'))
             ->andWhere('LOWER(p.name) LIKE :val')
             ->setParameter('val', strtolower('%' . $value . '%'))
         ;
@@ -38,11 +41,14 @@ class ProductRepository extends ServiceEntityRepository
 
     public function getCategoriesFromSearch($value = '', $cat = []): array
     {
+        $em = $this->getEntityManager();
         $query = $this->createQueryBuilder('p')
             ->select('DISTINCT c.id')
             ->join('p.category', 'c')
             ->where('LOWER(p.name) LIKE :val')
             ->setParameter('val', strtolower('%' . $value . '%'))
+            ->andWhere('p INSTANCE OF :type')
+            ->setParameter('type', $em->getClassMetadata('App\Entity\Server'))
         ;
 
         if ($cat) {

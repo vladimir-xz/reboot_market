@@ -7,6 +7,15 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\InheritanceType('SINGLE_TABLE')]
+#[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
+#[ORM\DiscriminatorMap([
+    'product' => Product::class,
+    'server' => Server::class,
+    'storage' => Storage::class,
+    'network_equipment' => NetworkEquipment::class,
+    'component' => Component::class
+    ])]
 class Product
 {
     #[ORM\Id]
@@ -22,9 +31,6 @@ class Product
 
     #[ORM\Column]
     private ?int $weight = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?int $length = null;
 
     #[ORM\Column]
     private ?int $price = null;
@@ -76,18 +82,6 @@ class Product
     public function setWeight(int $weight): static
     {
         $this->weight = $weight;
-
-        return $this;
-    }
-
-    public function getLength(): ?int
-    {
-        return $this->length;
-    }
-
-    public function setLength(?int $length): static
-    {
-        $this->length = $length;
 
         return $this;
     }
