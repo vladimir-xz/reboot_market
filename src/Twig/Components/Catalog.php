@@ -69,11 +69,11 @@ final class Catalog
     #[LiveAction]
     public function updateCategories(#[LiveArg] int $newId)
     {
-        $this->logger->info('start');
-        $this->logger->info(print_r($this->activeLastNodes, true));
-        $log = $this->logger;
+        // $this->logger->info('start');
+        // $this->logger->info(print_r($this->activeLastNodes, true));
+        // $log = $this->logger;
         $children = $this->children;
-        $getLastNodes = function ($id) use ($children, &$getLastNodes, $log) {
+        $getLastNodes = function ($id) use ($children, &$getLastNodes) {
             if (!array_key_exists($id, $children)) {
                 return [$id];
             }
@@ -84,28 +84,28 @@ final class Catalog
 
             return array_merge(...$result);
         };
-        $this->logger->info($newId);
+        // $this->logger->info($newId);
 
         $lastNodes = $getLastNodes($newId);
 
-        $this->logger->info($lastNodes[0]);
-        $this->logger->info(print_r($this->activeLastNodes, true));
+        // $this->logger->info($lastNodes[0]);
+        // $this->logger->info(print_r($this->activeLastNodes, true));
 
 
         if (in_array($lastNodes[0], $this->activeLastNodes)) {
-            $this->logger->info('deleting');
-            $this->logger->info('previous');
-            $this->logger->info(print_r($this->activeLastNodes, true));
+            // $this->logger->info('deleting');
+            // $this->logger->info('previous');
+            // $this->logger->info(print_r($this->activeLastNodes, true));
             $result = array_diff($this->activeLastNodes, $lastNodes);
-            $this->logger->info('now');
-            $this->logger->info(print_r($result, true));
+            // $this->logger->info('now');
+            // $this->logger->info(print_r($result, true));
         } else {
-            $this->logger->info('adding');
-            $this->logger->info('previous');
-            $this->logger->info(print_r($this->activeLastNodes, true));
+            // $this->logger->info('adding');
+            // $this->logger->info('previous');
+            // $this->logger->info(print_r($this->activeLastNodes, true));
             $result = array_merge($lastNodes, $this->activeLastNodes);
-            $this->logger->info('now');
-            $this->logger->info(print_r($result, true));
+            // $this->logger->info('now');
+            // $this->logger->info(print_r($result, true));
         }
 
         $this->emit('search', [
