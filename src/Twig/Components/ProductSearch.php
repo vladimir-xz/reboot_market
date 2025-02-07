@@ -36,15 +36,15 @@ class ProductSearch extends AbstractController
     #[LiveListener('search')]
     public function getSearch(#[LiveArg] string $query = '', #[LiveArg] array $newCatalogs = [])
     {
-        if ($query) {
-            $this->query = $query;
-        }
-        if ($newCatalogs) {
-            $this->newCatalogs = $newCatalogs;
+        if (!$query && !$newCatalogs) {
+            $this->emit('redraw', [
+                'newCatalogs' => [],
+            ]);
+            return;
         }
 
-        $this->products = $this->productRepository->findByNameField($this->query, $this->newCatalogs);
-        $categories = $this->productRepository->getCategoriesFromSearch($this->query, $this->newCatalogs);
+        $this->products = $this->productRepository->findByNameField($query, $newCatalogs);
+        $categories = $this->productRepository->getCategoriesFromSearch($query, $newCatalogs);
         // $this->dispatchBrowserEvent('product:search', [
         //     'activeCategories' => $categories,
         // ]);

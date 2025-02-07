@@ -25,8 +25,6 @@ final class Catalog
     public array $parents;
 
     #[LiveProp(writable: true, url: new UrlMapping(as: 'c'))]
-    public array $activeCategories = [];
-    #[LiveProp(writable: true, url: new UrlMapping(as: 'ca'))]
     public array $activeLastNodes = [];
     public LoggerInterface $logger;
 
@@ -62,7 +60,6 @@ final class Catalog
                 $activeCategories[$index] = $index;
             }
         }
-        $this->activeCategories = $activeCategories;
 
         $this->dispatchBrowserEvent('catalog:renew', [
             'activeCategories' => $activeCategories,
@@ -91,10 +88,11 @@ final class Catalog
 
         $lastNodes = $getLastNodes($newId);
 
-        $this->logger->info(print_r($lastNodes, true));
+        $this->logger->info($lastNodes[0]);
+        $this->logger->info(print_r($this->activeLastNodes, true));
 
 
-        if (array_key_exists($newId, $this->activeCategories)) {
+        if (in_array($lastNodes[0], $this->activeLastNodes)) {
             $this->logger->info('deleting');
             $this->logger->info('previous');
             $this->logger->info(print_r($this->activeLastNodes, true));
