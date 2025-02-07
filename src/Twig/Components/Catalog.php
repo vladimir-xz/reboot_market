@@ -10,6 +10,7 @@ use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\ComponentToolsTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
+use Psr\Log\LoggerInterface;
 
 #[AsLiveComponent]
 final class Catalog
@@ -64,11 +65,11 @@ final class Catalog
                 return [$id];
             }
 
-            $result = array_map(function ($id) use ($children, $getLastNodes) {
+            $result = array_map(function ($id) use ($getLastNodes) {
                 return $getLastNodes($id);
             }, $children[$id]);
 
-            return [...$result];
+            return array_merge(...$result);
         };
 
         $newCatalogs = $getLastNodes($newId);
