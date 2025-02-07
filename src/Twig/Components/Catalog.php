@@ -8,8 +8,10 @@ use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveListener;
 use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
+use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\ComponentToolsTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
+use Symfony\UX\LiveComponent\Metadata\UrlMapping;
 use Psr\Log\LoggerInterface;
 
 #[AsLiveComponent]
@@ -21,11 +23,17 @@ final class Catalog
     public array $catalog;
     public array $children;
     public array $parents;
-    public array $activeCategories;
+
+    #[LiveProp(writable: true, url: new UrlMapping(as: 'c'))]
+    public array $activeCategories = [];
+    #[LiveProp(writable: true, url: new UrlMapping(as: 'ca'))]
+    public array $activeLastNodes = [];
+    public LoggerInterface $logger;
 
     public function __construct(
         CatalogBuilder $builder,
         CategoryRepository $categoryRepository,
+        LoggerInterface $logger
     ) {
         $rawArr = $categoryRepository->getRawTree();
         $result = $builder->build($rawArr);
@@ -33,11 +41,16 @@ final class Catalog
         $this->catalog = $result['catalog'];
         $this->children = $result['children'];
         $this->parents = $result['parents'];
+
+        $this->logger = $logger;
     }
 
     #[LiveListener('redraw')]
     public function defineActiveCatalogs(#[LiveArg] array $newCatalogs = [])
     {
+        $this->activeLastNodes = $newCatalogs;
+        $this->logger->info('drawing');
+        $this->logger->info(print_r($this->activeLastNodes, true));
         $activeCategories = [];
         foreach ($newCatalogs as $index) {
             $activeCategories[$index] = $index;
@@ -59,8 +72,11 @@ final class Catalog
     #[LiveAction]
     public function updateCategories(#[LiveArg] int $newId)
     {
+        $this->logger->info('start');
+        $this->logger->info(print_r($this->activeLastNodes, true));
+        $log = $this->logger;
         $children = $this->children;
-        $getLastNodes = function ($id) use ($children, &$getLastNodes) {
+        $getLastNodes = function ($id) use ($children, &$getLastNodes, $log) {
             if (!array_key_exists($id, $children)) {
                 return [$id];
             }
@@ -71,11 +87,31 @@ final class Catalog
 
             return array_merge(...$result);
         };
+        $this->logger->info($newId);
 
-        $newCatalogs = $getLastNodes($newId);
+        $lastNodes = $getLastNodes($newId);
+
+        $this->logger->info(print_r($lastNodes, true));
+
+
+        if (array_key_exists($newId, $this->activeCategories)) {
+            $this->logger->info('deleting');
+            $this->logger->info('previous');
+            $this->logger->info(print_r($this->activeLastNodes, true));
+            $result = array_diff($this->activeLastNodes, $lastNodes);
+            $this->logger->info('now');
+            $this->logger->info(print_r($result, true));
+        } else {
+            $this->logger->info('adding');
+            $this->logger->info('previous');
+            $this->logger->info(print_r($this->activeLastNodes, true));
+            $result = array_merge($lastNodes, $this->activeLastNodes);
+            $this->logger->info('now');
+            $this->logger->info(print_r($result, true));
+        }
 
         $this->emit('search', [
-            'newCatalogs' => $newCatalogs,
+            'newCatalogs' => $result,
         ]);
     }
 }
