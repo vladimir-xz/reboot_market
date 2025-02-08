@@ -1,5 +1,29 @@
 <div {{ attributes.defaults(stimulus_controller('product')) }}>
-    {%  for product in this.products %}
-        <strong>{{  product.name    }}</strong>
-    {% endfor %}
+    <h1>Product List</h1>
+
+    <ul>
+        {% for product in products.currentPageResults %}
+            <li><strong>{{  product.name    }}</strong></li>
+        {% else %}
+            <li>No products found.</li>
+        {% endfor %}
+    </ul>
+
+    {% if products.haveToPaginate %}
+    <div class="flex">
+        {% if products.hasPreviousPage %}
+        <button class="" data-model="page" data-action="live#action" data-live-action-param="getProducts" data-live-page-param="{{  products.previousPage   }}">
+            {{  products.previousPage   }}
+        </button>
+        {% endif %}
+
+        {%  for i in range(products.currentPage, products.currentPage + products.nbPages)%}
+        <button class="" data-model="page" data-action="live#action" data-live-action-param="getProducts" data-live-page-param="{{  i   }}">
+            {{  i   }}
+        </button>
+        
+        {%  endfor   %}
+    </div>
+    {% endif %}
+
 </div>

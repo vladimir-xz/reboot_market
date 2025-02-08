@@ -4,10 +4,6 @@ namespace App\DataFixtures;
 
 use App\Entity\Product;
 use App\Entity\Category;
-use App\Entity\Server;
-use App\Entity\Storage;
-use App\Entity\NetworkEquipment;
-use App\Entity\Component;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -102,8 +98,9 @@ class AppFixtures extends Fixture
         $manager->persist($category20);
 
         for ($i = 0; $i < 10; $i++) {
-            $product = new Server();
+            $product = new Product();
             $product->setName('product ' . $i);
+            $product->setType('server');
             $product->setCondition('used');
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
@@ -113,8 +110,9 @@ class AppFixtures extends Fixture
         }
 
         for ($i = 10; $i < 20; $i++) {
-            $product = new Server();
+            $product = new Product();
             $product->setName('product ' . $i);
+            $product->setType('server');
             $product->setCondition('used');
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
@@ -124,8 +122,9 @@ class AppFixtures extends Fixture
         }
 
         for ($i = 20; $i < 30; $i++) {
-            $product = new Server();
+            $product = new Product();
             $product->setName('product ' . $i);
+            $product->setType('server');
             $product->setCondition('used');
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
@@ -135,8 +134,9 @@ class AppFixtures extends Fixture
         }
 
         for ($i = 30; $i < 40; $i++) {
-            $product = new NetworkEquipment();
+            $product = new Product();
             $product->setName('product ' . $i);
+            $product->setType('network equipment');
             $product->setCondition('used');
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
@@ -148,6 +148,7 @@ class AppFixtures extends Fixture
         for ($i = 40; $i < 50; $i++) {
             $product = new Product();
             $product->setName('product ' . $i);
+            $product->setType('other');
             $product->setCondition('used');
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
@@ -157,8 +158,9 @@ class AppFixtures extends Fixture
         }
 
         for ($i = 50; $i < 60; $i++) {
-            $product = new Component();
+            $product = new Product();
             $product->setName('product ' . $i);
+            $product->setType('component');
             $product->setCondition('used');
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
@@ -168,8 +170,9 @@ class AppFixtures extends Fixture
         }
 
         for ($i = 50; $i < 60; $i++) {
-            $product = new Component();
+            $product = new Product();
             $product->setName('product ' . $i);
+            $product->setType('component');
             $product->setCondition('used');
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));

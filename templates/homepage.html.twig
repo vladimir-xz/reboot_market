@@ -2,9 +2,15 @@
 
 {% block page_contents %}
 <main class="w-3/4">
-    {{ dump(prod)}}
 
-    <twig:ProductSearch />
+    <twig:ProductSearch :products="products" page="{{   page    }}"/>
+
+    <h1>Not paginated rresults: </h1>
+    <ul>
+        {% for product in notPaginated %}
+            <li><strong>{{  product.name   }}</strong></li>
+        {% endfor %}
+    </ul>
 
     <twig:Carousel />
     

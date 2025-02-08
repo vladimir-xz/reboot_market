@@ -11,6 +11,8 @@ export default class extends Controller {
 
     async initialize() {
         this.component = await getComponent(this.element);
+        const lastNodes = this.component.valueStore.props.activeLastNodes;
+        this.component.emit('redraw', { newCatalogs: lastNodes });
     }
 
     onClick(event) {

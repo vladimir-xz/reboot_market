@@ -6,6 +6,8 @@ use App\Entity\Product;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Pagerfanta\Pagerfanta;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
 
 /**
  * @extends ServiceEntityRepository<Product>
@@ -22,10 +24,7 @@ class ProductRepository extends ServiceEntityRepository
     */
     public function findByNameField(string $value, array $cat): array
     {
-        $em = $this->getEntityManager();
         $query = $this->createQueryBuilder('p')
-            ->andWhere('p INSTANCE OF :type')
-            ->setParameter('type', $em->getClassMetadata('App\Entity\Server'))
             ->andWhere('LOWER(p.name) LIKE :val')
             ->setParameter('val', strtolower('%' . $value . '%'))
         ;
@@ -47,8 +46,6 @@ class ProductRepository extends ServiceEntityRepository
             ->join('p.category', 'c')
             ->where('LOWER(p.name) LIKE :val')
             ->setParameter('val', strtolower('%' . $value . '%'))
-            ->andWhere('p INSTANCE OF :type')
-            ->setParameter('type', $em->getClassMetadata('App\Entity\Server'))
         ;
 
         if ($cat) {
@@ -58,5 +55,31 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         return $query->getQuery()->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
+    }
+
+    public function getPaginatedValues(string $value, array $cat, int $page, int $maxPerPage = 5): Pagerfanta
+    {
+        $query = $this->createQueryBuilder('p')
+            ->andWhere('LOWER(p.name) LIKE :val')
+            ->setParameter('val', strtolower('%' . $value . '%'))
+            ->orderBy('p.id', 'ASC');
+        ;
+
+        if ($cat) {
+            $query
+            ->andWhere('p.category IN (:val2)')
+            ->setParameter('val2', $cat);
+        }
+
+        $maxNbPages = $page === 1 ? 4 : 3;
+
+        $adapter = new QueryAdapter($query);
+        $pagerfanta = new Pagerfanta($adapter);
+
+        $pagerfanta->setMaxPerPage($maxPerPage);
+        $pagerfanta->setCurrentPage($page);
+        $pagerfanta->setMaxNbPages($maxNbPages);
+
+        return $pagerfanta;
     }
 }

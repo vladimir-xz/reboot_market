@@ -9,6 +9,7 @@ use Symfony\UX\LiveComponent\ComponentToolsTrait;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Metadata\UrlMapping;
+use Psr\Log\LoggerInterface;
 
 #[AsLiveComponent]
 final class Search
@@ -20,8 +21,12 @@ final class Search
     public string $query = '';
 
     #[LiveAction]
-    public function searching()
+    public function searching(LoggerInterface $log)
     {
+        if (empty($this->query)) {
+            return;
+        }
+
         $this->emit('search', [
             'query' => $this->query,
         ]);

@@ -11,6 +11,8 @@ use Symfony\UX\LiveComponent\Attribute\LiveListener;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\ComponentToolsTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
+use Pagerfanta\Pagerfanta;
+use Psr\Log\LoggerInterface;
 
 #[AsLiveComponent]
 class ProductSearch extends AbstractController
@@ -18,32 +20,31 @@ class ProductSearch extends AbstractController
     use DefaultActionTrait;
     use ComponentToolsTrait;
 
-
     #[LiveProp(writable: true)]
-    public string $currentProducts = '';
-
+    public int $page = 1;
     public string $query = '';
-    public array $newCatalogs = [];
     public array $categories = [];
 
     /** @var Product[] */
     public $products = [];
 
-    public function __construct(private ProductRepository $productRepository)
+    public function __construct(private ProductRepository $productRepository, private LoggerInterface $logger)
     {
     }
 
     #[LiveListener('search')]
-    public function getSearch(#[LiveArg] string $query = '', #[LiveArg] array $newCatalogs = [])
+    public function search(#[LiveArg] string $query = '', #[LiveArg] array $newCatalogs = [])
     {
         if (!$query && !$newCatalogs) {
             $this->emit('redraw', [
                 'newCatalogs' => [],
             ]);
-            return;
         }
 
-        $this->products = $this->productRepository->findByNameField($query, $newCatalogs);
+        $this->logger->info('searching');
+        $this->categories = $newCatalogs;
+        $page = 1;
+        $this->products = $this->productRepository->getPaginatedValues($query, $this->categories, $page);
         $categories = $this->productRepository->getCategoriesFromSearch($query, $newCatalogs);
         // $this->dispatchBrowserEvent('product:search', [
         //     'activeCategories' => $categories,
@@ -53,9 +54,11 @@ class ProductSearch extends AbstractController
         ]);
     }
 
-    public function getProducts(): array
+    #[LiveAction]
+    public function getProducts(#[LiveArg('page')] int $page)
     {
         // example method that returns an array of Products
-        return $this->products;
+        $this->products = $this->productRepository->getPaginatedValues($this->query, $this->categories, $page);
+        $this->logger->info($this->page);
     }
 }

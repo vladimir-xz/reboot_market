@@ -7,15 +7,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[ORM\InheritanceType('SINGLE_TABLE')]
-#[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
-#[ORM\DiscriminatorMap([
-    'product' => Product::class,
-    'server' => Server::class,
-    'storage' => Storage::class,
-    'network_equipment' => NetworkEquipment::class,
-    'component' => Component::class
-    ])]
 class Product
 {
     #[ORM\Id]
@@ -32,6 +23,9 @@ class Product
     #[ORM\Column]
     private ?int $weight = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $length = null;
+
     #[ORM\Column]
     private ?int $price = null;
 
@@ -44,6 +38,9 @@ class Product
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $type = null;
 
     public function getId(): ?int
     {
@@ -82,6 +79,18 @@ class Product
     public function setWeight(int $weight): static
     {
         $this->weight = $weight;
+
+        return $this;
+    }
+
+    public function getLength(): ?int
+    {
+        return $this->length;
+    }
+
+    public function setLength(?int $length): static
+    {
+        $this->length = $length;
 
         return $this;
     }
@@ -130,6 +139,18 @@ class Product
     public function setCategory(?Category $category_id): static
     {
         $this->category = $category_id;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): static
+    {
+        $this->type = $type;
 
         return $this;
     }
