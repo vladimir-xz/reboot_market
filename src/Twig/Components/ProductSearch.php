@@ -20,9 +20,11 @@ class ProductSearch extends AbstractController
     use DefaultActionTrait;
     use ComponentToolsTrait;
 
-    #[LiveProp(writable: true)]
+    #[LiveProp(writable: true, url: true)]
     public int $page = 1;
+    #[LiveProp]
     public string $query = '';
+    #[LiveProp]
     public array $categories = [];
 
     /** @var Product[] */
@@ -40,24 +42,30 @@ class ProductSearch extends AbstractController
                 'newCatalogs' => [],
             ]);
         }
+        if ($query) {
+            $this->query = $query;
+        }
+        if ($newCatalogs) {
+            $this->categories = $newCatalogs;
+        }
 
         $this->logger->info('searching');
         $this->categories = $newCatalogs;
-        $page = 1;
-        $this->products = $this->productRepository->getPaginatedValues($query, $this->categories, $page);
         $categories = $this->productRepository->getCategoriesFromSearch($query, $newCatalogs);
         // $this->dispatchBrowserEvent('product:search', [
         //     'activeCategories' => $categories,
         // ]);
+        $this->getProducts();
         $this->emit('redraw', [
             'newCatalogs' => $categories,
         ]);
     }
 
     #[LiveAction]
-    public function getProducts(#[LiveArg('page')] int $page)
+    public function getProducts(#[LiveArg('page')] int $page = 1)
     {
         // example method that returns an array of Products
+        $this->page = $page;
         $this->products = $this->productRepository->getPaginatedValues($this->query, $this->categories, $page);
         $this->logger->info($this->page);
     }

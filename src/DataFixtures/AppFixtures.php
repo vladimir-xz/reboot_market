@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Product;
 use App\Entity\Category;
+use App\Entity\Specification;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -33,11 +34,11 @@ class AppFixtures extends Fixture
         $category9 = new Category();
         $category10 = new Category();
         $category6->setName('Dell');
-        $category7->setName('Hp');
+        $category7->setName('HP');
         $category1->addChild($category6);
         $category1->addChild($category7);
         $category8->setName('Dell');
-        $category9->setName('Hp');
+        $category9->setName('HP');
         $category2->addChild($category8);
         $category2->addChild($category9);
         $category10->setName('Switches');
@@ -97,6 +98,24 @@ class AppFixtures extends Fixture
         $manager->persist($category19);
         $manager->persist($category20);
 
+        $specification1 = new Specification();
+        $specification1->setProperty('Form-factor');
+        $specification1->setValue('2.5 inch');
+        $specification2 = new Specification();
+        $specification2->setProperty('Form-factor');
+        $specification2->setValue('3.5 inch');
+        $specification3 = new Specification();
+        $specification3->setProperty('Height');
+        $specification3->setValue('1U');
+        $specification4 = new Specification();
+        $specification4->setProperty('Height');
+        $specification4->setValue('2U');
+
+        $manager->persist($specification1);
+        $manager->persist($specification2);
+        $manager->persist($specification3);
+        $manager->persist($specification4);
+
         for ($i = 0; $i < 10; $i++) {
             $product = new Product();
             $product->setName('product ' . $i);
@@ -105,7 +124,10 @@ class AppFixtures extends Fixture
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
             $product->setAmount(mt_rand(1, 10));
+            $product->setBrand('Dell');
             $category17->addProduct($product);
+            $product->addSpecification($specification1);
+            $product->addSpecification($specification3);
             $manager->persist($product);
         }
 
@@ -117,7 +139,10 @@ class AppFixtures extends Fixture
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
             $product->setAmount(mt_rand(1, 10));
+            $product->setBrand('Dell');
             $category18->addProduct($product);
+            $product->addSpecification($specification2);
+            $product->addSpecification($specification3);
             $manager->persist($product);
         }
 
@@ -129,7 +154,10 @@ class AppFixtures extends Fixture
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
             $product->setAmount(mt_rand(1, 10));
+            $product->setBrand('HP');
             $category19->addProduct($product);
+            $product->addSpecification($specification1);
+            $product->addSpecification($specification3);
             $manager->persist($product);
         }
 
@@ -141,6 +169,7 @@ class AppFixtures extends Fixture
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
             $product->setAmount(mt_rand(1, 10));
+            $product->setBrand('Cisco');
             $category10->addProduct($product);
             $manager->persist($product);
         }
@@ -153,6 +182,7 @@ class AppFixtures extends Fixture
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
             $product->setAmount(mt_rand(1, 10));
+            $product->setBrand('Rack');
             $category16->addProduct($product);
             $manager->persist($product);
         }
@@ -165,11 +195,12 @@ class AppFixtures extends Fixture
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
             $product->setAmount(mt_rand(1, 10));
+            $product->setBrand('SK Hynix');
             $category11->addProduct($product);
             $manager->persist($product);
         }
 
-        for ($i = 50; $i < 60; $i++) {
+        for ($i = 60; $i < 70; $i++) {
             $product = new Product();
             $product->setName('product ' . $i);
             $product->setType('component');
@@ -177,7 +208,23 @@ class AppFixtures extends Fixture
             $product->setPrice(mt_rand(10, 100));
             $product->setWeight(mt_rand(100, 1000));
             $product->setAmount(mt_rand(1, 10));
+            $product->setBrand('HP');
             $category14->addProduct($product);
+            $manager->persist($product);
+        }
+
+        for ($i = 70; $i < 80; $i++) {
+            $product = new Product();
+            $product->setName('product ' . $i);
+            $product->setType('storage');
+            $product->setCondition('used');
+            $product->setPrice(mt_rand(10, 100));
+            $product->setWeight(mt_rand(1000, 1500));
+            $product->setAmount(mt_rand(1, 10));
+            $product->setBrand('HP');
+            $category9->addProduct($product);
+            $product->addSpecification($specification1);
+            $product->addSpecification($specification4);
             $manager->persist($product);
         }
 

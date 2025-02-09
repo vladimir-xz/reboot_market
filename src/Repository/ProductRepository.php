@@ -71,15 +71,23 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('val2', $cat);
         }
 
-        $maxNbPages = $page === 1 ? 4 : 3;
-
         $adapter = new QueryAdapter($query);
         $pagerfanta = new Pagerfanta($adapter);
 
         $pagerfanta->setMaxPerPage($maxPerPage);
         $pagerfanta->setCurrentPage($page);
-        $pagerfanta->setMaxNbPages($maxNbPages);
+        // $pagerfanta->setMaxNbPages($maxNbPages);
 
         return $pagerfanta;
+    }
+
+    public function getAllWithSpecs()
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.specifications', 's')
+            ->addSelect('s')
+            ->getQuery()
+            ->getResult()
+        ;
     }
 }

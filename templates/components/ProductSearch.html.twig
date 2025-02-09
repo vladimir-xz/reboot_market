@@ -10,6 +10,10 @@
     </ul>
 
     {% if products.haveToPaginate %}
+
+    {{ 'Current page :' ~ products.currentPage  }}
+    {{ 'Number of pages :' ~ products.nbPages  }}
+
     <div class="flex">
         {% if products.hasPreviousPage %}
         <button class="" data-model="page" data-action="live#action" data-live-action-param="getProducts" data-live-page-param="{{  products.previousPage   }}">
@@ -17,7 +21,7 @@
         </button>
         {% endif %}
 
-        {%  for i in range(products.currentPage, products.currentPage + products.nbPages)%}
+        {%  for i in range(products.currentPage, products.nbPages)  %}
         <button class="" data-model="page" data-action="live#action" data-live-action-param="getProducts" data-live-page-param="{{  i   }}">
             {{  i   }}
         </button>

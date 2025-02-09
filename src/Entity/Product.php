@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -41,6 +43,20 @@ class Product
 
     #[ORM\Column(length: 50)]
     private ?string $type = null;
+
+    /**
+     * @var Collection<int, Specification>
+     */
+    #[ORM\ManyToMany(targetEntity: Specification::class, mappedBy: 'products')]
+    private Collection $specifications;
+
+    #[ORM\Column(length: 50)]
+    private ?string $Brand = null;
+
+    public function __construct()
+    {
+        $this->specifications = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -151,6 +167,45 @@ class Product
     public function setType(string $type): static
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Specification>
+     */
+    public function getSpecifications(): Collection
+    {
+        return $this->specifications;
+    }
+
+    public function addSpecification(Specification $specification): static
+    {
+        if (!$this->specifications->contains($specification)) {
+            $this->specifications->add($specification);
+            $specification->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSpecification(Specification $specification): static
+    {
+        if ($this->specifications->removeElement($specification)) {
+            $specification->removeProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function getBrand(): ?string
+    {
+        return $this->Brand;
+    }
+
+    public function setBrand(string $Brand): static
+    {
+        $this->Brand = $Brand;
 
         return $this;
     }
