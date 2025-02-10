@@ -33,13 +33,13 @@ class MainController extends AbstractController
             $activeCategories = [];
         }
 
-        $products = $productRepository->getPaginatedValues($query, $activeCategories, $page);
+        // $products = $productRepository->getPaginatedValues($query, $activeCategories, $page);
         // $productsNotPad = $productRepository->findByNameField($query, $activeCategories);
         $categories = $productRepository->getCategoriesFromSearch($query, $activeCategories);
 
         return $this->render('homepage.html.twig', [
-            'products' => $products,
             // 'notPaginated' => $productsNotPad,
+            'query' => $query,
             'categories' => $categories,
             'page' => $page,
             // 'array' => $array,

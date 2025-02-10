@@ -5,7 +5,7 @@
 
     {{  render_esi(controller('App\\Controller\\ProductFilterController::getAllFilters')) }}
 
-    <twig:ProductSearch :products="products" page="{{   page    }}"/>
+    <twig:ProductSearch query="{{ query  }}" :categories="categories" page="{{   page    }}"/>
 
     {# <h1>Not paginated rresults: </h1>
     <ul>

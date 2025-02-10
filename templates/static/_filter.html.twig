@@ -13,7 +13,7 @@
                     <div data-model="{{  key }}" class="flex flex-col ">
                         {% for value in specValues  %}
                         <div class="">
-                            <input id="{{  value  }}" type="checkbox" data-model="spec[{{  key  }}][]" value="{{  value    }}"><label for="{{  value  }}">{{  value|capitalize    }}</label>
+                            <input id="{{  value  }}" type="checkbox" data-model="specs['{{  key  }}'][]" value="{{  value    }}"><label for="{{  value  }}">{{  value|capitalize    }}</label>
                         </div>
                         {%  endfor  %}
                     </div>

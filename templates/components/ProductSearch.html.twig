@@ -1,28 +1,29 @@
 <div {{ attributes.defaults(stimulus_controller('product')) }}>
     <h1>Product List</h1>
 
+    {%  set paginator = this.products  %}
     <ul>
-        {% for product in products.currentPageResults %}
+        {% for product in paginator.currentPageResults %}
             <li><strong>{{  product.name    }}</strong></li>
         {% else %}
             <li>No products found.</li>
         {% endfor %}
     </ul>
 
-    {% if products.haveToPaginate %}
+    {% if paginator.haveToPaginate %}
 
-    {{ 'Current page :' ~ products.currentPage  }}
-    {{ 'Number of pages :' ~ products.nbPages  }}
+    {{ 'Current page :' ~ paginator.currentPage  }}
+    {{ 'Number of pages :' ~ paginator.nbPages  }}
 
     <div class="flex">
-        {% if products.hasPreviousPage %}
-        <button class="" data-model="page" data-action="live#action" data-live-action-param="getProducts" data-live-page-param="{{  products.previousPage   }}">
-            {{  products.previousPage   }}
+        {% if paginator.hasPreviousPage %}
+        <button class="" type="button" data-action="live#update" data-model="page" data-value="{{  paginator.previousPage   }}">
+            {{  paginator.previousPage   }}
         </button>
         {% endif %}
 
-        {%  for i in range(products.currentPage, products.nbPages)  %}
-        <button class="" data-model="page" data-action="live#action" data-live-action-param="getProducts" data-live-page-param="{{  i   }}">
+        {%  for i in range(paginator.currentPage, paginator.nbPages)  %}
+        <button class="" data-action="live#update" data-model="page" data-value="{{  i   }}" type="button">
             {{  i   }}
         </button>
         
