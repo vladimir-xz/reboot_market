@@ -7,6 +7,7 @@ use Doctrine\ORM\AbstractQuery;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Pagerfanta\Pagerfanta;
+use Pagerfanta\Adapter\NullAdapter;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Psr\Log\LoggerInterface;
 
@@ -39,18 +40,24 @@ class ProductRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-    public function getCategoriesFromSearch(string $value = '', array $cat = [], array $filter = []): array
+    public function getCategoriesFromSearch(string $query = '', array $cat = [], array $filter = []): array
     {
-        $em = $this->getEntityManager();
-        $query = $this->createQueryBuilder('p')
+        if ($query === '' && empty($cat) && empty($filter)) {
+            return [];
+        }
+
+        $qb = $this->createQueryBuilder('p')
             ->select('DISTINCT c.id')
-            ->join('p.category', 'c')
+            ->join('p.category', 'c');
+
+        if ($query !== '') {
+            $qb
             ->where('LOWER(p.name) LIKE :val')
-            ->setParameter('val', strtolower('%' . $value . '%'))
-        ;
+            ->setParameter('val', strtolower('%' . $query . '%'));
+        }
 
         if ($cat) {
-            $query
+            $qb
             ->andWhere('p.category IN (:val2)')
             ->setParameter('val2', $cat);
         }
@@ -61,35 +68,39 @@ class ProductRepository extends ServiceEntityRepository
                 $i++;
                 if ($key === 'specs') {
                     foreach ($value as $specKey => $specValue) {
-                        $query->join('p.specifications', 's')
+                        $qb->join('p.specifications', 's')
                         ->andWhere("s.{$specKey} IN (:val{$i})")
                         ->setParameter("val{$i}", $specValue);
                         $i++;
                     }
                 } else {
-                    $query
+                    $qb
                     ->andWhere("p.{$key} IN (:val{$i})")
                     ->setParameter("val{$i}", $value);
                 }
             }
         }
 
-        return $query->getQuery()->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
+        return $qb->getQuery()->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
     }
 
-    public function getPaginatedValues(string $value, array $cat, int $page, array $filter, int $maxPerPage = 5): Pagerfanta
+    public function getPaginatedValues(string $query, array $cat, int $page, array $filter, int $maxPerPage = 5): Pagerfanta
     {
-        $this->logger->info("paginating: query: {$value}, page: {$page}");
-        $this->logger->info(print_r($filter, true));
-        $this->logger->info(print_r($cat, true));
-        $query = $this->createQueryBuilder('p')
+        if ($query === '' && empty($cat) && empty($filter)) {
+            return new Pagerfanta(new NullAdapter(0));
+        }
+
+        $qb = $this->createQueryBuilder('p');
+
+        if ($query !== '') {
+            $qb
             ->andWhere('LOWER(p.name) LIKE :val')
-            ->setParameter('val', strtolower('%' . $value . '%'))
+            ->setParameter('val', strtolower('%' . $query . '%'))
             ->orderBy('p.id', 'ASC');
-        ;
+        }
 
         if ($cat) {
-            $query
+            $qb
             ->andWhere('p.category IN (:val2)')
             ->setParameter('val2', $cat);
         }
@@ -101,7 +112,7 @@ class ProductRepository extends ServiceEntityRepository
                 $this->logger->info(print_r($filterValue, true));
                 if ($key === 'specs') {
                     foreach ($filterValue as $specKey => $specValue) {
-                        $query->join('p.specifications', 's')
+                        $qb->join('p.specifications', 's')
                         ->andWhere("s.{$specKey} IN (:val{$i})")
                         ->setParameter("val{$i}", $specValue);
                         $i++;
@@ -109,7 +120,7 @@ class ProductRepository extends ServiceEntityRepository
                 } else {
                     // $this->logger->info('WHYYYYYYYYYYYYYYYYYYYYYYY');
                     // $this->logger->info("Key: {$key}, value: {$value}");
-                    $query
+                    $qb
                     ->andWhere("p.{$key} IN (:val{$i})")
                     ->setParameter("val{$i}", $filterValue);
                 }
@@ -117,7 +128,7 @@ class ProductRepository extends ServiceEntityRepository
         }
 
 
-        $adapter = new QueryAdapter($query);
+        $adapter = new QueryAdapter($qb);
         $pagerfanta = new Pagerfanta($adapter);
 
         $pagerfanta->setMaxPerPage($maxPerPage);
