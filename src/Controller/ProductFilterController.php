@@ -8,13 +8,19 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use App\Repository\ProductRepository;
+use Psr\Log\LoggerInterface;
 
 final class ProductFilterController extends AbstractController
 {
-    // #[Cache(smaxage: 6000)]
-    public function getAllFilters(ProductRepository $productRepository): Response
+    public function __construct(private ProductRepository $productRepository, private LoggerInterface $logger)
     {
-        $allProducts = $productRepository->getAllWithSpecs();
+    }
+
+    // #[Cache(smaxage: 6000)]
+    public function getAllFilters(string $brands): Response
+    {
+        $this->logger->info('Computing filter template');
+        $allProducts = $this->productRepository->getAllWithSpecs();
 
         // $filter = array_reduce(function (array $accumulator, Product $value): array {
         // }, []);
@@ -46,6 +52,7 @@ final class ProductFilterController extends AbstractController
 
         return $this->render('static/_filter.html.twig', [
             'filter' => $filter,
+            'brands' => $brands
         ]);
     }
 }

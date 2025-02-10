@@ -29,9 +29,14 @@ class MainController extends AbstractController
         $page = $allParams['page'] ?? 1;
         $query = $allParams['q'] ?? '';
         $activeCategories = $allParams['c'] ?? [];
+        $brands = $allParams['b'] ?? [];
         if (is_string($activeCategories)) {
             $activeCategories = [];
         }
+        if (is_string($brands)) {
+            $brands = [];
+        }
+        $brands = json_encode($brands);
 
         // $products = $productRepository->getPaginatedValues($query, $activeCategories, $page);
         // $productsNotPad = $productRepository->findByNameField($query, $activeCategories);
@@ -42,6 +47,7 @@ class MainController extends AbstractController
             'query' => $query,
             'categories' => $categories,
             'page' => $page,
+            'brands' => $brands
             // 'array' => $array,
         ]);
     }

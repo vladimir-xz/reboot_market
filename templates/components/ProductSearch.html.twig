@@ -1,4 +1,4 @@
-<div {{ attributes.defaults(stimulus_controller('product')) }}>
+<div {{ attributes.defaults(stimulus_controller('product')) }} data-action="filter:new@window->product#filter">
     <h1>Product List</h1>
 
     {%  set paginator = this.products  %}

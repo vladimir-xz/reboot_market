@@ -36,11 +36,6 @@ class ProductSearch extends AbstractController
 
     public function __construct(private ProductRepository $productRepository, private LoggerInterface $logger)
     {
-        // $logger->info('rendering this');
-        // $logger->info($this->query);
-        // $logger->info($this->page);
-        // $logger->info(print_r($this->categories, true));
-        // $this->products = $this->productRepository->getPaginatedValues($this->query, $this->categories, $this->page);
     }
 
     #[LiveListener('search')]
@@ -58,7 +53,6 @@ class ProductSearch extends AbstractController
             $this->categories = $newCatalogs;
         }
 
-        $this->logger->info('searching');
         $this->categories = $newCatalogs;
         $categories = $this->productRepository->getCategoriesFromSearch($query, $newCatalogs);
         // $this->dispatchBrowserEvent('product:search', [
@@ -74,7 +68,6 @@ class ProductSearch extends AbstractController
     public function getProducts()
     {
         // example method that returns an array of Products
-        $this->logger->info($this->page);
         return $this->productRepository->getPaginatedValues($this->query, $this->categories, $this->page);
     }
 }

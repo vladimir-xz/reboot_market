@@ -8,4 +8,12 @@ import { getComponent } from '@symfony/ux-live-component';
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
 
+    async initialize() {
+        this.component = await getComponent(this.element);
+    }
+
+    filter ({ detail: { content } }) {
+        console.log(content)
+    }
+
 }
