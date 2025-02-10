@@ -13,6 +13,7 @@ export default class extends Controller {
     }
 
     filter ({ detail: { content } }) {
+        this.component.action('search', { newFilters: content });
         console.log(content)
     }
 

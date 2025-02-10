@@ -47,8 +47,8 @@ final class Catalog
     public function defineActiveCatalogs(#[LiveArg] array $newCatalogs = [])
     {
         $this->activeLastNodes = $newCatalogs;
-        $this->logger->info('drawing');
-        $this->logger->info(print_r($this->activeLastNodes, true));
+        // $this->logger->info('drawing');
+        // $this->logger->info(print_r($this->activeLastNodes, true));
         $activeCategories = [];
         foreach ($newCatalogs as $index) {
             $activeCategories[$index] = $index;

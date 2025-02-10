@@ -18,8 +18,8 @@ export default class extends Controller {
         console.log(stringBrands)
     }
 
-    new() {
-        this.dispatch("new", { detail: { content: this.filterTarget.value } })
+    new(event) {
+        this.dispatch("new", { detail: { content: event.params.payload } })
     }
     // ...
 }

@@ -13,7 +13,7 @@
                     <div data-model="{{  key }}" class="flex flex-col ">
                         {% for value in specValues  %}
                         <div class="">
-                            <input id="{{  value  }}" type="checkbox" data-model="specs['{{  key  }}'][]" value="{{  value    }}"><label for="{{  value  }}">{{  value|capitalize    }}</label>
+                            <input id="{{  value  }}" data-action="filter#new" data-filter-target="filter" type="checkbox" data-filter-payload-param='{"key":"specs", "keySpecs":"{{  key  }}", "value":"{{  value  }}"}' >{{  value|capitalize    }}</label>
                         </div>
                         {%  endfor  %}
                     </div>
@@ -25,7 +25,7 @@
                 <div data-model="{{  key }}" class="flex flex-col ">
                     {% for value in values  %}
                         <div class="">
-                            <input id="{{  value  }}" data-filter-target="filter" type="submit" value="1234" value="{{  value    }}" ><label for="{{  value  }}">{{  value|capitalize    }}</label>
+                            <input id="{{  value  }}" data-action="filter#new" data-filter-target="filter" type="checkbox" data-filter-payload-param='{"key":"{{  key  }}", "value":"{{  value  }}"}' ><label for="{{  value  }}">{{  value|capitalize    }}</label>
                         </div>
                     {%  endfor  %}
                 </div>

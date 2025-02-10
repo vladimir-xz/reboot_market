@@ -51,7 +51,7 @@ class Product
     private Collection $specifications;
 
     #[ORM\Column(length: 50)]
-    private ?string $Brand = null;
+    private ?string $brand = null;
 
     public function __construct()
     {
@@ -198,14 +198,14 @@ class Product
         return $this;
     }
 
-    public function getBrand(): ?string
+    public function getbrand(): ?string
     {
-        return $this->Brand;
+        return $this->brand;
     }
 
-    public function setBrand(string $Brand): static
+    public function setbrand(string $brand): static
     {
-        $this->Brand = $Brand;
+        $this->brand = $brand;
 
         return $this;
     }

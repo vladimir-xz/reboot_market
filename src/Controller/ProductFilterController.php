@@ -29,16 +29,16 @@ final class ProductFilterController extends AbstractController
             $price = $value->getPrice();
             $type = $value->getType();
             $specs = $value->getSpecifications();
-            $currentMax = $accumulator['prices']['max'] ?? 0;
+            $currentMax = $accumulator['price']['max'] ?? 0;
 
-            $accumulator['brands'][$company] = $company;
-            $accumulator['types'][$type] = $type;
+            $accumulator['brand'][$company] = $company;
+            $accumulator['type'][$type] = $type;
             if ($currentMax < $price) {
-                $accumulator['prices']['max'] = $price;
+                $accumulator['price']['max'] = $price;
             } elseif (!isset($accumulator['Price']['min'])) {
-                $accumulator['prices']['min'] = $price;
+                $accumulator['price']['min'] = $price;
             } elseif ($accumulator['Price']['min'] > $price) {
-                $accumulator['prices']['min'] = $price;
+                $accumulator['price']['min'] = $price;
             }
 
             foreach ($specs as $spec) {

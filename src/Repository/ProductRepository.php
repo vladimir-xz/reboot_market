@@ -8,13 +8,14 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Psr\Log\LoggerInterface;
 
 /**
  * @extends ServiceEntityRepository<Product>
  */
 class ProductRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private LoggerInterface $logger)
     {
         parent::__construct($registry, Product::class);
     }
@@ -57,7 +58,7 @@ class ProductRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
     }
 
-    public function getPaginatedValues(string $value, array $cat, int $page, int $maxPerPage = 5): Pagerfanta
+    public function getPaginatedValues(string $value, array $cat, int $page, array $filter, int $maxPerPage = 5): Pagerfanta
     {
         $query = $this->createQueryBuilder('p')
             ->andWhere('LOWER(p.name) LIKE :val')
@@ -70,6 +71,29 @@ class ProductRepository extends ServiceEntityRepository
             ->andWhere('p.category IN (:val2)')
             ->setParameter('val2', $cat);
         }
+
+        if ($filter) {
+            $i = 2;
+            foreach ($filter as $key => $value) {
+                $i++;
+                $this->logger->info(print_r($value, true));
+                if ($key === 'specs') {
+                    foreach ($value as $specKey => $specValue) {
+                        $query->join('p.specifications', 's')
+                        ->andWhere("s.{$specKey} IN (:val{$i})")
+                        ->setParameter("val{$i}", $specValue);
+                        $i++;
+                    }
+                } else {
+                    // $this->logger->info('WHYYYYYYYYYYYYYYYYYYYYYYY');
+                    // $this->logger->info("Key: {$key}, value: {$value}");
+                    $query
+                    ->andWhere("p.{$key} IN (:val{$i})")
+                    ->setParameter("val{$i}", $value);
+                }
+            }
+        }
+
 
         $adapter = new QueryAdapter($query);
         $pagerfanta = new Pagerfanta($adapter);
@@ -89,5 +113,15 @@ class ProductRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
         ;
+    }
+
+    public function chooseAllServers()
+    {
+        $value = 'server';
+        return $this->createQueryBuilder('p')
+            ->andWhere("p.type = :val")
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getResult();
     }
 }
