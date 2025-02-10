@@ -52,7 +52,7 @@ class ProductRepository extends ServiceEntityRepository
 
         if ($query !== '') {
             $qb
-            ->where('LOWER(p.name) LIKE :val')
+            ->andWhere('LOWER(p.name) LIKE :val')
             ->setParameter('val', strtolower('%' . $query . '%'));
         }
 
@@ -63,22 +63,16 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         if ($filter) {
-            $i = 2;
-            foreach ($filter as $key => $value) {
-                $i++;
-                if ($key === 'specs') {
-                    foreach ($value as $specKey => $specValue) {
-                        $qb->join('p.specifications', 's')
-                        ->andWhere("s.{$specKey} IN (:val{$i})")
-                        ->setParameter("val{$i}", $specValue);
-                        $i++;
-                    }
-                } else {
-                    $qb
-                    ->andWhere("p.{$key} IN (:val{$i})")
-                    ->setParameter("val{$i}", $value);
-                }
+            $separateConditions = [];
+            foreach ($filter as $key => $filterValue) {
+                $targets = implode("', '", $filterValue);
+                $condition = "p.{$key} IN ('" . $targets . "')";
+                $separateConditions[] = $condition;
             }
+
+            $fullConditionWithOr = implode(' OR ', $separateConditions);
+            $this->logger->info($fullConditionWithOr);
+            $qb->andWhere($fullConditionWithOr);
         }
 
         return $qb->getQuery()->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
@@ -90,13 +84,13 @@ class ProductRepository extends ServiceEntityRepository
             return new Pagerfanta(new NullAdapter(0));
         }
 
-        $qb = $this->createQueryBuilder('p');
+        $qb = $this->createQueryBuilder('p')
+            ->orderBy('p.id', 'ASC');
 
         if ($query !== '') {
             $qb
             ->andWhere('LOWER(p.name) LIKE :val')
-            ->setParameter('val', strtolower('%' . $query . '%'))
-            ->orderBy('p.id', 'ASC');
+            ->setParameter('val', strtolower('%' . $query . '%'));
         }
 
         if ($cat) {
@@ -106,25 +100,34 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         if ($filter) {
-            $i = 2;
+            $separateConditions = [];
             foreach ($filter as $key => $filterValue) {
-                $i++;
-                $this->logger->info(print_r($filterValue, true));
-                if ($key === 'specs') {
-                    foreach ($filterValue as $specKey => $specValue) {
-                        $qb->join('p.specifications', 's')
-                        ->andWhere("s.{$specKey} IN (:val{$i})")
-                        ->setParameter("val{$i}", $specValue);
-                        $i++;
-                    }
-                } else {
-                    // $this->logger->info('WHYYYYYYYYYYYYYYYYYYYYYYY');
-                    // $this->logger->info("Key: {$key}, value: {$value}");
-                    $qb
-                    ->andWhere("p.{$key} IN (:val{$i})")
-                    ->setParameter("val{$i}", $filterValue);
-                }
+                $targets = implode("', '", $filterValue);
+                $condition = "p.{$key} IN ('" . $targets . "')";
+                $separateConditions[] = $condition;
             }
+
+            $fullConditionWithOr = implode(' OR ', $separateConditions);
+            $qb->andWhere($fullConditionWithOr);
+            // $i = 2;
+            // foreach ($filter as $key => $filterValue) {
+            //     $i++;
+            //     $this->logger->info(print_r($filterValue, true));
+            //     if ($key === 'specs') {
+            //         foreach ($filterValue as $specKey => $specValue) {
+            //             $qb->join('p.specifications', 's')
+            //             ->orWhere("s.{$specKey} IN (:val{$i})")
+            //             ->setParameter("val{$i}", $specValue);
+            //             $i++;
+            //         }
+            //     } else {
+            //         // $this->logger->info('WHYYYYYYYYYYYYYYYYYYYYYYY');
+            //         // $this->logger->info("Key: {$key}, value: {$value}");
+            //         $qb
+            //         ->orWhere("p.{$key} IN (:val{$i})")
+            //         ->setParameter("val{$i}", $filterValue);
+            //     }
+            // }
         }
 
 
@@ -146,15 +149,5 @@ class ProductRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult()
         ;
-    }
-
-    public function chooseAllServers()
-    {
-        $value = 'server';
-        return $this->createQueryBuilder('p')
-            ->andWhere("p.type = :val")
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getResult();
     }
 }

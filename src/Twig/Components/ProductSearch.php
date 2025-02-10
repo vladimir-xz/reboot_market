@@ -43,7 +43,7 @@ class ProductSearch extends AbstractController
     public function receiveQuery(#[LiveArg] string $query)
     {
         $this->query = $query;
-        // $this->sendCategoriesForTree();
+        $this->sendCategoriesForTree();
     }
 
     #[LiveListener('receiveCategories')]
