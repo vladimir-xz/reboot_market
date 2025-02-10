@@ -34,6 +34,7 @@ final class Catalog
         CategoryRepository $categoryRepository,
         LoggerInterface $logger
     ) {
+        $logger->info('creating new Catalog');
         $rawArr = $categoryRepository->getRawTree();
         $result = $builder->build($rawArr);
 
@@ -47,6 +48,7 @@ final class Catalog
     #[LiveListener('redraw')]
     public function defineActiveCatalogs(#[LiveArg] array $newCatalogs = [])
     {
+        $this->logger->info('redrawing all tree');
         $this->activeLastNodes = $newCatalogs;
         // $this->logger->info('drawing');
         // $this->logger->info(print_r($this->activeLastNodes, true));
@@ -92,8 +94,8 @@ final class Catalog
             $result = array_merge($lastNodes, $this->activeLastNodes);
         }
 
-        $this->emit('search', [
-            'newCatalogs' => $result,
+        $this->emit('receiveCategories', [
+            'newCategories' => $result,
         ]);
     }
 }

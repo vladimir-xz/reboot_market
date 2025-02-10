@@ -15,7 +15,11 @@ export default class extends Controller {
     async initialize() {
         // Fetch the LiveComponent instance associated with this DOM element
         const stringBrands = JSON.parse(this.brandsValue)
-        console.log(stringBrands)
+        const params = new Proxy(new URLSearchParams(window.location.search), {
+            get: (searchParams, prop) => searchParams.get(prop),
+          });
+        this.value = params.f;
+        console.log(this.value)
     }
 
     new(event) {

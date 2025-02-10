@@ -1,6 +1,18 @@
 <div {{ attributes.defaults(stimulus_controller('product')) }} data-action="filter:new@window->product#filter">
     <h1>Product List</h1>
 
+    <div class="flex items-center justify-around">
+        {% if not this.filters is empty   %}
+        <div class="">{{    this.query  }}</div>
+        {%  endif   %}
+        {%  if not this.categories is empty   %}
+        <div class="">categories are on</div>
+        {%  endif   %}
+        {% if not this.filters is empty   %}
+        <div class="">filters</div>
+        {%  endif   %}
+    </div>
+
     {%  set paginator = this.products  %}
     <ul>
         {% for product in paginator.currentPageResults %}

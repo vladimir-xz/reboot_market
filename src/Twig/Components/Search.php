@@ -23,11 +23,7 @@ final class Search
     #[LiveAction]
     public function searching(LoggerInterface $log)
     {
-        if (empty($this->query)) {
-            return;
-        }
-
-        $this->emit('search', [
+        $this->emit('receiveQuery', [
             'query' => $this->query,
         ]);
     }

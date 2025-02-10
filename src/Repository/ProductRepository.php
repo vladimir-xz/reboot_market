@@ -39,7 +39,7 @@ class ProductRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-    public function getCategoriesFromSearch($value = '', $cat = []): array
+    public function getCategoriesFromSearch(string $value = '', array $cat = [], array $filter = []): array
     {
         $em = $this->getEntityManager();
         $query = $this->createQueryBuilder('p')
@@ -55,11 +55,33 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('val2', $cat);
         }
 
+        if ($filter) {
+            $i = 2;
+            foreach ($filter as $key => $value) {
+                $i++;
+                if ($key === 'specs') {
+                    foreach ($value as $specKey => $specValue) {
+                        $query->join('p.specifications', 's')
+                        ->andWhere("s.{$specKey} IN (:val{$i})")
+                        ->setParameter("val{$i}", $specValue);
+                        $i++;
+                    }
+                } else {
+                    $query
+                    ->andWhere("p.{$key} IN (:val{$i})")
+                    ->setParameter("val{$i}", $value);
+                }
+            }
+        }
+
         return $query->getQuery()->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
     }
 
     public function getPaginatedValues(string $value, array $cat, int $page, array $filter, int $maxPerPage = 5): Pagerfanta
     {
+        $this->logger->info("paginating: query: {$value}, page: {$page}");
+        $this->logger->info(print_r($filter, true));
+        $this->logger->info(print_r($cat, true));
         $query = $this->createQueryBuilder('p')
             ->andWhere('LOWER(p.name) LIKE :val')
             ->setParameter('val', strtolower('%' . $value . '%'))
@@ -74,11 +96,11 @@ class ProductRepository extends ServiceEntityRepository
 
         if ($filter) {
             $i = 2;
-            foreach ($filter as $key => $value) {
+            foreach ($filter as $key => $filterValue) {
                 $i++;
-                $this->logger->info(print_r($value, true));
+                $this->logger->info(print_r($filterValue, true));
                 if ($key === 'specs') {
-                    foreach ($value as $specKey => $specValue) {
+                    foreach ($filterValue as $specKey => $specValue) {
                         $query->join('p.specifications', 's')
                         ->andWhere("s.{$specKey} IN (:val{$i})")
                         ->setParameter("val{$i}", $specValue);
@@ -89,7 +111,7 @@ class ProductRepository extends ServiceEntityRepository
                     // $this->logger->info("Key: {$key}, value: {$value}");
                     $query
                     ->andWhere("p.{$key} IN (:val{$i})")
-                    ->setParameter("val{$i}", $value);
+                    ->setParameter("val{$i}", $filterValue);
                 }
             }
         }
