@@ -62,9 +62,7 @@ class ProductSearch extends AbstractController
             $filterKey = $newFilters['key'];
             $newValue = $newFilters['value'];
             if (!array_key_exists($filterKey, $this->filters)) {
-                $this->logger->info('adding new filter');
                 $this->filters[$filterKey][] = $newValue;
-                $this->logger->info(print_r($this->filters, true));
             } elseif ($filterKey === 'specs') {
                 $newSpecKey = $newFilters['keySpecs'];
                 if (!array_key_exists($newSpecKey, $this->filters['specs'])) {
@@ -77,9 +75,7 @@ class ProductSearch extends AbstractController
                     $this->filters['specs'][$newSpecKey] = $collection->toArray();
                 }
             } else {
-                $this->logger->info('appending new filter');
                 $collection = new ArrayCollection($this->filters[$filterKey]);
-                $this->logger->info(print_r($collection, true));
                 $collection->exists(fn($key, $value) => $value === $newValue)
                     ? $collection->removeElement($newValue)
                     : $collection->add($newValue);

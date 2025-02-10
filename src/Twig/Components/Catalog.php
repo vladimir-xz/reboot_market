@@ -4,6 +4,7 @@ namespace App\Twig\Components;
 
 use App\Service\CatalogBuilder;
 use App\Repository\CategoryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveListener;
 use Symfony\UX\LiveComponent\Attribute\LiveArg;
@@ -69,9 +70,6 @@ final class Catalog
     #[LiveAction]
     public function updateCategories(#[LiveArg] int $newId)
     {
-        // $this->logger->info('start');
-        // $this->logger->info(print_r($this->activeLastNodes, true));
-        // $log = $this->logger;
         $children = $this->children;
         $getLastNodes = function ($id) use ($children, &$getLastNodes) {
             if (!array_key_exists($id, $children)) {
@@ -84,28 +82,14 @@ final class Catalog
 
             return array_merge(...$result);
         };
-        // $this->logger->info($newId);
 
         $lastNodes = $getLastNodes($newId);
 
-        // $this->logger->info($lastNodes[0]);
-        // $this->logger->info(print_r($this->activeLastNodes, true));
-
-
-        if (in_array($lastNodes[0], $this->activeLastNodes)) {
-            // $this->logger->info('deleting');
-            // $this->logger->info('previous');
-            // $this->logger->info(print_r($this->activeLastNodes, true));
+        $collection = new ArrayCollection($lastNodes);
+        if ($collection->exists(fn($key, $value) => in_array($value, $this->activeLastNodes))) {
             $result = array_diff($this->activeLastNodes, $lastNodes);
-            // $this->logger->info('now');
-            // $this->logger->info(print_r($result, true));
         } else {
-            // $this->logger->info('adding');
-            // $this->logger->info('previous');
-            // $this->logger->info(print_r($this->activeLastNodes, true));
             $result = array_merge($lastNodes, $this->activeLastNodes);
-            // $this->logger->info('now');
-            // $this->logger->info(print_r($result, true));
         }
 
         $this->emit('search', [
