@@ -2,10 +2,21 @@
     {% for category in categories %}
         <div>
             <button 
-                class="w-full flex justify-between items-center pl-{{ offset }} transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300"
+                class="w-full flex items-center pl-{{ offset }} transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300"
                 id="{{category.id}}" data-catalog-target="node"
-                >
+            >
                 <p class="hover:underline">{{ category.name }}</p>
+
+                <div class="nested-div pl-4">
+                    <label class="container include_box">
+                        <input type="checkbox">
+                        <span class="checkmark"></span>
+                    </label>
+                    <label class="container exclude_box">
+                        <input type="checkbox">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
             </button>
             {% if category.children is defined %}
                 <twig:NavMenu :categories="category.children" offset="{{ offset + 3 }}"/>

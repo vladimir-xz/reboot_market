@@ -4,11 +4,11 @@
                 {% for category in this.catalog %}
                     <li >
                         <button 
-                            class="w-full flex items-center pl-3 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300"
+                            class="w-full menu-button flex items-center pl-3 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300"
                             id="{{category.id}}" data-catalog-target="node" 
                         >
-                            <p class="hover:underline">{{ category.name }}</p>
-                            <div class="flex pl-4">
+                                <p class="hover:underline">{{ category.name }}</p>
+                            <div class="nested-div pl-4">
                                 <label class="container include_box">
                                     <input type="checkbox">
                                     <span class="checkmark"></span>
