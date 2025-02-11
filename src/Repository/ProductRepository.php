@@ -40,9 +40,9 @@ class ProductRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-    public function getCategoriesFromSearch(string $query = '', array $cat = [], array $filter = []): array
+    public function getCategoriesFromSearch(string $query = '', array $catInclude = [], array $catExclude = [], array $filter = []): array
     {
-        if ($query === '' && empty($cat) && empty($filter)) {
+        if ($query === '' && empty($catInclude) && empty($catInclude) && empty($filter)) {
             return [];
         }
 
@@ -56,10 +56,16 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('val', strtolower('%' . $query . '%'));
         }
 
-        if ($cat) {
+        if ($catInclude) {
             $qb
             ->andWhere('p.category IN (:val2)')
-            ->setParameter('val2', $cat);
+            ->setParameter('val2', $catInclude);
+        }
+
+        if ($catExclude) {
+            $qb
+            ->andWhere('p.category NOT IN (:val3)')
+            ->setParameter('val3', $catExclude);
         }
 
         if ($filter) {
@@ -78,9 +84,9 @@ class ProductRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
     }
 
-    public function getPaginatedValues(string $query, array $cat, int $page, array $filter, int $maxPerPage = 5): Pagerfanta
+    public function getPaginatedValues(string $query, array $catInclude, array $catExclude, array $filter, int $page, int $maxPerPage = 5): Pagerfanta
     {
-        if ($query === '' && empty($cat) && empty($filter)) {
+        if ($query === '' && empty($catInclude) && empty($catExclude) && empty($filter)) {
             return new Pagerfanta(new NullAdapter(0));
         }
 
@@ -93,10 +99,16 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('val', strtolower('%' . $query . '%'));
         }
 
-        if ($cat) {
+        if ($catInclude) {
             $qb
             ->andWhere('p.category IN (:val2)')
-            ->setParameter('val2', $cat);
+            ->setParameter('val2', $catInclude);
+        }
+
+        if ($catExclude) {
+            $qb
+            ->andWhere('p.category NOT IN (:val3)')
+            ->setParameter('val3', $catExclude);
         }
 
         if ($filter) {

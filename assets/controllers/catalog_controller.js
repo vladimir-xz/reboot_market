@@ -50,22 +50,32 @@ export default class extends Controller {
             if (Number(element.id) in event.detail.activeCategories.active) {
                 element.classList.remove("category_neutral")
                 element.classList.remove("category_chosen")
+                element.classList.remove("category_exclude")
                 element.classList.add("category_active")
                 this.open(element.nextElementSibling)
             } else if (Number(element.id) in event.detail.activeCategories.chosen) {
                 element.classList.remove("category_neutral")
                 element.classList.remove("category_active")
+                element.classList.remove("category_exclude")
                 element.classList.add("category_chosen")
+                this.open(element.nextElementSibling)
+            } else if (Number(element.id) in event.detail.activeCategories.excluded) {
+                element.classList.remove("category_chosen")
+                element.classList.remove("category_active")
+                element.classList.remove("category_neutral")
+                element.classList.add("category_exclude")
                 this.open(element.nextElementSibling)
             } else if (Number(element.id) in event.detail.activeCategories.neutral) {
                 element.classList.remove("category_chosen")
                 element.classList.remove("category_active")
+                element.classList.remove("category_exclude")
                 element.classList.add("category_neutral")
                 this.open(element.nextElementSibling)
             } else {
                 element.classList.remove("category_chosen")
                 element.classList.remove("category_active")
                 element.classList.remove("category_neutral")
+                element.classList.remove("category_exclude")
                 this.close(element.nextElementSibling)
             }
         })

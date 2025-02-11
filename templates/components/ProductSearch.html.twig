@@ -5,8 +5,11 @@
         {% if not this.filters is empty   %}
         <div class="">{{    this.query  }}</div>
         {%  endif   %}
-        {%  if not this.categories is empty   %}
-        <div class="">categories are on</div>
+        {%  if not this.includedCategories is empty   %}
+        <div class="">+ categories are included</div>
+        {%  endif   %}
+        {%  if not this.excludedCategories is empty   %}
+        <div class="">- categories are excluded</div>
         {%  endif   %}
         {% if not this.filters is empty   %}
         <div class="">filters</div>

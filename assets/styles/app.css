@@ -18,5 +18,9 @@
     .category_chosen {
         @apply underline text-amber-600 text-opacity-50
     }
+
+    .category_exclude {
+        @apply line-through text-gray-600
+    }
     /* ... */
   }

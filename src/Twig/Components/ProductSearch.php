@@ -27,9 +27,11 @@ class ProductSearch extends AbstractController
     #[LiveProp]
     public string $query = '';
     #[LiveProp]
-    public array $categories = [];
+    public array $includedCategories = [];
     #[LiveProp(writable: true, url: new UrlMapping(as: 'f'))]
     public array $filters = [];
+    #[LiveProp]
+    public array $excludedCategories = [];
     // #[LiveProp(writable: true, url: new UrlMapping(as: 't'))]
     // public array $types = [];
     // #[LiveProp(writable: true, url: new UrlMapping(as: 's'))]
@@ -49,7 +51,17 @@ class ProductSearch extends AbstractController
     #[LiveListener('receiveCategories')]
     public function receiveCategories(#[LiveArg] array $newCategories)
     {
-        $this->categories = $newCategories;
+        if (array_key_exists('included', $newCategories)) {
+            $this->includedCategories = $newCategories['included'];
+        }
+        if (array_key_exists('excluded', $newCategories)) {
+            $this->excludedCategories = $newCategories['excluded'];
+        }
+        if (!$newCategories) {
+            $this->excludedCategories = [];
+            $this->includedCategories = [];
+        }
+
         $this->sendCategoriesForTree();
     }
 
@@ -96,11 +108,23 @@ class ProductSearch extends AbstractController
 
     private function sendCategoriesForTree()
     {
-        if ($this->categories) {
-            $categories['active'] = $this->productRepository->getCategoriesFromSearch($this->query, $this->categories, $this->filters);
-            $categories['chosen'] = $this->categories;
+        // if ($this->includedCategories) {
+        //     $categories['active'] = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
+        //     $categories['chosen'] = $this->includedCategories;
+        // } else {
+        //     $categories['neutral'] = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
+        // }
+        // $this->emit('redraw', [
+        //     'newCatalogs' => $categories,
+        // ]);
+
+        $categoriesResult = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
+        if ($this->includedCategories || $this->excludedCategories) {
+            $categories['active'] = $categoriesResult;
+            $categories['chosen'] = $this->includedCategories;
+            $categories['excluded'] = $this->excludedCategories;
         } else {
-            $categories['neutral'] = $this->productRepository->getCategoriesFromSearch($this->query, $this->categories, $this->filters);
+            $categories['neutral'] = $categoriesResult;
         }
         $this->emit('redraw', [
             'newCatalogs' => $categories,
@@ -111,6 +135,6 @@ class ProductSearch extends AbstractController
     public function getProducts()
     {
         // example method that returns an array of Products
-        return $this->productRepository->getPaginatedValues($this->query, $this->categories, $this->page, $this->filters);
+        return $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
     }
 }
