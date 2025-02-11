@@ -45,12 +45,23 @@ export default class extends Controller {
     // }
 
     renew(event) {
+        console.log(event.detail.activeCategories)
         this.nodeTargets.forEach((element) => {
-            if (Number(element.id) in event.detail.activeCategories) {
-                element.classList.add("category__active")
+            if (Number(element.id) in event.detail.activeCategories.active) {
+                element.classList.remove("category_active")
+                element.classList.add("category_chosen")
                 this.open(element.nextElementSibling)
+            } else if (Number(element.id) in event.detail.activeCategories.chosen) {
+                element.classList.remove("category_chosen")
+                element.classList.add("category_active")
+                this.open(element.nextElementSibling)
+            } else if (Number(element.id) in event.detail.activeCategories.neutral) {
+                element.classList.remove("category_chosen")
+                element.classList.remove("category_active")
+                this.close(element.nextElementSibling)
             } else {
-                element.classList.remove("category__active")
+                element.classList.remove("category_chosen")
+                element.classList.remove("category_active")
                 this.close(element.nextElementSibling)
             }
         })

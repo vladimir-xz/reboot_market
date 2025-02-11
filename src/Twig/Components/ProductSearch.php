@@ -96,8 +96,12 @@ class ProductSearch extends AbstractController
 
     private function sendCategoriesForTree()
     {
-        $this->logger->info('sendingCategories?');
-        $categories = $this->productRepository->getCategoriesFromSearch($this->query, $this->categories, $this->filters);
+        if ($this->categories) {
+            $categories['active'] = $this->productRepository->getCategoriesFromSearch($this->query, $this->categories, $this->filters);
+            $categories['chosen'] = $this->categories;
+        } else {
+            $categories['neutral'] = $this->productRepository->getCategoriesFromSearch($this->query, $this->categories, $this->filters);
+        }
         $this->emit('redraw', [
             'newCatalogs' => $categories,
         ]);

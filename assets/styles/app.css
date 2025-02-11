@@ -7,8 +7,16 @@
         @apply bg-teal-900 translate-x-6;
     }
 
-    .category__active {
-        @apply text-amber-600 underline
+    .category_neutral {
+        @apply underline
+    }
+
+    .category_chosen {
+        @apply underline text-amber-600
+    }
+
+    .category_active {
+        @apply underline text-amber-600 text-opacity-50
     }
     /* ... */
   }

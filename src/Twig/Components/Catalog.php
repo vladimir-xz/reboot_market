@@ -53,14 +53,26 @@ final class Catalog
         // $this->logger->info('drawing');
         // $this->logger->info(print_r($this->activeLastNodes, true));
         $activeCategories = [];
-        foreach ($newCatalogs as $index) {
-            $activeCategories[$index] = $index;
-            while (array_key_exists($index, $this->parents)) {
-                $index = $this->parents[$index];
-                if (array_key_exists($index, $activeCategories)) {
-                    break;
+        $activeCategories['active'] = [];
+        $activeCategories['chosen'] = [];
+        $activeCategories['neutral'] = [];
+        foreach ($newCatalogs as $status => $value) {
+            foreach ($value as $index) {
+                if (array_key_exists($index, $activeCategories['active'])) {
+                    continue;
                 }
-                $activeCategories[$index] = $index;
+                $activeCategories[$status][$index] = $index;
+                while (array_key_exists($index, $this->parents)) {
+                    $index = $this->parents[$index];
+                    if (
+                        array_key_exists($index, $activeCategories['active'])
+                        || array_key_exists($index, $activeCategories['chosen'])
+                        || array_key_exists($index, $activeCategories['neutral'])
+                    ) {
+                        break;
+                    }
+                    $activeCategories[$status][$index] = $index;
+                }
             }
         }
 
