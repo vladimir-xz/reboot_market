@@ -49,7 +49,8 @@ final class Catalog
     public function defineActiveCatalogs(#[LiveArg] array $newCatalogs = [])
     {
         $this->logger->info('redrawing all tree');
-        $this->activeLastNodes = $newCatalogs;
+        $this->logger->info(print_r($newCatalogs, true));
+        $this->activeLastNodes = $newCatalogs['chosen'] ?? [];
         // $this->logger->info('drawing');
         // $this->logger->info(print_r($this->activeLastNodes, true));
         $activeCategories = [];

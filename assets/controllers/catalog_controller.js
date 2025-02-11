@@ -48,20 +48,24 @@ export default class extends Controller {
         console.log(event.detail.activeCategories)
         this.nodeTargets.forEach((element) => {
             if (Number(element.id) in event.detail.activeCategories.active) {
-                element.classList.remove("category_active")
-                element.classList.add("category_chosen")
-                this.open(element.nextElementSibling)
-            } else if (Number(element.id) in event.detail.activeCategories.chosen) {
+                element.classList.remove("category_neutral")
                 element.classList.remove("category_chosen")
                 element.classList.add("category_active")
+                this.open(element.nextElementSibling)
+            } else if (Number(element.id) in event.detail.activeCategories.chosen) {
+                element.classList.remove("category_neutral")
+                element.classList.remove("category_active")
+                element.classList.add("category_chosen")
                 this.open(element.nextElementSibling)
             } else if (Number(element.id) in event.detail.activeCategories.neutral) {
                 element.classList.remove("category_chosen")
                 element.classList.remove("category_active")
-                this.close(element.nextElementSibling)
+                element.classList.add("category_neutral")
+                this.open(element.nextElementSibling)
             } else {
                 element.classList.remove("category_chosen")
                 element.classList.remove("category_active")
+                element.classList.remove("category_neutral")
                 this.close(element.nextElementSibling)
             }
         })
