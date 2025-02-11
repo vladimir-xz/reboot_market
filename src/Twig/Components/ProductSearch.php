@@ -120,8 +120,14 @@ class ProductSearch extends AbstractController
 
         $categoriesResult = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
         if ($this->includedCategories || $this->excludedCategories) {
+            $this->logger->info('this is active:');
+            $this->logger->info(print_r($categoriesResult, true));
             $categories['active'] = $categoriesResult;
+            $this->logger->info('this is chosen:');
+            $this->logger->info(print_r($this->includedCategories, true));
             $categories['chosen'] = $this->includedCategories;
+            $this->logger->info('this is exluded:');
+            $this->logger->info(print_r($this->excludedCategories, true));
             $categories['excluded'] = $this->excludedCategories;
         } else {
             $categories['neutral'] = $categoriesResult;

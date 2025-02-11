@@ -15,7 +15,13 @@ export default class extends Controller {
         // this.component.emit('redraw', { newCatalogs: lastNodes });
     }
 
+    check(event) {
+        this.component.action('updateCategories', { newId: event.params.id, ifExclude: event.params.exclude });
+    }
+
     onClick(event) {
+        console.log(event.params.include)
+        console.log('hello!')
         if (event.target.tagName === 'P') {
             console.log('attempt');
             this.component.action('updateCategories', { newId: event.target.parentElement.id });

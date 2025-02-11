@@ -8,14 +8,16 @@
                 <p class="hover:underline">{{ category.name }}</p>
 
                 <div class="nested-div pl-4">
+
                     <label class="container include_box">
-                        <input type="checkbox">
+                        <input type="checkbox" data-action="catalog#check" data-catalog-exclude-param="false" data-catalog-id-param="{{ category.id }}">
                         <span class="checkmark"></span>
                     </label>
                     <label class="container exclude_box">
-                        <input type="checkbox">
+                        <input type="checkbox" data-action="catalog#check" data-catalog-exclude-param="true" data-catalog-id-param="{{ category.id }}">
                         <span class="checkmark"></span>
                     </label>
+
                 </div>
             </button>
             {% if category.children is defined %}
