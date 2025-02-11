@@ -1,13 +1,23 @@
 <div {{ attributes.defaults(stimulus_controller('catalog')) }} class="w-1/4" data-action="catalog:renew->catalog#renew">
-        <nav class="inline-block w-full bg-stone-200 border border-neutral-300 rounded-md shadow-xl">
+        <nav class="inline-block w-full bg-stone-200 border border-neutral-300 rounded-md shadow-xl text-nowrap">
             <ul data-action="click->catalog#onClick" class="text-base leading-[3.5rem]">
                 {% for category in this.catalog %}
                     <li >
                         <button 
-                            class="w-full flex justify-between items-center pl-3 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300"
+                            class="w-full flex items-center pl-3 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300"
                             id="{{category.id}}" data-catalog-target="node" 
                         >
-                        <p class="hover:underline">{{ category.name }}</p>
+                            <p class="hover:underline">{{ category.name }}</p>
+                            <div class="flex pl-4">
+                                <label class="container include_box">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container exclude_box">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
                         </button>
                         {% if category.children is defined %}
                             <twig:NavMenu :categories="category.children" offset="6" />
@@ -17,3 +27,16 @@
             </ul>
         </nav>
 </div>
+{# 
+<div class="w-full pl-4">
+    <div class="check_box flex items-center w-full h-16">
+        <label class="check_cont flex h-full items-center">
+            <input type="checkbox">
+            <span class="checkmark"></span>
+        </label>
+        <label class="check_cont flex h-full items-center">
+            <input type="checkbox">
+            <span class="checkmark"></span>
+        </label>
+    </div>
+</div> #}
