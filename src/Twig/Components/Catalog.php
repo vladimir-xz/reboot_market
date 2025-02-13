@@ -26,9 +26,9 @@ final class Catalog
     public array $parents;
 
     #[LiveProp(writable: true, url: new UrlMapping(as: 'c'))]
-    public array $choosenNodes = [];
+    public array $lastNodesChosen = [];
     #[LiveProp(writable: true, url: new UrlMapping(as: 'c'))]
-    public array $excludedNodes = [];
+    public array $lastNodesExcluded = [];
     public LoggerInterface $logger;
 
     public function __construct(
@@ -36,7 +36,6 @@ final class Catalog
         CategoryRepository $categoryRepository,
         LoggerInterface $logger
     ) {
-        $logger->info('creating new Catalog');
         $rawArr = $categoryRepository->getRawTree();
         $result = $builder->build($rawArr);
 
@@ -50,43 +49,43 @@ final class Catalog
     #[LiveListener('redraw')]
     public function defineActiveCatalogs(#[LiveArg] array $newCatalogs = [])
     {
-        $this->logger->info('redrawing all tree');
-        $this->logger->info(print_r($newCatalogs, true));
-        $this->choosenNodes = $newCatalogs['chosen'] ?? [];
-        $this->excludedNodes = $newCatalogs['excluded'] ?? [];
+        $this->lastNodesChosen = $newCatalogs['chosen'] ?? [];
+        $this->lastNodesExcluded = $newCatalogs['excluded'] ?? [];
         $alreadyProceededIds = [];
         $allParents = $this->parents;
-        $buildTree = function ($ids) use (&$alreadyProceededIds, $allParents) {
+        $buildMapWithStatuses = function ($ids, $status) use (&$alreadyProceededIds, $allParents) {
             if (!$ids) {
                 return [];
             }
 
             $result = [];
-            foreach ($ids as $index) {
+            foreach ($ids as $index => $value) {
                 if (array_key_exists($index, $alreadyProceededIds)) {
                     continue;
                 }
-                $result[$index] = $index;
+                $result[$index] = ['isLastNode' => true, 'status' => $status];
                 $alreadyProceededIds[$index] = $index;
                 while (array_key_exists($index, $allParents)) {
                     $index = $this->parents[$index];
+
                     if (array_key_exists($index, $alreadyProceededIds)) {
                         break;
                     }
-                    $result[$index] = $index;
+                    $result[$index] = ['isLastNode' => false, 'status' => $status];
                 }
             }
 
             return $result;
         };
-        $activeCategories = [];
-        $activeCategories['active'] = $buildTree($newCatalogs['active'] ?? []);
-        $activeCategories['excluded'] = $buildTree($newCatalogs['excluded'] ?? []);
-        $activeCategories['chosen'] = $buildTree($newCatalogs['chosen'] ?? []);
-        $activeCategories['neutral'] = $buildTree($newCatalogs['neutral'] ?? []);
+        $activeCategories = $buildMapWithStatuses($newCatalogs['active'] ?? [], 'active');
+        $excludedCategories = $buildMapWithStatuses($newCatalogs['excluded'] ?? [], 'excluded');
+        $chosenCategories = $buildMapWithStatuses($newCatalogs['chosen'] ?? [], 'chosen');
+        $neutralCategories = $buildMapWithStatuses($newCatalogs['neutral'] ?? [], 'neutral');
+
+        $treeMap = $activeCategories + $excludedCategories + $chosenCategories + $neutralCategories;
 
         $this->dispatchBrowserEvent('catalog:renew', [
-            'activeCategories' => $activeCategories,
+            'treeMap' => $treeMap,
         ]);
     }
 
@@ -94,40 +93,45 @@ final class Catalog
     public function updateCategories(#[LiveArg] int $newId, #[LiveArg] bool $ifExclude = false)
     {
         $children = $this->children;
-        $getLastNodes = function ($id) use ($children, &$getLastNodes) {
-            if (!array_key_exists($id, $children)) {
-                return [$id];
+        $logger = $this->logger;
+
+        $getLastNodes = function ($ids, $acc) use ($children, &$getLastNodes, $logger) {
+
+            foreach ($ids as $id) {
+                if (!array_key_exists($id, $children)) {
+                    $acc[$id] = $id;
+                } else {
+                    $acc += $getLastNodes($children[$id], $acc);
+                }
             }
-
-            $result = array_map(function ($id) use ($getLastNodes) {
-                return $getLastNodes($id);
-            }, $children[$id]);
-
-            return array_merge(...$result);
+            $logger->info(print_r($acc, true));
+            return $acc;
         };
 
-        $lastNodes = $getLastNodes($newId);
+        $lastNodes = $getLastNodes([$newId], []);
+        $this->logger->info('new getLastNodes result :');
+        $this->logger->info(print_r($lastNodes, true));
 
         $collection = new ArrayCollection($lastNodes);
-        $ifAnyExistInActive = $collection->exists(fn($key, $value) => in_array($value, $this->choosenNodes));
-        $ifRevertExclude = array_diff($lastNodes, $this->excludedNodes) === [];
+        $ifAnyExistInActive = $collection->exists(fn($key, $value) => in_array($value, $this->lastNodesChosen));
+        $ifRevertExclude = array_diff($lastNodes, $this->lastNodesExcluded) === [];
 
         if ($ifRevertExclude) {
             $this->logger->info('What im doing wrong?');
             $this->logger->info('Rever exclude');
-            $result['excluded'] = array_diff($this->excludedNodes, $lastNodes);
+            $result['excluded'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
         } elseif ($ifExclude) {
             $this->logger->info('Maybe this?');
             $this->logger->info('adding new exluding to array');
-            $result['excluded'] = array_unique(array_merge($lastNodes, $this->excludedNodes));
-            $result['included'] = array_diff($this->choosenNodes, $lastNodes);
+            $result['excluded'] = $lastNodes + $this->lastNodesExcluded;
+            $result['included'] = array_diff_key($this->lastNodesChosen, $lastNodes);
         } elseif ($ifAnyExistInActive) {
             $this->logger->info('Deleting new');
-            $result['included'] = array_diff($this->choosenNodes, $lastNodes);
+            $result['included'] = array_diff_key($this->lastNodesChosen, $lastNodes);
         } else {
             $this->logger->info('Adding new without old');
-            $choosenWithoutExcluded = array_diff($lastNodes, $this->excludedNodes);
-            $result['included'] = array_merge($choosenWithoutExcluded, $this->choosenNodes);
+            $choosenWithoutExcluded = array_diff_key($lastNodes, $this->lastNodesExcluded);
+            $result['included'] = $choosenWithoutExcluded + $this->lastNodesChosen;
         }
 
         $this->emit('receiveCategories', [

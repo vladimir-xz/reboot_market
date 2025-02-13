@@ -7,13 +7,13 @@
             >
                 <p class="hover:underline">{{ category.name }}</p>
 
-                <div class="nested-div pl-4">
+                <div class="flex pl-4">
 
-                    <label class="container include_box">
+                    <label class="check_box chosen_box active_box">
                         <input type="checkbox" data-action="catalog#check" data-catalog-exclude-param="false" data-catalog-id-param="{{ category.id }}">
                         <span class="checkmark"></span>
                     </label>
-                    <label class="container exclude_box">
+                    <label class="check_box excluded_box">
                         <input type="checkbox" data-action="catalog#check" data-catalog-exclude-param="true" data-catalog-id-param="{{ category.id }}">
                         <span class="checkmark"></span>
                     </label>

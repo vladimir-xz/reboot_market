@@ -19,12 +19,12 @@
         @apply underline text-amber-600 text-opacity-50
     }
 
-    .category_exclude {
+    .category_excluded {
         @apply line-through text-gray-600
     }
-/* Customize the label (the container) */
-.container {
-    display: block;
+/* Customize the label (the check_box) */
+.check_box {
+    display: none;
     position: relative;
     padding-left: 25px;
     padding-bottom: 12px;
@@ -36,7 +36,7 @@
   }
   
   /* Hide the browser's default checkbox */
-  .container input {
+  .check_box input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
@@ -54,23 +54,23 @@
   }
   
   /* On mouse-over, add a grey background color */
-  .container:hover input ~ .checkmark {
+  .check_box:hover input ~ .checkmark {
     background-color: #ccc;
   }
 
-  .container:hover input ~ .checkmark:before,
-  .container:hover input ~ .checkmark:after {
+  .check_box:hover input ~ .checkmark:before,
+  .check_box:hover input ~ .checkmark:after {
     opacity: 1;
   }
   
   /* When the checkbox is checked, add a blue background */
-  .include_box input:checked ~ .checkmark {
-    @apply bg-amber-600;
+  /* .include_box input:checked ~ .checkmark {
+    background-color: #ccc;
   }
 
   .exclude_box input:checked ~ .checkmark {
-    @apply bg-teal-900;
-  }
+    background-color: #ccc;
+  } */
   
   /* Create the checkmark/indicator (hidden when not checked) */
   .checkmark:before,
@@ -81,8 +81,8 @@
   }
   
   /* Show the checkmark when checked */
-  .container input:checked ~ .checkmark:before,
-  .container input:checked ~ .checkmark:after {
+  .check_box input:checked ~ .checkmark:before,
+  .check_box input:checked ~ .checkmark:after {
     display: block;
   }
   
@@ -115,13 +115,15 @@
     transform: rotate(-45deg);
   }
 
-  .nested-div {
-    display: none;
-  }
+        nav button:hover .check_box {
+        display: flex; /* Visible on hover */
+        }
 
-  nav button:hover .nested-div {
-    display: flex; /* Visible on hover */
+    .category_active_last {
+
     }
     
     /* ... */
   }
+
+

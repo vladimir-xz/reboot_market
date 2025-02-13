@@ -20,8 +20,6 @@ export default class extends Controller {
     }
 
     onClick(event) {
-        console.log(event.params.include)
-        console.log('hello!')
         if (event.target.tagName === 'P') {
             console.log('attempt');
             this.component.action('updateCategories', { newId: event.target.parentElement.id });
@@ -45,43 +43,41 @@ export default class extends Controller {
         }
     }
 
+    updateCheck(element, ifRemoveBoth = true, boxType = '') {
+        if (ifRemoveBoth) {
+            element.querySelector(`.chosen_box > input`).checked = false
+            element.querySelector(`.excluded_box > input`).checked = false
+        } else {
+            element.querySelector(`.${boxType}_box > input`).checked = true
+        }
+    }
+
     // renew(event) {
     //     this.activeCategories = event.detail.activeCategories
     //     this.activate()
     // }
 
     renew(event) {
-        console.log(event.detail.activeCategories)
+        const treeMap = event.detail.treeMap
+        console.log(treeMap)
+        console.log(treeMap['1'].status)
         this.nodeTargets.forEach((element) => {
-            if (Number(element.id) in event.detail.activeCategories.active) {
-                element.classList.remove("category_neutral")
-                element.classList.remove("category_chosen")
-                element.classList.remove("category_exclude")
-                element.classList.add("category_active")
+            const elementId = Number(element.id)
+            element.classList.remove("category_neutral", "category_chosen", "category_excluded", "category_active")
+            if (elementId in treeMap) {
+                console.log(elementId)
+                const newStatus = "category_" + treeMap[elementId].status
+                element.classList.add(newStatus)
                 this.open(element.nextElementSibling)
-            } else if (Number(element.id) in event.detail.activeCategories.chosen) {
-                element.classList.remove("category_neutral")
-                element.classList.remove("category_active")
-                element.classList.remove("category_exclude")
-                element.classList.add("category_chosen")
-                this.open(element.nextElementSibling)
-            } else if (Number(element.id) in event.detail.activeCategories.excluded) {
-                element.classList.remove("category_chosen")
-                element.classList.remove("category_active")
-                element.classList.remove("category_neutral")
-                element.classList.add("category_exclude")
-                this.open(element.nextElementSibling)
-            } else if (Number(element.id) in event.detail.activeCategories.neutral) {
-                element.classList.remove("category_chosen")
-                element.classList.remove("category_active")
-                element.classList.remove("category_exclude")
-                element.classList.add("category_neutral")
-                this.open(element.nextElementSibling)
+
+                if (treeMap[elementId].isLastNode && treeMap[elementId].status != 'neutral') {
+                    element.querySelector(`.${treeMap[elementId].status}_box > input`).checked = true
+                } else {
+                    element.querySelector(`.chosen_box > input`).checked = false
+                    element.querySelector(`.excluded_box > input`).checked = false
+                }
+
             } else {
-                element.classList.remove("category_chosen")
-                element.classList.remove("category_active")
-                element.classList.remove("category_neutral")
-                element.classList.remove("category_exclude")
                 this.close(element.nextElementSibling)
             }
         })

@@ -38,6 +38,9 @@ class MainController extends AbstractController
         }
         $brands = json_encode($brands);
 
+        $allCatFromProd = $productRepository->getCategoriesFromSearch($query, $activeCategories);
+        $allCatFromCat = $categoryRepository->getCategoriesFromSearch($query, $activeCategories);
+
         // $products = $productRepository->getPaginatedValues($query, $activeCategories, $page);
         // $productsNotPad = $productRepository->findByNameField($query, $activeCategories);
         // $categories = $productRepository->getCategoriesFromSearch($query, $activeCategories);
@@ -45,6 +48,8 @@ class MainController extends AbstractController
         return $this->render('homepage.html.twig', [
             // 'notPaginated' => $productsNotPad,
             'query' => $query,
+            'catsProd' => $allCatFromProd,
+            'catsCat' => $allCatFromCat,
             'categories' => $categories ?? [],
             'page' => $page,
             'brands' => $brands

@@ -2,6 +2,7 @@
 
 namespace App\Twig\Components;
 
+use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -37,7 +38,7 @@ class ProductSearch extends AbstractController
     // #[LiveProp(writable: true, url: new UrlMapping(as: 's'))]
     // public array $specs = [];
 
-    public function __construct(private ProductRepository $productRepository, private LoggerInterface $logger)
+    public function __construct(private ProductRepository $productRepository, private CategoryRepository $categoryRepository, private LoggerInterface $logger)
     {
     }
 
@@ -118,7 +119,7 @@ class ProductSearch extends AbstractController
         //     'newCatalogs' => $categories,
         // ]);
 
-        $categoriesResult = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
+        $categoriesResult = $this->categoryRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
         if ($this->includedCategories || $this->excludedCategories) {
             $this->logger->info('this is active:');
             $this->logger->info(print_r($categoriesResult, true));

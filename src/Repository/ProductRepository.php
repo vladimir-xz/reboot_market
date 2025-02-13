@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Category;
 use App\Entity\Product;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -42,13 +43,13 @@ class ProductRepository extends ServiceEntityRepository
 
     public function getCategoriesFromSearch(string $query = '', array $catInclude = [], array $catExclude = [], array $filter = []): array
     {
-        if ($query === '' && empty($catInclude) && empty($catInclude) && empty($filter)) {
-            return [];
-        }
+        // if ($query === '' && empty($catInclude) && empty($catInclude) && empty($filter)) {
+        //     return [];
+        // }
 
         $qb = $this->createQueryBuilder('p')
-            ->select('DISTINCT c.id')
-            ->join('p.category', 'c');
+            ->join('p.category', 'c')
+            ->select('DISTINCT c.id');
 
         if ($query !== '') {
             $qb
