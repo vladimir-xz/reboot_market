@@ -57,6 +57,17 @@ export default class extends Controller {
     //     this.activate()
     // }
 
+    updateCheck(element, ifRemoveBoth = true, boxType) {
+        if (ifRemoveBoth) {
+            element.querySelector(`.chosen_box > input`).checked = false
+            element.querySelector(`.excluded_box > input`).checked = false
+        } else {
+            const opositeBoxType = boxType == 'excluded' ? 'chosen' : 'excluded'
+            element.querySelector(`.${boxType}_box > input`).checked = true
+            element.querySelector(`.${opositeBoxType}_box > input`).checked = false
+        }
+    }
+
     renew(event) {
         const treeMap = event.detail.treeMap
         this.nodeTargets.forEach((element) => {
@@ -69,15 +80,13 @@ export default class extends Controller {
                 this.open(element.nextElementSibling)
 
                 if (treeMap[elementId].isLastNode && treeMap[elementId].status != 'neutral') {
-                    element.querySelector(`.${treeMap[elementId].status}_box > input`).checked = true
+                    this.updateCheck(element, false, treeMap[elementId].status)
                 } else {
-                    element.querySelector(`.chosen_box > input`).checked = false
-                    element.querySelector(`.excluded_box > input`).checked = false
+                    this.updateCheck(element)
                 }
 
             } else {
-                element.querySelector(`.chosen_box > input`).checked = false
-                element.querySelector(`.excluded_box > input`).checked = false
+                this.updateCheck(element)
                 this.close(element.nextElementSibling)
             }
         })

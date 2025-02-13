@@ -1,6 +1,6 @@
 <div {{ attributes.defaults(stimulus_controller('catalog')) }} class="w-1/4" data-action="catalog:renew->catalog#renew">
         <nav class="inline-block w-full bg-stone-200 border border-neutral-300 rounded-md shadow-xl text-nowrap">
-            <ul data-action="click->catalog#onClick" class="text-base leading-[3.5rem]">
+            <ul data-action="click->catalog#onClick" class="text-base leading-10">
                 {% for category in this.catalog %}
                     <li >
                         <button 
