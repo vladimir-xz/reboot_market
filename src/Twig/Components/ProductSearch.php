@@ -33,6 +33,7 @@ class ProductSearch extends AbstractController
     public array $filters = [];
     #[LiveProp]
     public array $excludedCategories = [];
+
     // #[LiveProp(writable: true, url: new UrlMapping(as: 't'))]
     // public array $types = [];
     // #[LiveProp(writable: true, url: new UrlMapping(as: 's'))]
@@ -49,19 +50,59 @@ class ProductSearch extends AbstractController
         $this->sendCategoriesForTree();
     }
 
+    #[LiveListener('removeIncluded')]
+    public function removeIncludedCategories()
+    {
+        $this->includedCategories = [];
+        $this->sendCategoriesForTree();
+    }
+
+    #[LiveListener('removeExcluded')]
+    public function removeExcludedCategories()
+    {
+        $this->excludedCategories = [];
+        $this->sendCategoriesForTree();
+    }
+
+    #[LiveListener('removeFilters')]
+    public function removeFiltersCategories()
+    {
+        $this->filters = [];
+        $this->dispatchBrowserEvent('productFilters:remove');
+        $this->sendCategoriesForTree();
+    }
+
     #[LiveListener('receiveCategories')]
     public function receiveCategories(#[LiveArg] array $newCategories)
     {
         if (array_key_exists('included', $newCategories)) {
+            if (empty($newCategories['included']) && $this->includedCategories) {
+                $this->emit('changeIfIncluded', [
+                    'newValue' => false,
+                ]);
+            } elseif ($newCategories['included'] && empty($this->includedCategories)) {
+                $this->emit('changeIfIncluded', [
+                    'newValue' => true,
+                ]);
+            }
             $this->includedCategories = $newCategories['included'];
         }
         if (array_key_exists('excluded', $newCategories)) {
+            if (empty($newCategories['excluded']) && $this->includedCategories) {
+                $this->emit('changeIfExcluded', [
+                    'newValue' => false,
+                ]);
+            } elseif ($newCategories['excluded'] && empty($this->excludedCategories)) {
+                $this->emit('changeIfExcluded', [
+                    'newValue' => true,
+                ]);
+            }
             $this->excludedCategories = $newCategories['excluded'];
         }
-        if (!$newCategories) {
-            $this->excludedCategories = [];
-            $this->includedCategories = [];
-        }
+        // if (!$newCategories) {
+        //     $this->excludedCategories = [];
+        //     $this->includedCategories = [];
+        // }
 
         $this->sendCategoriesForTree();
     }
@@ -104,6 +145,8 @@ class ProductSearch extends AbstractController
                 $this->filters[$filterKey] = $result;
             }
         }
+
+
         $this->sendCategoriesForTree();
     }
 

@@ -1,9 +1,10 @@
-<div class="mx-8 mt-2" data-controller="filter" data-filter-brands-value="{{ brands }}">
-    <div class="flex justify-end px-4 pb-2">
-        <div class=""></div>
+<div class="mx-8 mt-2" data-controller="filter" data-filter-brands-value="{{ brands }}" data-action="productFilters:remove@window->filter#removeAll">
+    <div class="flex justify-between px-4 pb-2">
+        <twig:Labels />
+
         <button 
             data-action="filter#toggle"
-            class="cursor-pointer px-6 text-3xl text-slate-100 bg-teal-900 transition ease-in-out delay-100 hover:bg-teal-600" 
+            class="cursor-pointer px-6 text-2xl text-slate-100 bg-teal-900 transition ease-in-out delay-100 hover:bg-teal-600" 
         >Filters</button>
     </div>
     <div class="hidden p-8 flex border-2 border solid border-neutral-400"  data-filter-target="body">

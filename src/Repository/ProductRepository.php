@@ -85,7 +85,7 @@ class ProductRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
     }
 
-    public function getPaginatedValues(string $query, array $catInclude, array $catExclude, array $filter, int $page, int $maxPerPage = 5): Pagerfanta
+    public function getPaginatedValues(string $query, array $catInclude, array $catExclude, array $filter, int $page, int $maxPerPage = 12): Pagerfanta
     {
         if ($query === '' && empty($catInclude) && empty($catExclude) && empty($filter)) {
             return new Pagerfanta(new NullAdapter(0));

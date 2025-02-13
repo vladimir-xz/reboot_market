@@ -1,23 +1,8 @@
-<div {{ attributes.defaults(stimulus_controller('product')) }} data-action="filter:new@window->product#filter">
+<div {{ attributes.defaults(stimulus_controller('product')) }} data-action="filter:new@window->product#filter" class="px-8">
     <h1>Product List</h1>
 
-    <div class="flex items-center justify-around">
-        {% if not this.query is empty   %}
-        <div class=""><p>Query: </p>{{    this.query  }}</div>
-        {%  endif   %}
-        {%  if not this.includedCategories is empty   %}
-        <div class="">Categories are included</div>
-        {%  endif   %}
-        {%  if not this.excludedCategories is empty   %}
-        <div class="">Categories are excluded</div>
-        {%  endif   %}
-        {% if not this.filters is empty   %}
-        <div class="">Added filters</div>
-        {%  endif   %}
-    </div>
-
     {%  set paginator = this.products  %}
-    <div class="flex">
+    <div class="flex flex-wrap gap-4">
         {% for product in paginator.currentPageResults %}
             <twig:Card :product="product"/>
         {% else %}

@@ -30,5 +30,11 @@ export default class extends Controller {
     toggle() {
         this.bodyTarget.classList.toggle('hidden')
     }
+
+    removeAll() {
+        this.filterTartget.forEach((element) => {
+            element.checked = false;
+        })
+    }
     // ...
 }

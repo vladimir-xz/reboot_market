@@ -63,7 +63,6 @@ class CategoryRepository extends ServiceEntityRepository
             }
 
             $fullConditionWithOr = implode(' OR ', $separateConditions);
-            $this->logger->info($fullConditionWithOr);
             $qb->andWhere($fullConditionWithOr);
         }
 

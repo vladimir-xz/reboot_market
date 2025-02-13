@@ -1,0 +1,33 @@
+<div{{ attributes }} class="flex gap-4 items-center justify-around">
+        {% if not this.query is empty   %}
+        <button 
+            class="" 
+            data-action="live#action"
+            data-live-action-param="removeQuery"
+        >Query: {{    this.query  }}</button>
+        {%  endif   %}
+
+        {%  if this.hasIncluded   %}
+        <button 
+            class="" 
+            data-action="live#action"
+            data-live-action-param="removeIncluded"
+        >Categories are included</button>
+        {%  endif   %}
+
+        {%  if  this.hasExcluded  %}
+        <button 
+            class="" 
+            data-action="live#action"
+            data-live-action-param="removeExcluded"
+        >Categories are excluded</button>
+        {%  endif   %}
+
+        {% if this.hasFilters  %}
+        <button 
+            class="" 
+            data-action="live#action"
+            data-live-action-param="removeFilters"
+        >Added filters</button>
+        {%  endif   %}
+</div>
