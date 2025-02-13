@@ -28,9 +28,9 @@ class CategoryRepository extends ServiceEntityRepository
 
     public function getCategoriesFromSearch(string $query = '', array $catInclude = [], array $catExclude = [], array $filter = []): array
     {
-        // if ($query === '' && empty($catInclude) && empty($catInclude) && empty($filter)) {
-        //     return [];
-        // }
+        if ($query === '' && empty($catInclude) && empty($catInclude) && empty($filter)) {
+            return [];
+        }
 
         $qb = $this->createQueryBuilder('c', 'c.id')
             ->join('c.products', 'p')

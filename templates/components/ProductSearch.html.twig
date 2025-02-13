@@ -2,28 +2,28 @@
     <h1>Product List</h1>
 
     <div class="flex items-center justify-around">
-        {% if not this.filters is empty   %}
-        <div class="">{{    this.query  }}</div>
+        {% if not this.query is empty   %}
+        <div class=""><p>Query: </p>{{    this.query  }}</div>
         {%  endif   %}
         {%  if not this.includedCategories is empty   %}
-        <div class="">+ categories are included</div>
+        <div class="">Categories are included</div>
         {%  endif   %}
         {%  if not this.excludedCategories is empty   %}
-        <div class="">- categories are excluded</div>
+        <div class="">Categories are excluded</div>
         {%  endif   %}
         {% if not this.filters is empty   %}
-        <div class="">filters</div>
+        <div class="">Added filters</div>
         {%  endif   %}
     </div>
 
     {%  set paginator = this.products  %}
-    <ul>
+    <div class="flex">
         {% for product in paginator.currentPageResults %}
-            <li><strong>{{  product.name    }}</strong></li>
+            <twig:Card :product="product"/>
         {% else %}
-            <li>No products found.</li>
+            <p>No products found.</p>
         {% endfor %}
-    </ul>
+    </div>
 
     {% if paginator.haveToPaginate %}
 

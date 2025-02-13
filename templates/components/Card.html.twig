@@ -1,0 +1,13 @@
+<div{{ attributes }} class="flex-none w-48 h-64">
+    <img class="h-40 object-contain" src="{{ asset('images/logo.png') }}" alt="Server">
+    <div>
+        <span>{{    product.name    }}</span>
+    </div>
+    <div class="">
+        <p>{{   product.description }}</p>
+    </div>
+    <div class="flex justify-between">
+        <div class="">{{  product.amount  }}</div>
+        <div class="">{{  product.price  }}</div>
+    </div>
+</div>

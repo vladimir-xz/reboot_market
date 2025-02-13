@@ -6,7 +6,7 @@ import { Controller } from '@hotwired/stimulus';
 */
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-    static targets = ['filter']
+    static targets = ['filter', 'body']
 
     static values = {
         brands: String,
@@ -20,10 +20,15 @@ export default class extends Controller {
           });
         this.value = params.f;
         console.log(this.value)
+        console.log()
     }
 
     new(event) {
         this.dispatch("new", { detail: { content: event.params.payload } })
+    }
+
+    toggle() {
+        this.bodyTarget.classList.toggle('hidden')
     }
     // ...
 }
