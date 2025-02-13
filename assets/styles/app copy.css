@@ -24,7 +24,7 @@
     }
 /* Customize the label (the check_box) */
 .check_box {
-    display: block;
+    display: flex;
     position: relative;
     padding-left: 25px;
     padding-bottom: 12px;
@@ -46,17 +46,12 @@
   
   /* Create a custom checkbox */
   .checkmark {
-    display: none;
     position: absolute;
     left: 0;
     height: 16px;
     width: 16px;
     background-color: #eee;
   }
-
-  nav button:hover .checkmark {
-    display: block; 
-    }
   
   /* On mouse-over, add a grey background color */
   .check_box:hover input ~ .checkmark {
@@ -65,17 +60,17 @@
 
   .check_box:hover input ~ .checkmark:before,
   .check_box:hover input ~ .checkmark:after {
-    opacity: 1;
+    opacity: 0;
   }
   
   /* When the checkbox is checked, add a blue background */
-  .include_box input:checked ~ .checkmark {
-    background-color: #595151;
+  /* .include_box input:checked ~ .checkmark {
+    background-color: #ccc;
   }
 
   .exclude_box input:checked ~ .checkmark {
-    background-color: #736a6a;
-  }
+    background-color: #ccc;
+  } */
   
   /* Create the checkmark/indicator (hidden when not checked) */
   .checkmark:before,
@@ -97,7 +92,8 @@
     top: 2px;
     width: 5px;
     height: 10px;
-    @apply border-amber-600;
+    border-color: black
+    ;
     @apply border-solid;
     border-width: 0 3px 3px 0;
     -webkit-transform: rotate(45deg);
@@ -123,14 +119,9 @@
     transform: rotate(-45deg);
   }
 
-  .check_box input:checked ~ .checkmark {
-    display: block;
-  }
-
-/* 
-    .include_box input:checked .check_box {
-        display: flex;
-    } */
+    nav button:hover .check_box {
+    display: flex; /* Visible on hover */
+    }
     
     /* ... */
   }

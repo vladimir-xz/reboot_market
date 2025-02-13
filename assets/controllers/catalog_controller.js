@@ -59,8 +59,6 @@ export default class extends Controller {
 
     renew(event) {
         const treeMap = event.detail.treeMap
-        console.log(treeMap)
-        console.log(treeMap['1'].status)
         this.nodeTargets.forEach((element) => {
             const elementId = Number(element.id)
             element.classList.remove("category_neutral", "category_chosen", "category_excluded", "category_active")
@@ -78,6 +76,8 @@ export default class extends Controller {
                 }
 
             } else {
+                element.querySelector(`.chosen_box > input`).checked = false
+                element.querySelector(`.excluded_box > input`).checked = false
                 this.close(element.nextElementSibling)
             }
         })
