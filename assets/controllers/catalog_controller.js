@@ -16,13 +16,17 @@ export default class extends Controller {
     }
 
     check(event) {
-        this.component.action('updateCategories', { newId: event.params.id, ifExclude: event.params.exclude });
+        if (event.params.exclude) {
+            this.component.action('excludeCategories', { newId: event.params.id});
+        } else {
+            this.component.action('includeCategories', { newId: event.params.id});
+        }
     }
 
     onClick(event) {
         if (event.target.tagName === 'P') {
             console.log('attempt');
-            this.component.action('updateCategories', { newId: event.target.parentElement.id });
+            this.component.action('revertCategories', { newId: event.target.parentElement.id });
         } else {
             const nextElement = event.target.nextElementSibling
             if (nextElement && nextElement.tagName === 'DIV') {
@@ -43,14 +47,14 @@ export default class extends Controller {
         }
     }
 
-    updateCheck(element, ifRemoveBoth = true, boxType = '') {
-        if (ifRemoveBoth) {
-            element.querySelector(`.chosen_box > input`).checked = false
-            element.querySelector(`.excluded_box > input`).checked = false
-        } else {
-            element.querySelector(`.${boxType}_box > input`).checked = true
-        }
-    }
+    // updateCheck(element, ifRemoveBoth = true, boxType = '') {
+    //     if (ifRemoveBoth) {
+    //         element.querySelector(`.chosen_box > input`).checked = false
+    //         element.querySelector(`.excluded_box > input`).checked = false
+    //     } else {
+    //         element.querySelector(`.${boxType}_box > input`).checked = true
+    //     }
+    // }
 
     // renew(event) {
     //     this.activeCategories = event.detail.activeCategories

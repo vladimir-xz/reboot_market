@@ -95,41 +95,20 @@ final class Catalog
     }
 
     #[LiveAction]
-    public function updateCategories(#[LiveArg] int $newId, #[LiveArg] bool $ifExclude = false)
+    public function revertCategories(#[LiveArg] int $newId)
     {
-        $children = $this->children;
-        $logger = $this->logger;
-
-        $getLastNodes = function ($ids, $acc) use ($children, &$getLastNodes, $logger) {
-
-            foreach ($ids as $id) {
-                if (!array_key_exists($id, $children)) {
-                    $acc[$id] = $id;
-                } else {
-                    $acc += $getLastNodes($children[$id], $acc);
-                }
-            }
-            $logger->info(print_r($acc, true));
-            return $acc;
-        };
-
-        $lastNodes = $getLastNodes([$newId], []);
+        $lastNodes = $this->getLastNodesOfCategory([$newId]);
         $this->logger->info('new getLastNodes result :');
         $this->logger->info(print_r($lastNodes, true));
 
         $collection = new ArrayCollection($lastNodes);
-        $ifAnyExistInActive = $collection->exists(fn($key, $value) => in_array($value, $this->lastNodesChosen));
+        $ifAnyExistInActive = $collection->exists(fn($key, $value) => array_key_exists($key, $this->lastNodesChosen));
         $ifRevertExclude = array_diff($lastNodes, $this->lastNodesExcluded) === [];
 
         if ($ifRevertExclude) {
             $this->logger->info('What im doing wrong?');
             $this->logger->info('Rever exclude');
             $result['excluded'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
-        } elseif ($ifExclude) {
-            $this->logger->info('Maybe this?');
-            $this->logger->info('adding new exluding to array');
-            $result['excluded'] = $lastNodes + $this->lastNodesExcluded;
-            $result['included'] = array_diff_key($this->lastNodesChosen, $lastNodes);
         } elseif ($ifAnyExistInActive) {
             $this->logger->info('Deleting new');
             $result['included'] = array_diff_key($this->lastNodesChosen, $lastNodes);
@@ -142,5 +121,67 @@ final class Catalog
         $this->emit('receiveCategories', [
             'newCategories' => $result,
         ]);
+    }
+
+    #[LiveAction]
+    public function excludeCategories(#[LiveArg] int $newId)
+    {
+        $lastNodes = $this->getLastNodesOfCategory([$newId]);
+        $this->logger->info('new getLastNodes result :');
+        $this->logger->info(print_r($lastNodes, true));
+
+        $ifRevertExclude = array_diff($lastNodes, $this->lastNodesExcluded) === [];
+
+        if ($ifRevertExclude) {
+            $this->logger->info('What im doing wrong?');
+            $this->logger->info('Rever exclude');
+            $result['excluded'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
+        } else {
+            $this->logger->info('Maybe this?');
+            $this->logger->info('adding new exluding to array');
+            $result['excluded'] = $lastNodes + $this->lastNodesExcluded;
+            $result['included'] = array_diff_key($this->lastNodesChosen, $lastNodes);
+        }
+
+        $this->emit('receiveCategories', [
+            'newCategories' => $result,
+        ]);
+    }
+
+    #[LiveAction]
+    public function includeCategories(#[LiveArg] int $newId)
+    {
+        $lastNodes = $this->getLastNodesOfCategory([$newId]);
+        $this->logger->info('new getLastNodes result :');
+        $this->logger->info(print_r($lastNodes, true));
+
+        $collection = new ArrayCollection($lastNodes);
+        $ifAllExistInActive = !$collection->exists(fn($key, $value) => !array_key_exists($key, $this->lastNodesChosen));
+
+        if ($ifAllExistInActive) {
+            $this->logger->info('Chosen without last nodes');
+            $result['included'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
+        } else {
+            $this->logger->info('Excluding excluded and making them included');
+            $result['excluded'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
+            $result['included'] = $this->lastNodesChosen + $lastNodes;
+        }
+
+        $this->emit('receiveCategories', [
+            'newCategories' => $result,
+        ]);
+    }
+
+    private function getLastNodesOfCategory(array $ids, array $acc = [])
+    {
+        foreach ($ids as $id) {
+            if (!array_key_exists($id, $this->children)) {
+                $acc[$id] = $id;
+            } else {
+                $acc += $this->getLastNodesOfCategory($this->children[$id], $acc);
+            }
+        }
+        $this->logger->info(print_r($acc, true));
+        return $acc;
     }
 }
