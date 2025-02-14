@@ -82,9 +82,8 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         if ($filters) {
-            // $qb->join('p.specifications', 's');
-            $i = 5;
-                    // $qb->andWhere("p.type IN ('network equipment')");
+            $i = 4;
+            $j = 5;
 
             foreach ($filters as $key => $filterValues) {
                 if (!array_key_exists($key, $this->allowedFilters)) {
@@ -98,16 +97,16 @@ class ProductRepository extends ServiceEntityRepository
                         ->setParameter("val{$j}", $filterValues['max']);
                     $i++;
                 } elseif (in_array($key, $this->allowedFilters['product'])) {
-                    $this->logger->info('doing filter');
-                    $this->logger->info('Letter i for counting' . $i);
-                    $this->logger->info(print_r($filterValues, true));
                     $qb->andWhere("p.{$key} IN (:val{$i})")
                         ->setParameter("val{$i}", $filterValues);
                 } else {
-                    $qb->andWhere("s.{$key} IN (:val{$i})")
-                        ->setParameter("val{$i}", $filterValues);
+                    $qb->leftJoin('p.specifications', "s{$i}");
+                    $qb->andWhere("s{$i}.property = :val{$i} AND s{$i}.value IN (:val{$j})")
+                        ->setParameter("val{$i}", $key)
+                        ->setParameter("val{$j}", $filterValues);
                 }
-                $i++;
+                $i += 2;
+                $j += 2;
             }
         }
 
@@ -145,9 +144,8 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         if ($filters) {
-            // $qb->join('p.specifications', 's');
             $i = 4;
-                    // $qb->andWhere("p.type IN ('network equipment')");
+            $j = 5;
 
             foreach ($filters as $key => $filterValues) {
                 if (!array_key_exists($key, $this->allowedFilters)) {
@@ -159,18 +157,17 @@ class ProductRepository extends ServiceEntityRepository
                     $qb->andWhere("p.price BETWEEN :val{$i} AND :val{$j}")
                         ->setParameter("val{$i}", $filterValues['min'])
                         ->setParameter("val{$j}", $filterValues['max']);
-                    $i++;
                 } elseif (in_array($key, $this->allowedFilters['product'])) {
-                    $this->logger->info('doing filter');
-                    $this->logger->info('Letter i for counting' . $i);
-                    $this->logger->info(print_r($filterValues, true));
                     $qb->andWhere("p.{$key} IN (:val{$i})")
                         ->setParameter("val{$i}", $filterValues);
                 } else {
-                    $qb->andWhere("s.{$key} IN (:val{$i})")
-                        ->setParameter("val{$i}", $filterValues);
+                    $qb->leftJoin('p.specifications', "s{$i}");
+                    $qb->andWhere("s{$i}.property = :val{$i} AND s{$i}.value IN (:val{$j})")
+                        ->setParameter("val{$i}", $key)
+                        ->setParameter("val{$j}", $filterValues);
                 }
-                $i++;
+                $i += 2;
+                $j += 2;
             }
 
 

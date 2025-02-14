@@ -69,7 +69,7 @@ class CategoryRepository extends ServiceEntityRepository
         }
 
         if ($filters) {
-            $qb->join('p.specifications', 's');
+            $qb->leftJoin('p.specifications', 's')->select('s');
             $i = 4;
             foreach ($filters as $key => $filterValues) {
                 if (!array_key_exists($key, $this->allowedFilters)) {
