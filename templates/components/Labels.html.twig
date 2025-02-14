@@ -1,33 +1,33 @@
 <div{{ attributes }} class="flex gap-4 items-center justify-around">
         {% if not this.query is empty   %}
         <button 
-            class="" 
+            class="bg-gray-900 text-neutral-50 rounded-full px-2 transition ease-in-out delay-50 hover:-translate-y-1" 
             data-action="live#action"
             data-live-action-param="removeQuery"
-        >Query: {{    this.query  }}</button>
+        >⨯ Query: {{    this.query  }}</button>
         {%  endif   %}
 
         {%  if this.hasIncluded   %}
         <button 
-            class="" 
+            class="bg-amber-600 text-amber-100 rounded-full px-2 transition ease-in-out delay-50 hover:-translate-y-1" 
             data-action="live#action"
             data-live-action-param="removeIncluded"
-        >Categories are included</button>
+        >⨯ Categories are included</button>
         {%  endif   %}
 
         {%  if  this.hasExcluded  %}
         <button 
-            class="" 
+            class="bg-neutral-400 text-grey-900 rounded-full px-2 transition ease-in-out delay-50 hover:-translate-y-1" 
             data-action="live#action"
             data-live-action-param="removeExcluded"
-        >Categories are excluded</button>
+        >⨯ Categories are excluded</button>
         {%  endif   %}
 
         {% if this.hasFilters  %}
         <button 
-            class="" 
+            class="bg-teal-900 text-neutral-100 rounded-full px-2 transition ease-in-out delay-50 hover:-translate-y-1" 
             data-action="live#action"
             data-live-action-param="removeFilters"
-        >Added filters</button>
+        >⨯ Added filters</button>
         {%  endif   %}
 </div>

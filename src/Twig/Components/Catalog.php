@@ -71,6 +71,7 @@ final class Catalog
                     if (array_key_exists($index, $alreadyProceededIds)) {
                         break;
                     }
+                    $alreadyProceededIds[$index] = $index;
                     $result[$index] = ['isLastNode' => false, 'status' => $status];
                 }
             }
@@ -78,10 +79,14 @@ final class Catalog
             return $result;
         };
         $activeCategories = $buildMapWithStatuses($newCatalogs['active'] ?? [], 'active');
-        $excludedCategories = $buildMapWithStatuses($newCatalogs['excluded'] ?? [], 'excluded');
         $chosenCategories = $buildMapWithStatuses($newCatalogs['chosen'] ?? [], 'chosen');
+        $excludedCategories = $buildMapWithStatuses($newCatalogs['excluded'] ?? [], 'excluded');
         $neutralCategories = $buildMapWithStatuses($newCatalogs['neutral'] ?? [], 'neutral');
 
+        $this->logger->info('This is chosen');
+        $this->logger->info(print_r($chosenCategories, true));
+        $this->logger->info('This is excluded');
+        $this->logger->info(print_r($excludedCategories, true));
         $treeMap = $activeCategories + $excludedCategories + $chosenCategories + $neutralCategories;
 
         $this->dispatchBrowserEvent('catalog:renew', [
