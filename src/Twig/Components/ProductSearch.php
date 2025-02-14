@@ -88,7 +88,6 @@ class ProductSearch extends AbstractController
             $this->includedCategories = $newCategories['included'];
         }
         if (array_key_exists('excluded', $newCategories)) {
-            $this->logger->info('adding new excluded');
             if (empty($newCategories['excluded']) && $this->excludedCategories) {
                 $this->emit('changeIfExcluded', [
                     'newValue' => false,
@@ -113,39 +112,17 @@ class ProductSearch extends AbstractController
         #[LiveArg] array $newFilters = [],
     ) {
         $wasEmpty = empty($this->filters);
-        $this->logger->info('settingFilter');
-        $this->logger->info(print_r($newFilters, true));
         $filterKey = $newFilters['key'];
         $newValue = $newFilters['value'];
         if (!array_key_exists($filterKey, $this->filters)) {
-            $this->filters[$filterKey][] = $newValue;
-        } elseif ($filterKey === 'specs') {
-            $newSpecKey = $newFilters['keySpecs'];
-            if (!array_key_exists($newSpecKey, $this->filters['specs'])) {
-                $this->filters['specs'][$newSpecKey][] = $newValue;
-            } else {
-                $collection = new ArrayCollection($this->filters['specs'][$newSpecKey]);
-                $collection->exists(fn($key, $value) => $value === $newValue)
-                    ? $collection->removeElement($newValue)
-                    : $collection->add($newValue);
-                $result = $collection->toArray();
-                if (!$result) {
-                    unset($this->filters['specs'][$newSpecKey]);
-                } else {
-                    $this->filters['specs'][$newSpecKey] = $result;
-                }
+            $this->filters[$filterKey][$newValue] = $newValue;
+        } elseif (array_key_exists($newValue, $this->filters[$filterKey])) {
+            unset($this->filters[$filterKey][$newValue]);
+            if (empty($this->filters[$filterKey])) {
+                unset($this->filters[$filterKey]);
             }
         } else {
-            $collection = new ArrayCollection($this->filters[$filterKey]);
-            $collection->exists(fn($key, $value) => $value === $newValue)
-                ? $collection->removeElement($newValue)
-                : $collection->add($newValue);
-            $result = $collection->toArray();
-            if (!$result) {
-                unset($this->filters[$filterKey]);
-            } else {
-                $this->filters[$filterKey] = $result;
-            }
+            $this->filters[$filterKey][$newValue] = $newValue;
         }
 
         if ($wasEmpty && $this->filters) {
@@ -173,7 +150,7 @@ class ProductSearch extends AbstractController
         //     'newCatalogs' => $categories,
         // ]);
 
-        $categoriesResult = $this->categoryRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
+        $categoriesResult = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
         if ($this->includedCategories) {
             $this->logger->info('this is active:');
             $this->logger->info(print_r($categoriesResult, true));

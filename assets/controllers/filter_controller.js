@@ -32,8 +32,6 @@ export default class extends Controller {
     }
 
     removeAll() {
-        console.log('removing all')
-
         this.filterTargets.forEach((element) => {
             element.checked = false;
         })

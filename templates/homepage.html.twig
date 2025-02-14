@@ -3,7 +3,7 @@
 {% block page_contents %}
 <main class="w-3/4">
 
-
+    {{  dump(test)  }}
     {{  render_esi(controller('App\\Controller\\ProductFilterController::getAllFilters', {brands: brands})) }}
 
     <twig:ProductSearch query="{{ query  }}" :includedCategories="categories" page="{{   page    }}"/>

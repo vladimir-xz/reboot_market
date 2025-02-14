@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Category;
+use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
 use Doctrine\ORM\AbstractQuery;
 
 /**
@@ -12,9 +14,20 @@ use Doctrine\ORM\AbstractQuery;
  */
 class CategoryRepository extends ServiceEntityRepository
 {
+    private array $allowedFilters;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Category::class);
+        $this->allowedFilters = [
+            'Height' => 'Height',
+            'Form-factor' => 'Form-factor',
+            'price' => 'price',
+            'type' => 'type',
+            'brand' => 'brand',
+            'product' => ['brand', 'type', 'price'],
+            'specs' => ['Form-factor', 'Height']
+        ];
     }
 
     public function getRawTree(): array
@@ -26,14 +39,15 @@ class CategoryRepository extends ServiceEntityRepository
         return $result->fetchAllAssociativeIndexed();
     }
 
-    public function getCategoriesFromSearch(string $query = '', array $catInclude = [], array $catExclude = [], array $filter = []): array
+    public function getCategoriesFromSearch(string $query = '', array $catInclude = [], array $catExclude = [], array $filters = []): array
     {
-        if ($query === '' && empty($catInclude) && empty($catInclude) && empty($filter)) {
+        if ($query === '' && empty($catInclude) && empty($catInclude) && empty($filters)) {
             return [];
         }
 
         $qb = $this->createQueryBuilder('c', 'c.id')
-            ->join('c.products', 'p')
+            ->from('App\Entity\Product', 'p') // Switch to Product as the root entity
+            ->leftJoin('p.category', 'c')
             ->select('DISTINCT c.id');
 
         if ($query !== '') {
@@ -54,16 +68,29 @@ class CategoryRepository extends ServiceEntityRepository
             ->setParameter('val3', $catExclude);
         }
 
-        if ($filter) {
-            $separateConditions = [];
-            foreach ($filter as $key => $filterValue) {
-                $targets = implode("', '", $filterValue);
-                $condition = "p.{$key} IN ('" . $targets . "')";
-                $separateConditions[] = $condition;
-            }
+        if ($filters) {
+            $qb->join('p.specifications', 's');
+            $i = 4;
+            foreach ($filters as $key => $filterValues) {
+                if (!array_key_exists($key, $this->allowedFilters)) {
+                    throw new Exception('Not allowed key value');
+                }
 
-            $fullConditionWithOr = implode(' OR ', $separateConditions);
-            $qb->andWhere($fullConditionWithOr);
+                if ($key === 'price') {
+                    $j = $i + 1;
+                    $qb->andWhere("p.price BETWEEN :val{$i} AND :val{$j}")
+                        ->setParameter("val{$i}", $filterValues['min'])
+                        ->setParameter("val{$j}", $filterValues['max']);
+                    $i++;
+                } elseif (in_array($key, $this->allowedFilters['product'])) {
+                    $qb->andWhere("p.{$key} IN (:val{$i})")
+                        ->setParameter("val{$i}", $filterValues);
+                } else {
+                    $qb->andWhere("s.{$key} IN (:val{$i})")
+                        ->setParameter("val{$i}", $filterValues);
+                }
+                $i++;
+            }
         }
 
         return $qb->getQuery()->getResult();

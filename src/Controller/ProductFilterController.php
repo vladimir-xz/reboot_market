@@ -44,11 +44,13 @@ final class ProductFilterController extends AbstractController
             foreach ($specs as $spec) {
                 $property = $spec->getProperty();
                 $propValue = $spec->getValue();
-                $accumulator['specifications'][$property][$propValue] = $propValue;
+                $accumulator[$property][$propValue] = $propValue;
             }
 
             return $accumulator;
         }, []);
+
+        $this->logger->info(print_r($filter, true));
 
         return $this->render('static/_filter.html.twig', [
             'filter' => $filter,

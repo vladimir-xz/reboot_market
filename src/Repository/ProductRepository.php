@@ -7,6 +7,7 @@ use App\Entity\Product;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
 use Pagerfanta\Pagerfanta;
 use Pagerfanta\Adapter\NullAdapter;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
@@ -17,9 +18,20 @@ use Psr\Log\LoggerInterface;
  */
 class ProductRepository extends ServiceEntityRepository
 {
+    private array $allowedFilters;
+
     public function __construct(ManagerRegistry $registry, private LoggerInterface $logger)
     {
         parent::__construct($registry, Product::class);
+        $this->allowedFilters = [
+            'Height' => 'Height',
+            'Form-factor' => 'Form-factor',
+            'price' => 'price',
+            'type' => 'type',
+            'brand' => 'brand',
+            'product' => ['brand', 'type', 'price'],
+            'specs' => ['Form-factor', 'Height']
+        ];
     }
 
     /**
@@ -41,14 +53,14 @@ class ProductRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-    public function getCategoriesFromSearch(string $query = '', array $catInclude = [], array $catExclude = [], array $filter = []): array
+    public function getCategoriesFromSearch(string $query = '', array $catInclude = [], array $catExclude = [], array $filters = []): array
     {
-        // if ($query === '' && empty($catInclude) && empty($catInclude) && empty($filter)) {
-        //     return [];
-        // }
+        if ($query === '' && empty($catInclude) && empty($catInclude) && empty($filters)) {
+            return [];
+        }
 
         $qb = $this->createQueryBuilder('p')
-            ->join('p.category', 'c')
+            ->leftJoin('p.category', 'c')
             ->select('DISTINCT c.id');
 
         if ($query !== '') {
@@ -69,25 +81,45 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('val3', $catExclude);
         }
 
-        if ($filter) {
-            $separateConditions = [];
-            foreach ($filter as $key => $filterValue) {
-                $targets = implode("', '", $filterValue);
-                $condition = "p.{$key} IN ('" . $targets . "')";
-                $separateConditions[] = $condition;
-            }
+        if ($filters) {
+            // $qb->join('p.specifications', 's');
+            $i = 5;
+                    // $qb->andWhere("p.type IN ('network equipment')");
 
-            $fullConditionWithOr = implode(' OR ', $separateConditions);
-            $this->logger->info($fullConditionWithOr);
-            $qb->andWhere($fullConditionWithOr);
+            foreach ($filters as $key => $filterValues) {
+                if (!array_key_exists($key, $this->allowedFilters)) {
+                    throw new Exception('Not allowed key value');
+                }
+
+                if ($key === 'price') {
+                    $j = $i + 1;
+                    $qb->andWhere("p.price BETWEEN :val{$i} AND :val{$j}")
+                        ->setParameter("val{$i}", $filterValues['min'])
+                        ->setParameter("val{$j}", $filterValues['max']);
+                    $i++;
+                } elseif (in_array($key, $this->allowedFilters['product'])) {
+                    $this->logger->info('doing filter');
+                    $this->logger->info('Letter i for counting' . $i);
+                    $this->logger->info(print_r($filterValues, true));
+                    $qb->andWhere("p.{$key} IN (:val{$i})")
+                        ->setParameter("val{$i}", $filterValues);
+                } else {
+                    $qb->andWhere("s.{$key} IN (:val{$i})")
+                        ->setParameter("val{$i}", $filterValues);
+                }
+                $i++;
+            }
         }
 
         return $qb->getQuery()->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
     }
 
-    public function getPaginatedValues(string $query, array $catInclude, array $catExclude, array $filter, int $page, int $maxPerPage = 12): Pagerfanta
+    public function getPaginatedValues(string $query, array $catInclude, array $catExclude, array $filters, int $page, int $maxPerPage = 12): Pagerfanta
     {
-        if ($query === '' && empty($catInclude) && empty($catExclude) && empty($filter)) {
+        $this->logger->info('here are filters');
+        $this->logger->info(print_r($filters, true));
+
+        if ($query === '' && empty($catInclude) && empty($catExclude) && empty($filters)) {
             return new Pagerfanta(new NullAdapter(0));
         }
 
@@ -112,35 +144,45 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('val3', $catExclude);
         }
 
-        if ($filter) {
-            $separateConditions = [];
-            foreach ($filter as $key => $filterValue) {
-                $targets = implode("', '", $filterValue);
-                $condition = "p.{$key} IN ('" . $targets . "')";
-                $separateConditions[] = $condition;
+        if ($filters) {
+            // $qb->join('p.specifications', 's');
+            $i = 4;
+                    // $qb->andWhere("p.type IN ('network equipment')");
+
+            foreach ($filters as $key => $filterValues) {
+                if (!array_key_exists($key, $this->allowedFilters)) {
+                    throw new Exception('Not allowed key value');
+                }
+
+                if ($key === 'price') {
+                    $j = $i + 1;
+                    $qb->andWhere("p.price BETWEEN :val{$i} AND :val{$j}")
+                        ->setParameter("val{$i}", $filterValues['min'])
+                        ->setParameter("val{$j}", $filterValues['max']);
+                    $i++;
+                } elseif (in_array($key, $this->allowedFilters['product'])) {
+                    $this->logger->info('doing filter');
+                    $this->logger->info('Letter i for counting' . $i);
+                    $this->logger->info(print_r($filterValues, true));
+                    $qb->andWhere("p.{$key} IN (:val{$i})")
+                        ->setParameter("val{$i}", $filterValues);
+                } else {
+                    $qb->andWhere("s.{$key} IN (:val{$i})")
+                        ->setParameter("val{$i}", $filterValues);
+                }
+                $i++;
             }
 
-            $fullConditionWithOr = implode(' OR ', $separateConditions);
-            $qb->andWhere($fullConditionWithOr);
-            // $i = 2;
+
+            // $separateConditions = [];
             // foreach ($filter as $key => $filterValue) {
-            //     $i++;
-            //     $this->logger->info(print_r($filterValue, true));
-            //     if ($key === 'specs') {
-            //         foreach ($filterValue as $specKey => $specValue) {
-            //             $qb->join('p.specifications', 's')
-            //             ->orWhere("s.{$specKey} IN (:val{$i})")
-            //             ->setParameter("val{$i}", $specValue);
-            //             $i++;
-            //         }
-            //     } else {
-            //         // $this->logger->info('WHYYYYYYYYYYYYYYYYYYYYYYY');
-            //         // $this->logger->info("Key: {$key}, value: {$value}");
-            //         $qb
-            //         ->orWhere("p.{$key} IN (:val{$i})")
-            //         ->setParameter("val{$i}", $filterValue);
-            //     }
+            //     $targets = implode("', '", $filterValue);
+            //     $condition = "p.{$key} IN ('" . $targets . "')";
+            //     $separateConditions[] = $condition;
             // }
+
+            // $fullConditionWithOr = implode(' OR ', $separateConditions);
+            // $qb->andWhere($fullConditionWithOr);
         }
 
 

@@ -52,6 +52,7 @@ final class Catalog
         $this->lastNodesChosen = $newCatalogs['chosen'] ?? [];
         $this->lastNodesExcluded = $newCatalogs['excluded'] ?? [];
         $alreadyProceededIds = [];
+        $this->logger->info(print_r($newCatalogs, true));
         $allParents = $this->parents;
         $buildMapWithStatuses = function ($ids, $status) use (&$alreadyProceededIds, $allParents) {
             if (!$ids) {
@@ -59,20 +60,20 @@ final class Catalog
             }
 
             $result = [];
-            foreach ($ids as $index => $value) {
-                if (array_key_exists($index, $alreadyProceededIds)) {
+            foreach ($ids as $index => $id) {
+                if (array_key_exists($id, $alreadyProceededIds)) {
                     continue;
                 }
-                $result[$index] = ['isLastNode' => true, 'status' => $status];
-                $alreadyProceededIds[$index] = $index;
-                while (array_key_exists($index, $allParents)) {
-                    $index = $this->parents[$index];
+                $result[$id] = ['isLastNode' => true, 'status' => $status];
+                $alreadyProceededIds[$id] = $id;
+                while (array_key_exists($id, $allParents)) {
+                    $id = $this->parents[$id];
 
-                    if (array_key_exists($index, $alreadyProceededIds)) {
+                    if (array_key_exists($id, $alreadyProceededIds)) {
                         break;
                     }
-                    $alreadyProceededIds[$index] = $index;
-                    $result[$index] = ['isLastNode' => false, 'status' => $status];
+                    $alreadyProceededIds[$id] = $id;
+                    $result[$id] = ['isLastNode' => false, 'status' => $status];
                 }
             }
 
@@ -143,7 +144,7 @@ final class Catalog
         $ifAllExistInActive = !$collection->exists(fn($key, $value) => !array_key_exists($key, $this->lastNodesChosen));
 
         if ($ifAllExistInActive) {
-            $result['included'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
+            $result['included'] = array_diff_key($this->lastNodesChosen, $lastNodes);
         } else {
             $result['excluded'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
             $result['included'] = $this->lastNodesChosen + $lastNodes;
