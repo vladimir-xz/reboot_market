@@ -88,7 +88,8 @@ class ProductSearch extends AbstractController
             $this->includedCategories = $newCategories['included'];
         }
         if (array_key_exists('excluded', $newCategories)) {
-            if (empty($newCategories['excluded']) && $this->includedCategories) {
+            $this->logger->info('adding new excluded');
+            if (empty($newCategories['excluded']) && $this->excludedCategories) {
                 $this->emit('changeIfExcluded', [
                     'newValue' => false,
                 ]);
@@ -111,6 +112,7 @@ class ProductSearch extends AbstractController
     public function setFilter(
         #[LiveArg] array $newFilters = [],
     ) {
+        $wasEmpty = empty($this->filters);
         $this->logger->info('settingFilter');
         $this->logger->info(print_r($newFilters, true));
         $filterKey = $newFilters['key'];
@@ -146,6 +148,15 @@ class ProductSearch extends AbstractController
             }
         }
 
+        if ($wasEmpty && $this->filters) {
+            $this->emit('makeFiltered', [
+                'newValue' => true,
+            ]);
+        } elseif (!$wasEmpty && empty($this->filters)) {
+            $this->emit('makeFiltered', [
+                'newValue' => false,
+            ]);
+        }
 
         $this->sendCategoriesForTree();
     }

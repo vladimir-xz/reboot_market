@@ -83,10 +83,6 @@ final class Catalog
         $excludedCategories = $buildMapWithStatuses($newCatalogs['excluded'] ?? [], 'excluded');
         $neutralCategories = $buildMapWithStatuses($newCatalogs['neutral'] ?? [], 'neutral');
 
-        $this->logger->info('This is chosen');
-        $this->logger->info(print_r($chosenCategories, true));
-        $this->logger->info('This is excluded');
-        $this->logger->info(print_r($excludedCategories, true));
         $treeMap = $activeCategories + $excludedCategories + $chosenCategories + $neutralCategories;
 
         $this->dispatchBrowserEvent('catalog:renew', [
@@ -98,22 +94,16 @@ final class Catalog
     public function revertCategories(#[LiveArg] int $newId)
     {
         $lastNodes = $this->getLastNodesOfCategory([$newId]);
-        $this->logger->info('new getLastNodes result :');
-        $this->logger->info(print_r($lastNodes, true));
 
         $collection = new ArrayCollection($lastNodes);
         $ifAnyExistInActive = $collection->exists(fn($key, $value) => array_key_exists($key, $this->lastNodesChosen));
         $ifRevertExclude = array_diff($lastNodes, $this->lastNodesExcluded) === [];
 
         if ($ifRevertExclude) {
-            $this->logger->info('What im doing wrong?');
-            $this->logger->info('Rever exclude');
             $result['excluded'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
         } elseif ($ifAnyExistInActive) {
-            $this->logger->info('Deleting new');
             $result['included'] = array_diff_key($this->lastNodesChosen, $lastNodes);
         } else {
-            $this->logger->info('Adding new without old');
             $choosenWithoutExcluded = array_diff_key($lastNodes, $this->lastNodesExcluded);
             $result['included'] = $choosenWithoutExcluded + $this->lastNodesChosen;
         }
@@ -127,18 +117,13 @@ final class Catalog
     public function excludeCategories(#[LiveArg] int $newId)
     {
         $lastNodes = $this->getLastNodesOfCategory([$newId]);
-        $this->logger->info('new getLastNodes result :');
-        $this->logger->info(print_r($lastNodes, true));
+
 
         $ifRevertExclude = array_diff($lastNodes, $this->lastNodesExcluded) === [];
 
         if ($ifRevertExclude) {
-            $this->logger->info('What im doing wrong?');
-            $this->logger->info('Rever exclude');
             $result['excluded'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
         } else {
-            $this->logger->info('Maybe this?');
-            $this->logger->info('adding new exluding to array');
             $result['excluded'] = $lastNodes + $this->lastNodesExcluded;
             $result['included'] = array_diff_key($this->lastNodesChosen, $lastNodes);
         }
@@ -152,17 +137,14 @@ final class Catalog
     public function includeCategories(#[LiveArg] int $newId)
     {
         $lastNodes = $this->getLastNodesOfCategory([$newId]);
-        $this->logger->info('new getLastNodes result :');
-        $this->logger->info(print_r($lastNodes, true));
+
 
         $collection = new ArrayCollection($lastNodes);
         $ifAllExistInActive = !$collection->exists(fn($key, $value) => !array_key_exists($key, $this->lastNodesChosen));
 
         if ($ifAllExistInActive) {
-            $this->logger->info('Chosen without last nodes');
             $result['included'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
         } else {
-            $this->logger->info('Excluding excluded and making them included');
             $result['excluded'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
             $result['included'] = $this->lastNodesChosen + $lastNodes;
         }
