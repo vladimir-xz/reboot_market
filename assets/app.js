@@ -9,3 +9,8 @@ import './styles/app.css';
 // import './controllers/filter_controller.js';
 
 console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+window.onpopstate = function(event) {
+    if (event && event.state) {
+        location.reload();
+    }
+};

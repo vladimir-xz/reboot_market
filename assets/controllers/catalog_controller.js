@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import { getComponent } from '@symfony/ux-live-component';
+import * as Turbo from '@hotwired/turbo';
 
 /*
 * The following line makes this controller "lazy": it won't be downloaded until needed
@@ -11,11 +12,27 @@ export default class extends Controller {
 
     async initialize() {
         this.component = await getComponent(this.element);
+        document.addEventListener("turbo:load", function() {
+            console.log("This page was loaded via Turbo!");
+        });
         // const lastNodes = this.component.valueStore.props.activeLastNodes;
         // this.component.emit('redraw', { newCatalogs: lastNodes });
     }
 
+    historyPush() {
+        console.log(this.element.getAttribute('src'))
+        const url = new URL('http://127.0.0.1:8000/search');
+        // history.pushState(history.state, "", url);
+        Turbo.navigator.history.push(url);
+        console.log("my_push_state", url, history.state);
+    }
+
     check(event) {
+        if (window.location.pathname != '/search') {
+            this.historyPush()
+            Turbo.visit("/_search")
+        }
+
         if (event.params.exclude) {
             this.component.action('excludeCategories', { newId: event.params.id});
         } else {
@@ -24,8 +41,15 @@ export default class extends Controller {
     }
 
     onClick(event) {
+        console.log('this is detail')
+        console.log(window.location.pathname)
         if (event.target.tagName === 'P') {
             console.log('attempt');
+            if (window.location.pathname != '/search') {
+                this.historyPush()
+                Turbo.visit("/_search")
+            }
+
             this.component.action('revertCategories', { newId: event.target.parentElement.id });
         } else {
             const nextElement = event.target.nextElementSibling

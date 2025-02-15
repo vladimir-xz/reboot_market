@@ -5,17 +5,10 @@
 
     {{  render_esi(controller('App\\Controller\\ProductFilterController::getAllFilters', {brands: brands})) }}
 
-    <twig:ProductSearch query="{{ query  }}" :includedCategories="categories" page="{{   page    }}"/>
+    <div id="carousel" class="">    
+        <twig:Carousel />
+    </div>
 
-    {# <h1>Not paginated rresults: </h1>
-    <ul>
-        {% for product in notPaginated %}
-            <li><strong>{{  product.name   }}</strong></li>
-        {% endfor %}
-    </ul> #}
-
-    <twig:Carousel />
-    
 </main>
 
 {% endblock %}
