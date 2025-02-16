@@ -3,11 +3,13 @@
 {% block page_contents %}
 <main class="w-3/4">
 
-    {{  render_esi(controller('App\\Controller\\ProductFilterController::getAllFilters', {brands: brands})) }}
+    {# {{  render_esi(controller('App\\Controller\\ProductFilterController::getAllFilters', {brands: brands})) }} #}
 
-    <div id="carousel" class="">    
+    <twig:ProductSearch/>
+
+    {# <div id="carousel" class="">    
         <twig:Carousel />
-    </div>
+    </div> #}
 
 </main>
 

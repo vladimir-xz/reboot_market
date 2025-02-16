@@ -23,16 +23,20 @@ class ProductSearch extends AbstractController
     use DefaultActionTrait;
     use ComponentToolsTrait;
 
-    #[LiveProp(writable: true, url: new UrlMapping(as: 'p'))]
+    #[LiveProp]
     public int $page = 1;
     #[LiveProp]
     public string $query = '';
-    #[LiveProp]
+    #[LiveProp(writable: true, url: new UrlMapping(as: 'i'))]
     public array $includedCategories = [];
     #[LiveProp(writable: true, url: new UrlMapping(as: 'f'))]
     public array $filters = [];
-    #[LiveProp]
+    #[LiveProp(writable: true, url: new UrlMapping(as: 'e'))]
     public array $excludedCategories = [];
+    #[LiveProp]
+    public bool $isNew = true;
+    #[LiveProp]
+    public int $maxNbPages = 1;
 
     // #[LiveProp(writable: true, url: new UrlMapping(as: 't'))]
     // public array $types = [];
@@ -75,6 +79,7 @@ class ProductSearch extends AbstractController
     #[LiveListener('receiveCategories')]
     public function receiveCategories(#[LiveArg] array $newCategories)
     {
+        $this->logger->info('receiving categories');
         if (array_key_exists('included', $newCategories)) {
             if (empty($newCategories['included']) && $this->includedCategories) {
                 $this->emit('changeIfIncluded', [
@@ -150,6 +155,7 @@ class ProductSearch extends AbstractController
         //     'newCatalogs' => $categories,
         // ]);
 
+        $this->logger->info('what is going on?');
         $categoriesResult = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
         if ($this->includedCategories) {
             $this->logger->info('this is active:');
@@ -170,10 +176,21 @@ class ProductSearch extends AbstractController
         ]);
     }
 
-
-    public function getProducts()
+    #[LiveAction]
+    public function setMaxNbPages(int $nbPages)
     {
-        // example method that returns an array of Products
-        return $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
+        $this->maxNbPages = $nbPages;
     }
+
+    // public function getProducts()
+    // {
+    //     // example method that returns an array of Products
+    //     $this->isNew = true;
+    //     $result = $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
+    //     $this->setMaxNbPages($result->getNbPages());
+    //     $this->logger->info('Number of pages: ');
+    //     $this->logger->info($this->maxNbPages);
+    //     $this->logger->info($result->getNbPages());
+    //     return $result;
+    // }
 }

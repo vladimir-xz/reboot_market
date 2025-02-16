@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,42 +12,139 @@ use Psr\Log\LoggerInterface;
 
 final class SearchController extends AbstractController
 {
-    public function __construct(private LoggerInterface $logger)
+    public function __construct(private LoggerInterface $logger, private ProductRepository $productRep)
     {
     }
 
-    #[Route('/_search', name: 'searchStream')]
-    public function getProductSearch(Request $request): Response
-    {
-        $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-        return $this->renderBlock('search/index.html.twig', 'search_block');
-    }
-
-    #[Route('/search', name: 'search')]
-    public function index(Request $request): Response
+    #[Route('/_new_product_scroll', name: 'new_product_scroll')]
+    public function getNewProductsForScroll(Request $request)
     {
         $allParams = $request->query->all();
-        $page = $allParams['page'] ?? 1;
+        $this->logger->info('this is page');
+        $this->logger->info(print_r($request->query->all(), true));
+        $page = $allParams['p'] ?? 1;
         $query = $allParams['q'] ?? '';
-        $activeCategories = $allParams['c'] ?? [];
-        $brands = $allParams['b'] ?? [];
-        if (is_string($activeCategories)) {
-            $activeCategories = [];
+        $excludedCategories = $allParams['e'] ?? [];
+        $filters = $allParams['f'] ?? [];
+        $includedCategories = $allParams['i'] ?? [];
+        if (is_string($includedCategories)) {
+            $includedCategories = [];
         }
-        if (is_string($brands)) {
-            $brands = [];
+        if (is_string($excludedCategories)) {
+            $excludedCategories = [];
         }
-        $brands = json_encode($brands);
-        // $products = $productRepository->getPaginatedValues($query, $activeCategories, $page);
-        // $productsNotPad = $productRepository->findByNameField($query, $activeCategories);
-        // $categories = $productRepository->getCategoriesFromSearch($query, $activeCategories);
+        if (is_string($filters)) {
+            $filters = [];
+        }
 
-        return $this->render('homepage.html.twig', [
-            // 'notPaginated' => $productsNotPad,
-            'categories' => $categories ?? [],
-            'page' => $page,
-            'brands' => $brands
-            // 'array' => $array,
+        $paginator = $this->productRep->getPaginatedValues($query, $includedCategories, $excludedCategories, $filters, $page);
+        $maxNbPages = $paginator->getNbPages();
+        $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+        return $this->renderBlock('search/newInfiniteScroll.html.twig', 'search_block', [
+            'paginator' => $paginator, 'maxNbPages' => $maxNbPages
         ]);
     }
+
+    #[Route('/_product_scroll', name: 'product_scroll')]
+    public function getProductsForScroll(Request $request)
+    {
+        $allParams = $request->query->all();
+        $this->logger->info('this is page');
+        $this->logger->info(print_r($request->query->get('p'), true));
+        $page = $allParams['p'] ?? 1;
+        $query = $allParams['q'] ?? '';
+        $excludedCategories = $allParams['e'] ?? [];
+        $filters = $allParams['f'] ?? [];
+        $includedCategories = $allParams['i'] ?? [];
+        if (is_string($includedCategories)) {
+            $includedCategories = [];
+        }
+        if (is_string($excludedCategories)) {
+            $excludedCategories = [];
+        }
+        if (is_string($filters)) {
+            $filters = [];
+        }
+
+        $paginator = $this->productRep->getPaginatedValues($query, $includedCategories, $excludedCategories, $filters, $page);
+        $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+        return $this->renderBlock('search/infiniteScroll.html.twig', 'search_block', ['paginator' => $paginator]);
+    }
+
+    #[Route('/filter_options', name: 'filter_options')]
+    public function getFilterOptions(Request $request)
+    {
+        $this->logger->info('Lazy loaded filters');
+        $allProducts = $this->productRep->getAllWithSpecs();
+
+        // $filter = array_reduce(function (array $accumulator, Product $value): array {
+        // }, []);
+        $filter = array_reduce($allProducts, function ($accumulator, $value) {
+            $company = $value->getBrand();
+            $price = $value->getPrice();
+            $type = $value->getType();
+            $specs = $value->getSpecifications();
+            $currentMax = $accumulator['price']['max'] ?? 0;
+
+            $accumulator['brand'][$company] = $company;
+            $accumulator['type'][$type] = $type;
+            if ($currentMax < $price) {
+                $accumulator['price']['max'] = $price;
+            } elseif (!isset($accumulator['Price']['min'])) {
+                $accumulator['price']['min'] = $price;
+            } elseif ($accumulator['Price']['min'] > $price) {
+                $accumulator['price']['min'] = $price;
+            }
+
+            foreach ($specs as $spec) {
+                $property = $spec->getProperty();
+                $propValue = $spec->getValue();
+                $accumulator[$property][$propValue] = $propValue;
+            }
+
+            return $accumulator;
+        }, []);
+
+        // $this->logger->info(print_r($filter, true));
+
+        return $this->render('static/_filterFrame.html.twig', [
+            'filter' => $filter,
+        ]);
+    }
+
+    // #[Route('/_search', name: 'searchStream')]
+    // public function getProductSearch(Request $request): Response
+    // {
+    //     $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+    //     return $this->renderBlock('search/index.html.twig', 'search_block');
+    // }
+
+    // #[Route('/search', name: 'search')]
+    // public function index(Request $request): Response
+    // {
+    //     $allParams = $request->query->all();
+    //     $page = $allParams['page'] ?? 1;
+    //     $query = $allParams['q'] ?? '';
+    //     $activeCategories = $allParams['c'] ?? [];
+    //     $brands = $allParams['b'] ?? [];
+    //     if (is_string($activeCategories)) {
+    //         $activeCategories = [];
+    //     }
+    //     if (is_string($brands)) {
+    //         $brands = [];
+    //     }
+    //     $brands = json_encode($brands);
+    //     // $products = $productRepository->getPaginatedValues($query, $activeCategories, $page);
+    //     // $productsNotPad = $productRepository->findByNameField($query, $activeCategories);
+    //     // $categories = $productRepository->getCategoriesFromSearch($query, $activeCategories);
+
+    //     return $this->render('homepage.html.twig', [
+    //         // 'notPaginated' => $productsNotPad,
+    //         'categories' => $categories ?? [],
+    //         'page' => $page,
+    //         'brands' => $brands
+    //         // 'array' => $array,
+    //     ]);
+    // }
 }

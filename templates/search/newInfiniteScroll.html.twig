@@ -1,0 +1,21 @@
+{% extends 'layout.html.twig' %}
+
+{% block search_block %}
+
+<turbo-stream action="replace" target="product_scroll">
+    <template >
+        <div id="product_scroll" data-product-target="result" class="flex flex-wrap gap-4" data-max-page-number="{{ maxNbPages  }}">
+            <div class="flex justify-between w-full">
+                <h1>Product List</h1>
+                <h3>Total amount: {{   paginator.count  }}  </h3>
+            </div>
+            {% for product in paginator.currentPageResults %}
+                <twig:Card :product="product"/>
+            {% else %}
+                <p>No products found.</p> #}
+            {% endfor %}
+        </div>
+    </template>
+</turbo-stream>
+
+{% endblock %}

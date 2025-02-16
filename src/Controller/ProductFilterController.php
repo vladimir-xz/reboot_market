@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Product;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use App\Repository\ProductRepository;
@@ -17,8 +18,16 @@ final class ProductFilterController extends AbstractController
     }
 
     // #[Cache(smaxage: 6000)]
-    public function getAllFilters(string $brands): Response
+    public function getAllFilters(Request $request): Response
     {
+        $allParams = $request->query->all();
+        $brands = $allParams['b'] ?? [];
+
+        if (is_string($brands)) {
+            $brands = [];
+        }
+        $brands = json_encode($brands);
+
         $this->logger->info('Computing filter template');
         $allProducts = $this->productRepository->getAllWithSpecs();
 
@@ -50,7 +59,7 @@ final class ProductFilterController extends AbstractController
             return $accumulator;
         }, []);
 
-        $this->logger->info(print_r($filter, true));
+        // $this->logger->info(print_r($filter, true));
 
         return $this->render('static/_filter.html.twig', [
             'filter' => $filter,

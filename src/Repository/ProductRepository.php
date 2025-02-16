@@ -118,9 +118,9 @@ class ProductRepository extends ServiceEntityRepository
         $this->logger->info('here are filters');
         $this->logger->info(print_r($filters, true));
 
-        if ($query === '' && empty($catInclude) && empty($catExclude) && empty($filters)) {
-            return new Pagerfanta(new NullAdapter(0));
-        }
+        // if ($query === '' && empty($catInclude) && empty($catExclude) && empty($filters)) {
+        //     return new Pagerfanta(new NullAdapter(0));
+        // }
 
         $qb = $this->createQueryBuilder('p')
             ->orderBy('p.id', 'ASC');

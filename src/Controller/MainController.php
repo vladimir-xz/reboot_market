@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Psr\Log\LoggerInterface;
 
 class MainController extends AbstractController
 {
@@ -23,8 +24,11 @@ class MainController extends AbstractController
         CatalogBuilder $builder,
         ProductRepository $productRepository,
         CategoryRepository $categoryRepository,
+        LoggerInterface $logger
     ): Response {
 
+        $logger->info('normal load query');
+        $logger->info(print_r($request->query->all(), true));
         $allParams = $request->query->all();
         $page = $allParams['page'] ?? 1;
         $query = $allParams['q'] ?? '';

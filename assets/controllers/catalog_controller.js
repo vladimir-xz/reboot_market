@@ -12,27 +12,20 @@ export default class extends Controller {
 
     async initialize() {
         this.component = await getComponent(this.element);
-        document.addEventListener("turbo:load", function() {
-            console.log("This page was loaded via Turbo!");
-        });
+        this.page = 2
         // const lastNodes = this.component.valueStore.props.activeLastNodes;
         // this.component.emit('redraw', { newCatalogs: lastNodes });
     }
 
-    historyPush() {
-        console.log(this.element.getAttribute('src'))
-        const url = new URL('http://127.0.0.1:8000/search');
-        // history.pushState(history.state, "", url);
-        Turbo.navigator.history.push(url);
-        console.log("my_push_state", url, history.state);
-    }
+    // historyPush() {
+    //     console.log(this.element.getAttribute('src'))
+    //     const url = new URL('https://127.0.0.1:8000/search');
+    //     // history.pushState(history.state, "", url);
+    //     Turbo.navigator.history.push(url);
+    //     console.log("my_push_state", url, history.state);
+    // }
 
     check(event) {
-        if (window.location.pathname != '/search') {
-            this.historyPush()
-            Turbo.visit("/_search")
-        }
-
         if (event.params.exclude) {
             this.component.action('excludeCategories', { newId: event.params.id});
         } else {
@@ -44,12 +37,6 @@ export default class extends Controller {
         console.log('this is detail')
         console.log(window.location.pathname)
         if (event.target.tagName === 'P') {
-            console.log('attempt');
-            if (window.location.pathname != '/search') {
-                this.historyPush()
-                Turbo.visit("/_search")
-            }
-
             this.component.action('revertCategories', { newId: event.target.parentElement.id });
         } else {
             const nextElement = event.target.nextElementSibling
@@ -70,6 +57,12 @@ export default class extends Controller {
             nextElement.classList.add("hidden")
         }
     }
+
+    // loadProducts() {
+    //     console.log('is it loading?')
+    //     console.log(window.location.search)
+    //     Turbo.visit("/_new_product_scroll" + window.location.search)
+    // }
 
     // updateCheck(element, ifRemoveBoth = true, boxType = '') {
     //     if (ifRemoveBoth) {
@@ -96,7 +89,13 @@ export default class extends Controller {
         }
     }
 
+    sendNewResult() {
+        this.dispatch("reset")
+        Turbo.visit("/_new_product_scroll" + window.location.search)
+    }
+
     renew(event) {
+        this.sendNewResult()
         const treeMap = event.detail.treeMap
         this.nodeTargets.forEach((element) => {
             const elementId = Number(element.id)

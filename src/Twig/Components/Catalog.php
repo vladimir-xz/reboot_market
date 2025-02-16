@@ -49,10 +49,9 @@ final class Catalog
     #[LiveListener('redraw')]
     public function defineActiveCatalogs(#[LiveArg] array $newCatalogs = [])
     {
-        $this->lastNodesChosen = $newCatalogs['chosen'] ?? [];
-        $this->lastNodesExcluded = $newCatalogs['excluded'] ?? [];
         $alreadyProceededIds = [];
         $this->logger->info(print_r($newCatalogs, true));
+        $this->logger->info('Im drawing!');
         $allParents = $this->parents;
         $buildMapWithStatuses = function ($ids, $status) use (&$alreadyProceededIds, $allParents) {
             if (!$ids) {
@@ -109,9 +108,7 @@ final class Catalog
             $result['included'] = $choosenWithoutExcluded + $this->lastNodesChosen;
         }
 
-        $this->emit('receiveCategories', [
-            'newCategories' => $result,
-        ]);
+        $this->updateLastNodesAndSendResults($result);
     }
 
     #[LiveAction]
@@ -129,9 +126,7 @@ final class Catalog
             $result['included'] = array_diff_key($this->lastNodesChosen, $lastNodes);
         }
 
-        $this->emit('receiveCategories', [
-            'newCategories' => $result,
-        ]);
+        $this->updateLastNodesAndSendResults($result);
     }
 
     #[LiveAction]
@@ -150,9 +145,7 @@ final class Catalog
             $result['included'] = $this->lastNodesChosen + $lastNodes;
         }
 
-        $this->emit('receiveCategories', [
-            'newCategories' => $result,
-        ]);
+        $this->updateLastNodesAndSendResults($result);
     }
 
     private function getLastNodesOfCategory(array $ids, array $acc = [])
@@ -164,7 +157,25 @@ final class Catalog
                 $acc += $this->getLastNodesOfCategory($this->children[$id], $acc);
             }
         }
-        $this->logger->info(print_r($acc, true));
+
         return $acc;
+    }
+
+    private function updateLastNodesAndSendResults(array $result)
+    {
+        if (array_key_exists('included', $result)) {
+            $this->lastNodesChosen = $result['included'];
+            $this->logger->info(print_r($this->lastNodesChosen, true));
+        }
+        if (array_key_exists('excluded', $result)) {
+            $this->lastNodesExcluded = $result['excluded'];
+            $this->logger->info(print_r($this->lastNodesExcluded, true));
+        }
+
+        // $this->dispatchBrowserEvent('catalog:loadProducts');
+
+        $this->emit('receiveCategories', [
+            'newCategories' => $result,
+        ]);
     }
 }
