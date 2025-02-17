@@ -52,6 +52,7 @@ class ProductSearch extends AbstractController
         $this->sendCategoriesForTree();
     }
 
+    // TODO: change values in catalog class
     #[LiveListener('removeIncluded')]
     public function removeIncludedCategories()
     {
@@ -59,6 +60,7 @@ class ProductSearch extends AbstractController
         $this->sendCategoriesForTree();
     }
 
+    // TODO: change values in catalog class
     #[LiveListener('removeExcluded')]
     public function removeExcludedCategories()
     {
@@ -176,12 +178,6 @@ class ProductSearch extends AbstractController
         ]);
 
         $this->dispatchBrowserEvent('product:update', ['max' => $this->maxNbPages]);
-    }
-
-    #[LiveAction]
-    public function setMaxNbPages(int $nbPages)
-    {
-        $this->maxNbPages = $nbPages;
     }
 
     public function getProducts()

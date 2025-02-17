@@ -22,7 +22,9 @@ export default class extends Controller {
         window.addEventListener('scroll', () => {
             if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
                 if (this.currentPage < this.maxPages) {
+                    console.log('Max number: ', this.maxPages)
                     this.currentPage = this.currentPage + 1
+                    console.log('Current page: ', this.currentPage)
                     const searchParams = new URLSearchParams(window.location.search)
                     searchParams.set("p", this.currentPage)
                     const url = "/_product_scroll?" + searchParams.toString()
@@ -35,7 +37,7 @@ export default class extends Controller {
 
     setNewMaxAndClearScroll(event) {
         this.maxPages = event.detail.max
-        console.log('Setting new max and clear scroll')
+        console.log('Setting new max and clear scroll: ', this.maxPages)
         this.currentPage = 1
         this.scrollTarget.innerHTML = ''
     }
