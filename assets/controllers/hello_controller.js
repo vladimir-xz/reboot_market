@@ -12,8 +12,9 @@ import { getComponent } from '@symfony/ux-live-component';
  */
 export default class extends Controller {
     async initialize() {
+        // alert('Hello, world!');
         // Fetch the LiveComponent instance associated with this DOM element
-        this.target = await getComponent(document.getElementById('live-1884135188-0'));
+        // this.target = await getComponent(document.getElementById('live-1884135188-0'));
     }
 
     greet() {

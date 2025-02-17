@@ -1,6 +1,6 @@
 {% extends 'layout.html.twig' %}
 
-{% block search_block %}
+{% block scroll_block %}
 
 
 
@@ -12,6 +12,36 @@
             {% else %}
                 <p>No products found.</p>
             {% endfor %}
+        </div>
+    </template>
+</turbo-stream>
+
+{% endblock %}
+
+{% block new_search_block %}
+
+<turbo-stream action="replace" target="product_scroll">
+    <template >
+        <div
+            data-controller='product-list' data-action="catalog:reset@window->product-list#resetPage catalog:load@window->product-list#loadingState" 
+            id="product_scroll" 
+            data-product-list-page-value="{{ maxNbPages  }}" 
+            data-product-list-target="result" 
+            class="flex flex-wrap gap-4 relative" 
+            data-max-page-number="{{ maxNbPages  }}" 
+            data-current-page="1"
+        >
+            <div class="flex flex-wrap gap-4 ">
+                <div class="flex justify-between w-full">
+                    <h1>Product List</h1>
+                    <h3>Total amount: {{   paginator.count  }}  </h3>
+                </div>
+                {% for product in paginator.currentPageResults %}
+                    <twig:Card :product="product"/>
+                {% else %}
+                    <p>No products found.</p> #}
+                {% endfor %}
+            </div>
         </div>
     </template>
 </turbo-stream>

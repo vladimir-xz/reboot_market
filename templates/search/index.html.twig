@@ -1,10 +1,12 @@
 {% extends 'layout.html.twig' %}
 
-{% block search_block %}
+{% block meta %}
+    <meta name="turbo-cache-control" content="no-cache">
+{% endblock %}
 
+{% block page_contents %}
 
-<turbo-stream action="replace" targets="#carousel">
-    <template>
+    <div>
 
         <div class="mx-8 mt-2" data-controller="filter" data-action="productFilters:remove@window->filter#removeAll">
             <div class="flex justify-between px-4 pb-2">
@@ -16,16 +18,36 @@
                 >Filters</button>
             </div>
             <div class="hidden" data-filter-target="body">
-                <turbo-frame id="filter_options" src="/filter_options" loading="lazy">
+                <turbo-frame id="filter_options" src="/_filter_options" loading="lazy">
                     Loading...
                 </turbo-frame>
             </div>
 
         </div>
+    </div>
 
         <twig:ProductSearch/>
-
-    </template>
-</turbo-stream>
+        <div
+            data-controller='product-list' data-action="catalog:reset@window->product-list#resetPage catalog:load@window->product-list#loadingState" 
+            data-product-list-page-value="{{ maxNbPages  }}" 
+            id="product_scroll" 
+            data-product-list-target="result" 
+            class="flex flex-wrap gap-4 relative" 
+            data-max-page-number="{{ maxNbPages  }}" 
+            data-current-page="1"
+        >
+            <div class="flex flex-wrap gap-4 ">
+                <div class="flex justify-between w-full">
+                    <h1>Product List</h1>
+                    <h3>Total amount: {{   paginator.count  }}  </h3>
+                </div>
+                {% for product in paginator.currentPageResults %}
+                    <twig:Card :product="product"/>
+                {% else %}
+                    <p>No products found.</p> #}
+                {% endfor %}
+            </div>
+        </div>  
 
 {% endblock %}
+

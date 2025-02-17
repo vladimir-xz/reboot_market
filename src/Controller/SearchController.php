@@ -16,6 +16,37 @@ final class SearchController extends AbstractController
     {
     }
 
+    #[Route('/search', name: 'search')]
+    public function index(Request $request)
+    {
+        $allParams = $request->query->all();
+        $this->logger->info('this is page');
+        $this->logger->info(print_r($request->query->all(), true));
+        $page = $allParams['p'] ?? 1;
+        $query = $allParams['q'] ?? '';
+        $excludedCategories = $allParams['e'] ?? [];
+        $filters = $allParams['f'] ?? [];
+        $includedCategories = $allParams['i'] ?? [];
+        if (is_string($includedCategories)) {
+            $includedCategories = [];
+        }
+        if (is_string($excludedCategories)) {
+            $excludedCategories = [];
+        }
+        if (is_string($filters)) {
+            $filters = [];
+        }
+
+        $paginator = $this->productRep->getPaginatedValues($query, $includedCategories, $excludedCategories, $filters, $page);
+        $maxNbPages = $paginator->getNbPages();
+
+        return $this->render('search/index.html.twig', [
+            'paginator' => $paginator,
+            'maxNbPages' => $maxNbPages,
+            'categories' => $categories ?? [],
+        ]);
+    }
+
     #[Route('/_new_product_scroll', name: 'new_product_scroll')]
     public function getNewProductsForScroll(Request $request)
     {
@@ -39,9 +70,15 @@ final class SearchController extends AbstractController
 
         $paginator = $this->productRep->getPaginatedValues($query, $includedCategories, $excludedCategories, $filters, $page);
         $maxNbPages = $paginator->getNbPages();
+        if ($page > $maxNbPages) {
+            $this->logger->info($maxNbPages);
+            $this->logger->info($page);
+            die();
+        }
+
         $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
-        return $this->renderBlock('search/newInfiniteScroll.html.twig', 'search_block', [
+        return $this->renderBlock('search/infiniteScroll.html.twig', 'new_search_block', [
             'paginator' => $paginator, 'maxNbPages' => $maxNbPages
         ]);
     }
@@ -68,11 +105,17 @@ final class SearchController extends AbstractController
         }
 
         $paginator = $this->productRep->getPaginatedValues($query, $includedCategories, $excludedCategories, $filters, $page);
+        $maxNbPages = $paginator->getNbPages();
+        if ($page > $maxNbPages) {
+            $this->logger->info($maxNbPages);
+            $this->logger->info($page);
+            die();
+        }
         $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-        return $this->renderBlock('search/infiniteScroll.html.twig', 'search_block', ['paginator' => $paginator]);
+        return $this->renderBlock('search/infiniteScroll.html.twig', 'scroll_block', ['paginator' => $paginator]);
     }
 
-    #[Route('/filter_options', name: 'filter_options')]
+    #[Route('/_filter_options', name: 'filter_options')]
     public function getFilterOptions(Request $request)
     {
         $this->logger->info('Lazy loaded filters');

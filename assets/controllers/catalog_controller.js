@@ -26,6 +26,7 @@ export default class extends Controller {
     // }
 
     check(event) {
+        this.dispatch("load")
         if (event.params.exclude) {
             this.component.action('excludeCategories', { newId: event.params.id});
         } else {
@@ -37,6 +38,7 @@ export default class extends Controller {
         console.log('this is detail')
         console.log(window.location.pathname)
         if (event.target.tagName === 'P') {
+            this.dispatch("load")
             this.component.action('revertCategories', { newId: event.target.parentElement.id });
         } else {
             const nextElement = event.target.nextElementSibling
@@ -89,9 +91,12 @@ export default class extends Controller {
         }
     }
 
+
     sendNewResult() {
-        this.dispatch("reset")
+        console.log('reseting')
+        console.log(Date.now())
         Turbo.visit("/_new_product_scroll" + window.location.search)
+        this.dispatch("reset")
     }
 
     renew(event) {
