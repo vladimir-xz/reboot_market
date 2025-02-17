@@ -7,27 +7,37 @@ import { getComponent } from '@symfony/ux-live-component';
 * See https://github.com/symfony/stimulus-bridge#lazy-controllers
 */
 export default class extends Controller {
-    static targets = ['result']
+    static targets = ['scroll']
 
 
     async initialize() {
-        // this.component = await getComponent(this.element);
-        // this.page = 1
-        // console.log(this.page)
-        // window.addEventListener('scroll', () => {
-        //     if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
-        //         this.maxNbPages = this.resultTarget.dataset.maxPageNumber
-        //         console.log(this.maxNbPages)
-        //         console.log(this.page)
-        //         if (this.page < this.maxNbPages) {
-        //             this.page = this.page + 1
-        //             const url = "/_product_scroll" + window.location.search + 'p=' + String(this.page)
-        //             Turbo.visit(url)
-        //         }
-        //         console.log("You've reached the bottom of the page!");
-        //     }
-        //     // Check if the user has scrolled to the bottom
-        // });
+        this.component = await getComponent(this.element);
+        this.currentPage = 1
+        console.log(this.component)
+        this.maxPages = this.component.valueStore.props.maxNbPages
+        console.log('this is max pages: ', this.maxPages)
+    }
+
+    connect() {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
+                if (this.currentPage < this.maxPages) {
+                    this.currentPage = this.currentPage + 1
+                    const searchParams = new URLSearchParams(window.location.search)
+                    searchParams.set("p", this.currentPage)
+                    const url = "/_product_scroll?" + searchParams.toString()
+                    Turbo.visit(url)
+                }
+            }   
+            // Check if the user has scrolled to the bottom
+        });
+    }
+
+    setNewMaxAndClearScroll(event) {
+        this.maxPages = event.detail.max
+        console.log('Setting new max and clear scroll')
+        this.currentPage = 1
+        this.scrollTarget.innerHTML = ''
     }
 
     filter ({ detail: { content } }) {

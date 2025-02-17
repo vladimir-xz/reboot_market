@@ -26,7 +26,7 @@ export default class extends Controller {
     // }
 
     check(event) {
-        this.dispatch("load")
+        // this.dispatch("load")
         if (event.params.exclude) {
             this.component.action('excludeCategories', { newId: event.params.id});
         } else {
@@ -38,7 +38,7 @@ export default class extends Controller {
         console.log('this is detail')
         console.log(window.location.pathname)
         if (event.target.tagName === 'P') {
-            this.dispatch("load")
+            // this.dispatch("load")
             this.component.action('revertCategories', { newId: event.target.parentElement.id });
         } else {
             const nextElement = event.target.nextElementSibling
@@ -80,6 +80,11 @@ export default class extends Controller {
     //     this.activate()
     // }
 
+    // setMax() {
+    //     console.log('attempt to set max')
+    //     this.dispatch('setMax')
+    // }
+
     updateCheck(element, ifRemoveBoth = true, boxType) {
         if (ifRemoveBoth) {
             element.querySelector(`.chosen_box > input`).checked = false
@@ -92,15 +97,16 @@ export default class extends Controller {
     }
 
 
-    sendNewResult() {
-        console.log('reseting')
-        console.log(Date.now())
-        Turbo.visit("/_new_product_scroll" + window.location.search)
-        this.dispatch("reset")
-    }
+    // sendNewResult() {
+    //     console.log('reseting')
+    //     console.log(Date.now())
+    //     Turbo.visit("/_new_product_scroll" + window.location.search)
+    //     this.dispatch("reset")
+    // }
 
     renew(event) {
-        this.sendNewResult()
+        // this.sendNewResult()
+        // this.setMax()
         const treeMap = event.detail.treeMap
         this.nodeTargets.forEach((element) => {
             const elementId = Number(element.id)

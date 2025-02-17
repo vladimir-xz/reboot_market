@@ -1,14 +1,22 @@
-<div {{ attributes.defaults(stimulus_controller('product')) }}  
+<div {{ attributes.defaults(stimulus_controller('product')) }}  data-action="catalog:setMax@window->product#setNewMax product:update->product#setNewMaxAndClearScroll"
+    class="relative"    
 >
+    <span data-loading class="loader"></span>
 
-    {# {%  set paginator = this.products  %}
-    <div class="flex flex-wrap gap-4">
-        {% for product in paginator.currentPageResults %}
-            <twig:Card :product="product"/>
-        {# {% else %}
-            <p>No products found.</p> #} 
 
-    {# </div> #}
+    {%  set paginator = this.products  %}
+    <div data-loading="addClass(blur)">
+        <div class="flex flex-wrap gap-4" >
+            {% for product in paginator.currentPageResults %}
+                <twig:Card :product="product"/>
+                {% else %}
+                <p>No products found.</p> 
+            {% endfor %}
+        </div>
+        <div id="product_scroll" data-product-target="scroll" class="flex flex-wrap gap-4">
+            
+        </div>
+    </div>
 
     {# {% if paginator.haveToPaginate %}
 

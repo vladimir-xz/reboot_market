@@ -34,8 +34,6 @@ class ProductSearch extends AbstractController
     #[LiveProp(writable: true, url: new UrlMapping(as: 'e'))]
     public array $excludedCategories = [];
     #[LiveProp]
-    public bool $isNew = true;
-    #[LiveProp]
     public int $maxNbPages = 1;
 
     // #[LiveProp(writable: true, url: new UrlMapping(as: 't'))]
@@ -154,6 +152,8 @@ class ProductSearch extends AbstractController
         // $this->emit('redraw', [
         //     'newCatalogs' => $categories,
         // ]);
+        $result = $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
+        $this->maxNbPages = $result->getNbPages();
 
         $this->logger->info('what is going on?');
         $categoriesResult = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
@@ -174,6 +174,8 @@ class ProductSearch extends AbstractController
         $this->emit('redraw', [
             'newCatalogs' => $categories,
         ]);
+
+        $this->dispatchBrowserEvent('product:update', ['max' => $this->maxNbPages]);
     }
 
     #[LiveAction]
@@ -182,15 +184,8 @@ class ProductSearch extends AbstractController
         $this->maxNbPages = $nbPages;
     }
 
-    // public function getProducts()
-    // {
-    //     // example method that returns an array of Products
-    //     $this->isNew = true;
-    //     $result = $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
-    //     $this->setMaxNbPages($result->getNbPages());
-    //     $this->logger->info('Number of pages: ');
-    //     $this->logger->info($this->maxNbPages);
-    //     $this->logger->info($result->getNbPages());
-    //     return $result;
-    // }
+    public function getProducts()
+    {
+        return $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
+    }
 }
