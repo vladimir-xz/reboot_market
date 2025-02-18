@@ -23,4 +23,4 @@ EXPOSE 8000
 RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
 
-CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate --env=prod && php bin/console doctrine:fixtures:load --no-interaction && symfony server:start --listen-ip=0.0.0.0 --port=$PORT"]
+CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate --env=prod && php bin/console doctrine:fixtures:load --no-interaction && php -S 0.0.0.0:8000 -t public/ index.php"]
