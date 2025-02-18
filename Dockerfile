@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev
 RUN docker-php-ext-install pdo pdo_pgsql zip
+RUN curl -sS https://get.symfony.com/cli/installer | bash
 
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
