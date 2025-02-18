@@ -55,7 +55,7 @@ class ProductRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-    public function getCategoriesFromSearch(string $query = '', array $catInclude = [], array $catExclude = [], array $filters = []): array
+    public function getAllProductsWithCategoryAndFilters(string $query = '', array $catInclude = [], array $catExclude = [], array $filters = []): array
     {
         // if ($query === '' && empty($catInclude) && empty($catInclude) && empty($filters)) {
         //     return [];

@@ -20,7 +20,6 @@ class MapAllRecords
         $logger = $this->logger;
         $collection = new ArrayCollection($records);
         $result = $collection->reduce(function (array $accumulator, $record) use ($ifWithCategoriesAndCount, $logger) {
-            $logger->info(print_r($record->getName(), true));
             $company = $record->getBrand();
             $price = $record->getPrice();
             $type = $record->getType();
@@ -53,8 +52,6 @@ class MapAllRecords
                 $accumulator['count'] = $count;
             }
 
-
-            $logger->info(print_r($accumulator, true));
             return $accumulator;
         }, []);
 

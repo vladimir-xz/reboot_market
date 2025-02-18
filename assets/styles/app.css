@@ -161,6 +161,11 @@
       filter: blur(1px);
     }
 
+    .filter_passive {
+      @apply opacity-60;
+    }
+
+
 /* 
     .include_box input:checked .check_box {
         display: flex;

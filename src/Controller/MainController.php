@@ -44,7 +44,7 @@ class MainController extends AbstractController
         }
         $brands = json_encode($brands);
 
-        $allRecords = $productRepository->getCategoriesFromSearch($query, $activeCategories, [], ['brand' => ['Dell' => 'Dell'], 'type' => ['server' => 'server']]);
+        $allRecords = $productRepository->getAllProductsWithCategoryAndFilters($query, $activeCategories, [], ['brand' => ['Dell' => 'Dell'], 'type' => ['server' => 'server']]);
 
         $map = $mapAllRecords->mapRecords($allRecords, true);
         // $products = $productRepository->getPaginatedValues($query, $activeCategories, $page);

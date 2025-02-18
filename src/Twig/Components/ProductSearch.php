@@ -146,7 +146,7 @@ class ProductSearch extends AbstractController
     private function sendCategoriesForTree()
     {
         // TODO: refactor this when mapRecords return []
-        $allRecords = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
+        $allRecords = $this->productRepository->getAllProductsWithCategoryAndFilters($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
         $this->logger->info(print_r($this->filters, true));
         $map = $this->mapAllRecords->mapRecords($allRecords, true);
 
@@ -167,6 +167,9 @@ class ProductSearch extends AbstractController
 
         $this->emit('redraw', [
             'newCatalogs' => $categories,
+        ]);
+        $this->dispatchBrowserEvent('product:updateFilters', [
+            'filters' => $map
         ]);
 
         // TODO: assign explicitly the perPage amount

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\ProductRepository;
+use App\Service\MapAllRecords;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,7 +13,7 @@ use Psr\Log\LoggerInterface;
 
 final class SearchController extends AbstractController
 {
-    public function __construct(private LoggerInterface $logger, private ProductRepository $productRep)
+    public function __construct(private LoggerInterface $logger, private ProductRepository $productRep, private MapAllRecords $mapAllRecords)
     {
     }
 
@@ -37,11 +38,14 @@ final class SearchController extends AbstractController
             $filters = [];
         }
 
-        $paginator = $this->productRep->getPaginatedValues($query, $includedCategories, $excludedCategories, $filters, $page);
-        $maxNbPages = $paginator->getNbPages();
+        $allProducts = $this->productRep->getAllWithSpecs();
+        $filter = $this->mapAllRecords->mapRecords($allProducts);
+
+        // TODO: change to count when mapping
+        $maxNbPages = ceil(count($filter) / 12);
 
         return $this->render('search/index.html.twig', [
-            'paginator' => $paginator,
+            'filter' => $filter,
             'maxNbPages' => $maxNbPages,
             'categories' => $categories ?? [],
         ]);
