@@ -15,7 +15,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN composer install
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-scripts --no-autoloader
+
+EXPOSE 8000
 RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
 
