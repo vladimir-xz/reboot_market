@@ -20,6 +20,7 @@ use Psr\Log\LoggerInterface;
 class ProductRepository extends ServiceEntityRepository
 {
     private array $allowedFilters;
+    private array $selects = [];
 
     public function __construct(ManagerRegistry $registry, private LoggerInterface $logger)
     {
@@ -56,17 +57,18 @@ class ProductRepository extends ServiceEntityRepository
 
     public function getCategoriesFromSearch(string $query = '', array $catInclude = [], array $catExclude = [], array $filters = []): array
     {
-        if ($query === '' && empty($catInclude) && empty($catInclude) && empty($filters)) {
-            return [];
-        }
+        // if ($query === '' && empty($catInclude) && empty($catInclude) && empty($filters)) {
+        //     return [];
+        // }
+
+        // $qb = $this->createQueryBuilder('p')
+        //     ->leftJoin('p.category', 'c')
+        //     ->select('DISTINCT c.id');
 
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.category', 'c')
-            ->select('DISTINCT c.id');
-
-            // $qb = $this->createQueryBuilder('p')
-            // ->leftJoin('p.category', 'c')
-            // ->select('p', 'c');
+            ->leftJoin('p.specifications', "s")
+            ->select('p', 'c', 's');
 
         if ($query !== '') {
             $qb = $this->addQuerySearch($qb, $query);
@@ -81,10 +83,10 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         if ($filters) {
-            $qb = $this->addFilters($qb, $filters);
+            $qb = $this->addFilters($qb, $filters, true);
         }
 
-        return $qb->getQuery()->getResult(AbstractQuery::HYDRATE_SCALAR_COLUMN);
+        return $qb->getQuery()->getResult();
     }
 
     public function getPaginatedValues(string $query, array $catInclude, array $catExclude, array $filters, int $page, int $maxPerPage = 12): Pagerfanta
@@ -149,7 +151,7 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('val3', $catExclude);
     }
 
-    private function addFilters(QueryBuilder $qb, array $filters): QueryBuilder
+    private function addFilters(QueryBuilder $qb, array $filters, bool $ifAddSelect = false): QueryBuilder
     {
         $i = 4;
         $j = 5;

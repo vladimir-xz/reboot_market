@@ -154,15 +154,48 @@ class ProductSearch extends AbstractController
         // $this->emit('redraw', [
         //     'newCatalogs' => $categories,
         // ]);
-        $result = $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
-        $this->maxNbPages = $result->getNbPages();
+        // $result = $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
+        // $this->maxNbPages = $result->getNbPages();
 
-        $this->logger->info('what is going on?');
-        $categoriesResult = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
+        $allRecords = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
+        $collection = new ArrayCollection($allRecords);
+        $map = $collection->reduce(function (array $accumulator, $record) {
+            $count = $accumulator['count'] ?? 0;
+            $company = $record->getBrand();
+            $price = $record->getPrice();
+            $type = $record->getType();
+            $specs = $record->getSpecifications();
+            $categoryId = $record->getCategory()->getId();
+            $currentMax = $accumulator['price']['max'] ?? 0;
+            $currentMin = $accumulator['price']['min'] ?? 0;
+
+            $accumulator['brand'][$company] = $company;
+            $accumulator['type'][$type] = $type;
+            $accumulator['categories'][$categoryId] = $categoryId;
+            if ($currentMax < $price && $currentMin === 0) {
+                $accumulator['price']['max'] = $price;
+                $accumulator['price']['min'] = $currentMax;
+            } elseif ($currentMax < $price) {
+                $accumulator['price']['max'] = $price;
+            } elseif ($currentMin === 0 || $currentMin > $price) {
+                $accumulator['price']['min'] = $price;
+            }
+
+            foreach ($specs as $spec) {
+                $property = $spec->getProperty();
+                $propValue = $spec->getValue();
+                $accumulator[$property][$propValue] = $propValue;
+            }
+            $count++;
+            $accumulator['count'] = $count;
+
+            return $accumulator;
+        }, []);
+
         if ($this->includedCategories) {
             $this->logger->info('this is active:');
-            $this->logger->info(print_r($categoriesResult, true));
-            $categories['active'] = $categoriesResult;
+            $this->logger->info(print_r($map['categories'], true));
+            $categories['active'] = $map['categories'];
             $this->logger->info('this is chosen:');
             $this->logger->info(print_r($this->includedCategories, true));
             $categories['chosen'] = $this->includedCategories;
@@ -170,14 +203,18 @@ class ProductSearch extends AbstractController
             $this->logger->info(print_r($this->excludedCategories, true));
             $categories['excluded'] = $this->excludedCategories;
         } else {
-            $categories['neutral'] = $categoriesResult;
+            $categories['neutral'] = $map['categories'];
             $categories['excluded'] = $this->excludedCategories;
         }
+        $maxNbPages = ceil($map['count'] / 12);
+
+
         $this->emit('redraw', [
             'newCatalogs' => $categories,
         ]);
 
-        $this->dispatchBrowserEvent('product:update', ['max' => $this->maxNbPages]);
+        // TODO: assign explicitly the perPage amount
+        $this->dispatchBrowserEvent('product:update', ['max' => $maxNbPages]);
     }
 
     public function getProducts()

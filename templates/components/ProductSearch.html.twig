@@ -1,10 +1,14 @@
 <div {{ attributes.defaults(stimulus_controller('product')) }}  data-action="catalog:setMax@window->product#setNewMax product:update->product#setNewMaxAndClearScroll"
     class="relative"    
 >
+{%  set paginator = this.products  %}
+
+    <div class="flex justify-between">
+        <h1>Product list:</h1>
+        <h2>Result: {{  paginator.count  }}</h2>
+    </div>
     <span data-loading class="loader"></span>
 
-
-    {%  set paginator = this.products  %}
     <div data-loading="addClass(blur)">
         <div class="flex flex-wrap gap-4" >
             {% for product in paginator.currentPageResults %}
