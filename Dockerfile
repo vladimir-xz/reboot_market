@@ -13,9 +13,11 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 
 WORKDIR /app
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 COPY . .
 
-RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-scripts --no-autoloader
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-scripts --no-interaction
 
 EXPOSE 8000
 RUN php bin/console tailwind:init
