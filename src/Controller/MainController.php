@@ -9,6 +9,7 @@ use App\Entity\MainCategory;
 use App\Repository\MainCategoryRepository;
 use App\Repository\ProductRepository;
 use App\Repository\CategoryRepository;
+use App\Service\MapAllRecords;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,7 @@ class MainController extends AbstractController
         Request $request,
         CatalogBuilder $builder,
         ProductRepository $productRepository,
+        MapAllRecords $mapAllRecords,
         CategoryRepository $categoryRepository,
         LoggerInterface $logger
     ): Response {
@@ -42,8 +44,9 @@ class MainController extends AbstractController
         }
         $brands = json_encode($brands);
 
-        $allRecords = $productRepository->getCategoriesFromSearch($query, $activeCategories, [], ['Form-factor' => '2.5 inch']);
+        $allRecords = $productRepository->getCategoriesFromSearch($query, $activeCategories, [], ['brand' => ['Dell' => 'Dell'], 'type' => ['server' => 'server']]);
 
+        $map = $mapAllRecords->mapRecords($allRecords, true);
         // $products = $productRepository->getPaginatedValues($query, $activeCategories, $page);
         // $productsNotPad = $productRepository->findByNameField($query, $activeCategories);
         // $categories = $productRepository->getCategoriesFromSearch($query, $activeCategories);
@@ -52,6 +55,7 @@ class MainController extends AbstractController
             // 'notPaginated' => $productsNotPad,
             'all' => $allRecords,
             'categories' => [],
+            'map' => $map,
             'query' => $query,
             'page' => $page,
             'brands' => $brands

@@ -52,6 +52,8 @@ final class Catalog
         $alreadyProceededIds = [];
         $this->logger->info(print_r($newCatalogs, true));
         $this->logger->info('Im drawing!');
+        $this->lastNodesChosen = $newCatalogs['included'] ?? [];
+        $this->lastNodesExcluded = $newCatalogs['excluded'] ?? [];
         $allParents = $this->parents;
         $buildMapWithStatuses = function ($ids, $status) use (&$alreadyProceededIds, $allParents) {
             if (!$ids) {

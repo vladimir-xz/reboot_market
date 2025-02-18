@@ -3,13 +3,24 @@
 namespace App\Service;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Psr\Log\LoggerInterface;
 
 class MapAllRecords
 {
-    public static function mapRecords(array $records, bool $ifWithCategoriesAndCount = false)
+    public function __construct(private LoggerInterface $logger)
     {
+    }
+
+    public function mapRecords(array $records, bool $ifWithCategoriesAndCount = false)
+    {
+        if (empty($records)) {
+            return [];
+        }
+
+        $logger = $this->logger;
         $collection = new ArrayCollection($records);
-        return $collection->reduce(function (array $accumulator, $record) use ($ifWithCategoriesAndCount) {
+        $result = $collection->reduce(function (array $accumulator, $record) use ($ifWithCategoriesAndCount, $logger) {
+            $logger->info(print_r($record->getName(), true));
             $company = $record->getBrand();
             $price = $record->getPrice();
             $type = $record->getType();
@@ -43,8 +54,11 @@ class MapAllRecords
             }
 
 
-
+            $logger->info(print_r($accumulator, true));
             return $accumulator;
         }, []);
+
+        $this->logger->info(print_r($result, true));
+        return $result;
     }
 }

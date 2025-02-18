@@ -134,13 +134,9 @@ class ProductSearch extends AbstractController
             $this->filters[$filterKey][$newValue] = $newValue;
         }
 
-        if ($wasEmpty && $this->filters) {
+        if ($wasEmpty == $this->filters) {
             $this->emit('makeFiltered', [
-                'newValue' => true,
-            ]);
-        } elseif (!$wasEmpty && empty($this->filters)) {
-            $this->emit('makeFiltered', [
-                'newValue' => false,
+                'newValue' => empty($this->filters),
             ]);
         }
 
@@ -149,18 +145,24 @@ class ProductSearch extends AbstractController
 
     private function sendCategoriesForTree()
     {
+        // TODO: refactor this when mapRecords return []
         $allRecords = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
-        $map = $this->mapAllRecords::mapRecords($allRecords, true);
+        $this->logger->info(print_r($this->filters, true));
+        $map = $this->mapAllRecords->mapRecords($allRecords, true);
 
         if ($this->includedCategories) {
-            $categories['active'] = $map['categories'];
-            $categories['chosen'] = $this->includedCategories;
+            $categories['active'] = $map['categories'] ?? [];
+            $categories['included'] = $this->includedCategories;
             $categories['excluded'] = $this->excludedCategories;
         } else {
-            $categories['neutral'] = $map['categories'];
+            $this->logger->info('This is map value: ');
+            $this->logger->info(print_r($map, true));
+            $categories['neutral'] = $map['categories'] ?? [];
             $categories['excluded'] = $this->excludedCategories;
         }
-        $maxNbPages = ceil($map['count'] / 12);
+        $count = $map['count'] ?? 1;
+        $this->logger->info($count);
+        $maxNbPages = ceil($count / 12);
 
 
         $this->emit('redraw', [

@@ -43,6 +43,7 @@ export default class extends Controller {
     }
 
     filter ({ detail: { content } }) {
+        console.log('Filter on product side is working')
         this.component.action('setFilter', { newFilters: content });
         console.log(content)
     }

@@ -24,6 +24,7 @@ export default class extends Controller {
     }
 
     new(event) {
+        console.log('Filter new is working')
         this.dispatch("new", { detail: { content: event.params.payload } })
     }
 

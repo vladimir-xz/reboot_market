@@ -65,6 +65,9 @@ class ProductRepository extends ServiceEntityRepository
         //     ->leftJoin('p.category', 'c')
         //     ->select('DISTINCT c.id');
 
+        $this->logger->info('This is filters inside of repository');
+        $this->logger->info(print_r($filters, true));
+
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.category', 'c')
             ->leftJoin('p.specifications', "s")
@@ -83,7 +86,7 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         if ($filters) {
-            $qb = $this->addFilters($qb, $filters, true);
+            $qb = $this->addFilters($qb, $filters);
         }
 
         return $qb->getQuery()->getResult();
@@ -151,7 +154,7 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('val3', $catExclude);
     }
 
-    private function addFilters(QueryBuilder $qb, array $filters, bool $ifAddSelect = false): QueryBuilder
+    private function addFilters(QueryBuilder $qb, array $filters): QueryBuilder
     {
         $i = 4;
         $j = 5;
