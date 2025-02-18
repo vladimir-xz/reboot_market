@@ -129,14 +129,16 @@ final class SearchController extends AbstractController
             $type = $value->getType();
             $specs = $value->getSpecifications();
             $currentMax = $accumulator['price']['max'] ?? 0;
+            $currentMin = $accumulator['price']['min'] ?? 0;
 
             $accumulator['brand'][$company] = $company;
             $accumulator['type'][$type] = $type;
-            if ($currentMax < $price) {
+            if ($currentMin === 0 && $currentMax < $price) {
                 $accumulator['price']['max'] = $price;
-            } elseif (!isset($accumulator['Price']['min'])) {
-                $accumulator['price']['min'] = $price;
-            } elseif ($accumulator['Price']['min'] > $price) {
+                $accumulator['price']['min'] = $currentMax;
+            } elseif ($currentMax < $price) {
+                $accumulator['price']['max'] = $price;
+            } elseif ($currentMin === 0 || $currentMin > $price) {
                 $accumulator['price']['min'] = $price;
             }
 

@@ -39,16 +39,20 @@ final class ProductFilterController extends AbstractController
             $type = $value->getType();
             $specs = $value->getSpecifications();
             $currentMax = $accumulator['price']['max'] ?? 0;
+            $currentMin = $accumulator['price']['min'] ?? 0;
 
             $accumulator['brand'][$company] = $company;
             $accumulator['type'][$type] = $type;
-            if ($currentMax < $price) {
+            if ($currentMax < $price && $currentMin === 0) {
                 $accumulator['price']['max'] = $price;
-            } elseif (!isset($accumulator['Price']['min'])) {
-                $accumulator['price']['min'] = $price;
-            } elseif ($accumulator['Price']['min'] > $price) {
+                $accumulator['price']['min'] = $currentMax;
+            } elseif ($currentMax < $price) {
+                $accumulator['price']['max'] = $price;
+            } elseif ($currentMin === 0 || $currentMin > $price) {
                 $accumulator['price']['min'] = $price;
             }
+            $this->logger->info($price);
+            $this->logger->info(print_r($accumulator['price']));
 
             foreach ($specs as $spec) {
                 $property = $spec->getProperty();
