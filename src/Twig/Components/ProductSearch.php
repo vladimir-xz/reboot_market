@@ -14,6 +14,7 @@ use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\ComponentToolsTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 use Symfony\UX\LiveComponent\Metadata\UrlMapping;
+use App\Service\MapAllRecords;
 use Pagerfanta\Pagerfanta;
 use Psr\Log\LoggerInterface;
 
@@ -41,8 +42,11 @@ class ProductSearch extends AbstractController
     // #[LiveProp(writable: true, url: new UrlMapping(as: 's'))]
     // public array $specs = [];
 
-    public function __construct(private ProductRepository $productRepository, private CategoryRepository $categoryRepository, private LoggerInterface $logger)
-    {
+    public function __construct(
+        private ProductRepository $productRepository,
+        private MapAllRecords $mapAllRecords,
+        private LoggerInterface $logger
+    ) {
     }
 
     #[LiveListener('receiveQuery')]
@@ -145,62 +149,12 @@ class ProductSearch extends AbstractController
 
     private function sendCategoriesForTree()
     {
-        // if ($this->includedCategories) {
-        //     $categories['active'] = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
-        //     $categories['chosen'] = $this->includedCategories;
-        // } else {
-        //     $categories['neutral'] = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
-        // }
-        // $this->emit('redraw', [
-        //     'newCatalogs' => $categories,
-        // ]);
-        // $result = $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
-        // $this->maxNbPages = $result->getNbPages();
-
         $allRecords = $this->productRepository->getCategoriesFromSearch($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
-        $collection = new ArrayCollection($allRecords);
-        $map = $collection->reduce(function (array $accumulator, $record) {
-            $count = $accumulator['count'] ?? 0;
-            $company = $record->getBrand();
-            $price = $record->getPrice();
-            $type = $record->getType();
-            $specs = $record->getSpecifications();
-            $categoryId = $record->getCategory()->getId();
-            $currentMax = $accumulator['price']['max'] ?? 0;
-            $currentMin = $accumulator['price']['min'] ?? 0;
-
-            $accumulator['brand'][$company] = $company;
-            $accumulator['type'][$type] = $type;
-            $accumulator['categories'][$categoryId] = $categoryId;
-            if ($currentMax < $price && $currentMin === 0) {
-                $accumulator['price']['max'] = $price;
-                $accumulator['price']['min'] = $currentMax;
-            } elseif ($currentMax < $price) {
-                $accumulator['price']['max'] = $price;
-            } elseif ($currentMin === 0 || $currentMin > $price) {
-                $accumulator['price']['min'] = $price;
-            }
-
-            foreach ($specs as $spec) {
-                $property = $spec->getProperty();
-                $propValue = $spec->getValue();
-                $accumulator[$property][$propValue] = $propValue;
-            }
-            $count++;
-            $accumulator['count'] = $count;
-
-            return $accumulator;
-        }, []);
+        $map = $this->mapAllRecords::mapRecords($allRecords, true);
 
         if ($this->includedCategories) {
-            $this->logger->info('this is active:');
-            $this->logger->info(print_r($map['categories'], true));
             $categories['active'] = $map['categories'];
-            $this->logger->info('this is chosen:');
-            $this->logger->info(print_r($this->includedCategories, true));
             $categories['chosen'] = $this->includedCategories;
-            $this->logger->info('this is exluded:');
-            $this->logger->info(print_r($this->excludedCategories, true));
             $categories['excluded'] = $this->excludedCategories;
         } else {
             $categories['neutral'] = $map['categories'];

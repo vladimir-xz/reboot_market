@@ -9,12 +9,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use App\Repository\ProductRepository;
+use App\Service\MapAllRecords;
 use Psr\Log\LoggerInterface;
 
 final class ProductFilterController extends AbstractController
 {
-    public function __construct(private ProductRepository $productRepository, private LoggerInterface $logger)
-    {
+    public function __construct(
+        private ProductRepository $productRepository,
+        private MapAllRecords $mapAllRecords,
+        private LoggerInterface $logger
+    ) {
     }
 
     // #[Cache(smaxage: 6000)]
@@ -33,35 +37,7 @@ final class ProductFilterController extends AbstractController
 
         // $filter = array_reduce(function (array $accumulator, Product $value): array {
         // }, []);
-        $filter = array_reduce($allProducts, function ($accumulator, $value) {
-            $company = $value->getBrand();
-            $price = $value->getPrice();
-            $type = $value->getType();
-            $specs = $value->getSpecifications();
-            $currentMax = $accumulator['price']['max'] ?? 0;
-            $currentMin = $accumulator['price']['min'] ?? 0;
-
-            $accumulator['brand'][$company] = $company;
-            $accumulator['type'][$type] = $type;
-            if ($currentMax < $price && $currentMin === 0) {
-                $accumulator['price']['max'] = $price;
-                $accumulator['price']['min'] = $currentMax;
-            } elseif ($currentMax < $price) {
-                $accumulator['price']['max'] = $price;
-            } elseif ($currentMin === 0 || $currentMin > $price) {
-                $accumulator['price']['min'] = $price;
-            }
-            $this->logger->info($price);
-            $this->logger->info(print_r($accumulator['price']));
-
-            foreach ($specs as $spec) {
-                $property = $spec->getProperty();
-                $propValue = $spec->getValue();
-                $accumulator[$property][$propValue] = $propValue;
-            }
-
-            return $accumulator;
-        }, []);
+        $filter = $this->mapAllRecords::mapRecords($allProducts);
 
         // $this->logger->info(print_r($filter, true));
 

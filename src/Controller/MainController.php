@@ -51,6 +51,7 @@ class MainController extends AbstractController
         return $this->render('homepage.html.twig', [
             // 'notPaginated' => $productsNotPad,
             'all' => $allRecords,
+            'categories' => [],
             'query' => $query,
             'page' => $page,
             'brands' => $brands
