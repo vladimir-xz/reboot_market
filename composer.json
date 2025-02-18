@@ -10,6 +10,7 @@
         "doctrine/collections": ">=2.2.2",
         "doctrine/dbal": "^3.9.4",
         "doctrine/doctrine-bundle": "^2.13.2",
+        "doctrine/doctrine-fixtures-bundle": "^4.0",
         "doctrine/doctrine-migrations-bundle": "^3.4.1",
         "doctrine/orm": "^3.3.2",
         "pagerfanta/pagerfanta": "^4.7.1",
@@ -49,8 +50,7 @@
         "symfony/yaml": "7.2.*",
         "symfonycasts/tailwind-bundle": "^0.7.1",
         "twig/extra-bundle": "^2.12|^3.20",
-        "twig/twig": "^2.12|^3.20",
-        "doctrine/doctrine-fixtures-bundle": "^4.0"
+        "twig/twig": "^2.12|^3.20"
     },
     "config": {
         "allow-plugins": {
