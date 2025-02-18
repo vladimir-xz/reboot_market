@@ -4,8 +4,8 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev
 RUN docker-php-ext-install pdo pdo_pgsql zip
-RUN curl -sS https://get.symfony.com/cli/installer | bash
-
+RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | sudo -E bash
+RUN sudo apt install symfony-cli
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
@@ -23,4 +23,4 @@ EXPOSE 8000
 RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
 
-CMD ["bash", "-c", "php bin/console doctrine:migrations:m$PORTigrate --env=prod && php bin/console doctrine:fixtures:load --no-interaction && php -S 0.0.0.0:$PORT -t public/index.php"]
+CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate --env=prod && php bin/console doctrine:fixtures:load --no-interaction && symfony server:start --listen-ip=0.0.0.0 --port=$PORT"]
