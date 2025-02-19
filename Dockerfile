@@ -34,9 +34,7 @@ RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-scripts --no-interaction --
 RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
 
-# Expose port 80
 EXPOSE 80
 
-# Start PHP-FPM and Nginx
-CMD ["bash", "-c", "php-fpm && nginx -g "daemon off;""]
 # CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate --env=prod && php bin/console doctrine:fixtures:load --no-interaction && which nginx && ps aux | grep php-fpm"]
+CMD ["bash", "-c", "/usr/sbin/nginx && /usr/local/sbin/php-fpm"]
