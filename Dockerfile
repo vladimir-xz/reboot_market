@@ -36,4 +36,4 @@ RUN php bin/console tailwind:build
 
 EXPOSE 80
 
-CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate --env=prod && php bin/console doctrine:fixtures:load --no-interaction && nginx -t && ps aux | grep php-fpm && cat /usr/local/etc/php-fpm.d/www.conf"]
+CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate --env=prod && php bin/console doctrine:fixtures:load --no-interaction && nginx -t && ps aux | grep php-fpm"]
