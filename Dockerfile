@@ -19,6 +19,7 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 
 RUN composer install --no-dev --working-dir=/var/www/html
 
+RUN php bin/console asset-map:compile
 RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
 
