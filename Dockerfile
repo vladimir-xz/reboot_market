@@ -23,4 +23,4 @@ RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
 RUN php bin/console asset-map:compile
 
-CMD ["/start.sh"]
+CMD ["bash", "-c", "nginx -t && cat /start.sh"]
