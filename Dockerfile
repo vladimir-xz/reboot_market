@@ -13,6 +13,7 @@ FROM richarvey/nginx-php-fpm:latest
 
 WORKDIR /var/www/html
 
+COPY build/nginx/default.conf /etc/nginx/conf.d/
 COPY . .
 
 # Image config
@@ -32,5 +33,7 @@ RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-scripts --no-interaction --
 
 RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
+
+EXPOSE 80
 
 CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate --env=prod && php bin/console doctrine:fixtures:load --no-interaction"]
