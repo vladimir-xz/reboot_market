@@ -3,13 +3,13 @@ FROM richarvey/nginx-php-fpm:latest
 # RUN apt-get update && apt-get install -y \
 #     libpq-dev \
 #     libzip-dev
-RUN docker-php-ext-install pdo pdo_pgsql zip
-RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash
-RUN apt install symfony-cli
+# RUN docker-php-ext-install pdo pdo_pgsql zip
+# RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash
+# RUN apt install symfony-cli
 
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
-    && php -r "unlink('composer-setup.php');"
+# RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+#     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+#     && php -r "unlink('composer-setup.php');"
 
 WORKDIR /var/www/html
 
