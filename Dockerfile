@@ -1,7 +1,8 @@
 FROM richarvey/nginx-php-fpm:latest 
 
 COPY . .
-COPY build/nginx/default.conf /etc/nginx/conf.d/
+COPY build/nginx/default.conf /etc/nginx/sites-enabled/
+
 
 # Image config
 ENV SKIP_COMPOSER 1
@@ -24,4 +25,4 @@ RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
 RUN php bin/console asset-map:compile
 
-CMD ["bash", "-c", "cat /etc/nginx/conf.d/default.conf && cat /etc/nginx/nginx.conf && /start.sh"]
+CMD ["/start.sh"]
