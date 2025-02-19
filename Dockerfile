@@ -1,6 +1,7 @@
 FROM richarvey/nginx-php-fpm:latest 
 
 COPY . .
+COPY build/nginx/default.conf /etc/nginx/conf.d/
 
 # Image config
 ENV SKIP_COMPOSER 1
@@ -17,10 +18,11 @@ ENV LOG_CHANNEL stderr
 # Allow composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
+RUN composer global require hirak/prestissimo
 RUN composer install --no-dev --working-dir=/var/www/html
 
 RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
 RUN php bin/console asset-map:compile
 
-CMD ["bash", "-c", "nginx -t && cat /start.sh"]
+CMD ["/start.sh"]
