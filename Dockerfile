@@ -33,4 +33,4 @@ RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-scripts --no-interaction --
 RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
 
-CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate --env=prod && php bin/console doctrine:fixtures:load --no-interaction && pwd && ls /etc/nginx/conf.d/"]
+CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate --env=prod && php bin/console doctrine:fixtures:load --no-interaction"]
