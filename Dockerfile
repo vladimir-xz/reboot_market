@@ -13,8 +13,8 @@ FROM richarvey/nginx-php-fpm:latest
 
 WORKDIR /var/www/html
 
-# COPY build/nginx/default.conf /etc/nginx/conf.d/
-# COPY build/php-fpm/www.conf /usr/local/etc/php-fpm.d/
+COPY build/nginx/default.conf /etc/nginx/conf.d/
+COPY build/php-fpm/www.conf /usr/local/etc/php-fpm.d/
 COPY . .
 
 # Image config
