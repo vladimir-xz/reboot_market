@@ -38,5 +38,5 @@ RUN php bin/console tailwind:build
 EXPOSE 80
 
 # Start PHP-FPM and Nginx
-CMD ["php-fpm && nginx -g "daemon off;""]
+CMD ["bash", "-c", "php-fpm && nginx -g "daemon off;""]
 # CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate --env=prod && php bin/console doctrine:fixtures:load --no-interaction && which nginx && ps aux | grep php-fpm"]
