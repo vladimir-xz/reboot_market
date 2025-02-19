@@ -14,7 +14,7 @@ FROM richarvey/nginx-php-fpm:latest
 WORKDIR /var/www/html
 
 COPY build/nginx/default.conf /etc/nginx/conf.d/
-COPY build/php-fpm/www.conf /usr/local/etc/php-fpm.d/
+# COPY build/php-fpm/www.conf /usr/local/etc/php-fpm.d/
 COPY . .
 
 # Image config
@@ -41,4 +41,4 @@ RUN php bin/console tailwind:build
 EXPOSE 80
 
 # CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate --env=prod && php bin/console doctrine:fixtures:load --no-interaction && which nginx && ps aux | grep php-fpm"]
-CMD ["bash", "-c", "/usr/sbin/nginx && /usr/local/sbin/php-fpm && ps aux | grep php-fpm"]
+CMD ["bash", "-c", "/usr/sbin/nginx && /usr/local/sbin/php-fpm && cat /usr/local/etc/php-fpm.d/www.conf"]
