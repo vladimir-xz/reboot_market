@@ -35,10 +35,10 @@ RUN COMPOSER_ALLOW_SUPERUSER=1 composer install --no-scripts --no-interaction --
 RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
 
-RUN chmod 660 /var/run/php/php8.2-fpm.sock
-RUN chown www-data:www-data /var/run/php/php8.2-fpm.sock
+# RUN chmod 660 /var/run/php/php8.2-fpm.sock
+# RUN chown www-data:www-data /var/run/php/php8.2-fpm.sock
 
 EXPOSE 80
 
 # CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate --env=prod && php bin/console doctrine:fixtures:load --no-interaction && which nginx && ps aux | grep php-fpm"]
-CMD ["bash", "-c", "/usr/sbin/nginx && /usr/local/sbin/php-fpm && ls /var/run/php/"]
+CMD ["bash", "-c", "/usr/sbin/nginx && /usr/local/sbin/php-fpm && ps aux | grep php-fpm"]
