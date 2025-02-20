@@ -37,11 +37,17 @@ final class Catalog
         LoggerInterface $logger
     ) {
         $rawArr = $categoryRepository->getRawTree();
+        $logger->info('this is raw tree');
+        $logger->info(print_r($rawArr, true));
         $result = $builder->build($rawArr);
 
         $this->catalog = $result['catalog'];
-        $this->children = $result['children'];
-        $this->parents = $result['parents'];
+        $this->children = $result['allChildren'];
+        $this->parents = $result['lastNodeParents'];
+        $logger->info('This are lastNodes: ');
+        $logger->info(print_r($this->children, true));
+        $logger->info('This are allParentsOfLastNodes: ');
+        $logger->info(print_r($this->parents, true));
 
         $this->logger = $logger;
     }

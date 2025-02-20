@@ -46,7 +46,11 @@ class MainController extends AbstractController
 
         $allRecords = $productRepository->getAllProductsWithCategoryAndFilters($query, $activeCategories, [], ['brand' => ['Dell' => 'Dell'], 'type' => ['server' => 'server']]);
 
-        $map = $mapAllRecords->mapRecords($allRecords, true);
+        $rawArr = $categoryRepository->getRawTree();
+        $result = $builder->build($rawArr);
+
+        $lastNodesParents = $result['lastNodeParents'];
+        $allChildren = $result['allChildren'];
         // $products = $productRepository->getPaginatedValues($query, $activeCategories, $page);
         // $productsNotPad = $productRepository->findByNameField($query, $activeCategories);
         // $categories = $productRepository->getCategoriesFromSearch($query, $activeCategories);
@@ -55,7 +59,8 @@ class MainController extends AbstractController
             // 'notPaginated' => $productsNotPad,
             'all' => $allRecords,
             'categories' => [],
-            'map' => $map,
+            'lastNodesParents' => $lastNodesParents,
+            'allChildren' => $allChildren,
             'query' => $query,
             'page' => $page,
             'brands' => $brands

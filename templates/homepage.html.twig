@@ -4,7 +4,11 @@
 
     {# {{  render_esi(controller('App\\Controller\\ProductFilterController::getAllFilters', {brands: brands})) }} #}
 
-    {{ dump(map)    }}
+    <h1>All childrent</h1>
+    {{ dump(allChildren)    }}
+
+    <h1>Parents of last nodes</h1>
+    {{ dump(lastNodesParents)    }}
 
     <div id="carousel" class="">    
         <twig:Carousel />
