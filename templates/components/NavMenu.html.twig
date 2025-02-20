@@ -3,18 +3,18 @@
         <div>
             <button 
                 class="w-full flex items-center pl-{{ offset }} transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300"
-                id="{{category.id}}" data-catalog-target="node"
+                id="{{category.id}}" data-catalog-tree-target="node"
             >
                 <p class="hover:underline">{{ category.name }}</p>
 
                 <div class="flex pl-4">
 
-                    <label class="check_box chosen_box active_box">
-                        <input type="checkbox" data-action="catalog#check" data-catalog-exclude-param="false" data-catalog-id-param="{{ category.id }}">
+                    <label class="check_box included_box active_box">
+                        <input type="checkbox" data-action="catalog-tree#check" data-catalog-tree-exclude-param="false" data-catalog-tree-id-param="{{ category.id }}">
                         <span class="checkmark"></span>
                     </label>
                     <label class="check_box excluded_box">
-                        <input type="checkbox" data-action="catalog#check" data-catalog-exclude-param="true" data-catalog-id-param="{{ category.id }}">
+                        <input type="checkbox" data-action="catalog-tree#check" data-catalog-tree-exclude-param="true" data-catalog-tree-id-param="{{ category.id }}">
                         <span class="checkmark"></span>
                     </label>
 

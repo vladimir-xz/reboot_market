@@ -15,7 +15,7 @@
         @apply underline text-amber-600
     }
 
-    .category_chosen {
+    .category_included {
         @apply underline text-amber-600 text-opacity-50
     }
 
@@ -92,7 +92,7 @@
   }
   
   /* Style the checkmark/indicator */
-  .chosen_box .checkmark:after {
+  .included_box .checkmark:after {
     left: 5px;
     top: 2px;
     width: 5px;

@@ -39,7 +39,7 @@ final class Catalog
         $rawArr = $categoryRepository->getRawTree();
         $result = $builder->build($rawArr);
 
-        $this->catalog = $result['catalog'];
+        // $this->catalog = $result['catalog'];
         $this->children = $result['lastChildren'];
         $this->parents = $result['parents'];
 
@@ -50,8 +50,6 @@ final class Catalog
     public function defineActiveCatalogs(#[LiveArg] array $newCatalogs = [])
     {
         $alreadyProceededIds = [];
-        $this->logger->info(print_r($newCatalogs, true));
-        $this->logger->info('Im drawing!');
         $this->lastNodesChosen = $newCatalogs['included'] ?? [];
         $this->lastNodesExcluded = $newCatalogs['excluded'] ?? [];
         $allParents = $this->parents;
@@ -81,7 +79,7 @@ final class Catalog
             return $result;
         };
         $activeCategories = $buildMapWithStatuses($newCatalogs['active'] ?? [], 'active');
-        $chosenCategories = $buildMapWithStatuses($newCatalogs['chosen'] ?? [], 'chosen');
+        $includedCategories = $buildMapWithStatuses($newCatalogs['included'] ?? [], 'included');
         $excludedCategories = $buildMapWithStatuses($newCatalogs['excluded'] ?? [], 'excluded');
         $neutralCategories = $buildMapWithStatuses($newCatalogs['neutral'] ?? [], 'neutral');
         // $activeCollection = new ArrayCollection($newCatalogs['active'] ?? []);
@@ -98,7 +96,7 @@ final class Catalog
         // $neutralCollection = new ArrayCollection($newCatalogs['neutral'] ?? []);
         // $neutralCategories = $neutralCollection->reduce(fn($acc, $index) => $acc + $this->parents[$index], []);
 
-        $treeMap = $activeCategories + $excludedCategories + $chosenCategories + $neutralCategories;
+        $treeMap = $activeCategories + $excludedCategories + $includedCategories + $neutralCategories;
 
         $this->dispatchBrowserEvent('catalog:renew', [
             'treeMap' => $treeMap,
@@ -112,7 +110,7 @@ final class Catalog
 
         $collection = new ArrayCollection($lastNodes);
         $ifAnyExistInActive = $collection->exists(fn($key, $value) => array_key_exists($key, $this->lastNodesChosen));
-        $ifRevertExclude = array_diff($lastNodes, $this->lastNodesExcluded) === [];
+        $ifRevertExclude = array_diff_key($lastNodes, $this->lastNodesExcluded) === [];
 
         if ($ifRevertExclude) {
             $result['excluded'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
@@ -132,7 +130,7 @@ final class Catalog
         $lastNodes = $this->children[$newId];
 
 
-        $ifRevertExclude = array_diff($lastNodes, $this->lastNodesExcluded) === [];
+        $ifRevertExclude = array_diff_key($lastNodes, $this->lastNodesExcluded) === [];
 
         if ($ifRevertExclude) {
             $result['excluded'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
@@ -180,11 +178,9 @@ final class Catalog
     {
         if (array_key_exists('included', $result)) {
             $this->lastNodesChosen = $result['included'];
-            $this->logger->info(print_r($this->lastNodesChosen, true));
         }
         if (array_key_exists('excluded', $result)) {
             $this->lastNodesExcluded = $result['excluded'];
-            $this->logger->info(print_r($this->lastNodesExcluded, true));
         }
 
         // $this->dispatchBrowserEvent('catalog:loadProducts');

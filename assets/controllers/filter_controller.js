@@ -38,10 +38,8 @@ export default class extends Controller {
     }
 
     updateValidFilters(event) {
-        console.log('Updating filters', event.detail.filters)
         const filters = event.detail.filters
         this.filterTargets.forEach((element) => {
-            console.log(element)
             const elementId = element.id
             const parentModel = element.parentElement.parentElement.dataset.model
             element.nextElementSibling.classList.remove("filter_active", "filter_passive")

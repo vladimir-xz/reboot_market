@@ -1,31 +1,5 @@
-<div {{ attributes.defaults(stimulus_controller('catalog')) }} class="w-1/4" data-action="catalog:renew->catalog#renew catalog:loadProducts->catalog#loadProducts">
-        <nav class="inline-block w-full bg-stone-200 border border-neutral-300 rounded-md shadow-xl text-nowrap">
-            <ul data-action="click->catalog#onClick" class="text-base leading-10">
-                {% for category in this.catalog %}
-                    <li >
-                        <button 
-                            class="w-full menu-button flex items-center pl-3 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300"
-                            id="{{category.id}}" data-catalog-target="node" 
-                        >
-                                <p class="hover:underline">{{ category.name }}</p>
-                                <div class="flex pl-4">
-                                    <label class="check_box chosen_box active_box">
-                                        <input type="checkbox" data-action="catalog#check" data-catalog-exclude-param="false" data-catalog-id-param="{{ category.id }}">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                    <label class="check_box excluded_box">
-                                        <input type="checkbox" data-action="catalog#check" data-catalog-exclude-param="true" data-catalog-id-param="{{ category.id }}">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                        </button>
-                        {% if category.children is defined %}
-                            <twig:NavMenu :categories="category.children" offset="6" />
-                        {% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        </nav>
+<div {{ attributes.defaults(stimulus_controller('catalog')) }} class="hidden" 
+    data-action="catalog-tree:revert@window->catalog#revert catalog-tree:update@window->catalog#update">
 </div>
 {# 
 <div class="w-full pl-4">
@@ -40,3 +14,5 @@
         </label>
     </div>
 </div> #}
+
+{# data-action="catalog:renew->catalog#renew catalog:loadProducts->catalog#loadProducts" #}
