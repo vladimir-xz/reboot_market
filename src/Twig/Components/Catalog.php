@@ -37,17 +37,11 @@ final class Catalog
         LoggerInterface $logger
     ) {
         $rawArr = $categoryRepository->getRawTree();
-        $logger->info('this is raw tree');
-        $logger->info(print_r($rawArr, true));
         $result = $builder->build($rawArr);
 
         $this->catalog = $result['catalog'];
-        $this->children = $result['allChildren'];
-        $this->parents = $result['lastNodeParents'];
-        $logger->info('This are lastNodes: ');
-        $logger->info(print_r($this->children, true));
-        $logger->info('This are allParentsOfLastNodes: ');
-        $logger->info(print_r($this->parents, true));
+        $this->children = $result['lastChildren'];
+        $this->parents = $result['parents'];
 
         $this->logger = $logger;
     }
@@ -90,6 +84,19 @@ final class Catalog
         $chosenCategories = $buildMapWithStatuses($newCatalogs['chosen'] ?? [], 'chosen');
         $excludedCategories = $buildMapWithStatuses($newCatalogs['excluded'] ?? [], 'excluded');
         $neutralCategories = $buildMapWithStatuses($newCatalogs['neutral'] ?? [], 'neutral');
+        // $activeCollection = new ArrayCollection($newCatalogs['active'] ?? []);
+        // $activeCategories = $activeCollection->reduce(fn($acc, $index) => $acc + $this->parents[$index], []);
+
+        // $chosenCollection = new ArrayCollection($newCatalogs['chosen'] ?? []);
+        // $chosenWithActive = $chosenCollection->reduce(fn($acc, $index) => $acc + $this->parents[$index], []);
+        // $chosenCategories = array_diff_key($chosenWithActive, $activeCategories);
+
+        // $excludedCollection = new ArrayCollection($newCatalogs['excluded'] ?? []);
+        // $excludedWithActive = $excludedCollection->reduce(fn($acc, $index) => $acc + $this->parents[$index], []);
+        // $excludedCategories = array_diff_key($excludedWithActive, $activeCategories, $chosenCategories);
+
+        // $neutralCollection = new ArrayCollection($newCatalogs['neutral'] ?? []);
+        // $neutralCategories = $neutralCollection->reduce(fn($acc, $index) => $acc + $this->parents[$index], []);
 
         $treeMap = $activeCategories + $excludedCategories + $chosenCategories + $neutralCategories;
 
@@ -101,7 +108,7 @@ final class Catalog
     #[LiveAction]
     public function revertCategories(#[LiveArg] int $newId)
     {
-        $lastNodes = $this->getLastNodesOfCategory([$newId]);
+        $lastNodes = $this->children[$newId];
 
         $collection = new ArrayCollection($lastNodes);
         $ifAnyExistInActive = $collection->exists(fn($key, $value) => array_key_exists($key, $this->lastNodesChosen));
@@ -122,7 +129,7 @@ final class Catalog
     #[LiveAction]
     public function excludeCategories(#[LiveArg] int $newId)
     {
-        $lastNodes = $this->getLastNodesOfCategory([$newId]);
+        $lastNodes = $this->children[$newId];
 
 
         $ifRevertExclude = array_diff($lastNodes, $this->lastNodesExcluded) === [];
@@ -140,7 +147,7 @@ final class Catalog
     #[LiveAction]
     public function includeCategories(#[LiveArg] int $newId)
     {
-        $lastNodes = $this->getLastNodesOfCategory([$newId]);
+        $lastNodes = $this->children[$newId];
 
 
         $collection = new ArrayCollection($lastNodes);
@@ -156,18 +163,18 @@ final class Catalog
         $this->updateLastNodesAndSendResults($result);
     }
 
-    private function getLastNodesOfCategory(array $ids, array $acc = [])
-    {
-        foreach ($ids as $id) {
-            if (!array_key_exists($id, $this->children)) {
-                $acc[$id] = $id;
-            } else {
-                $acc += $this->getLastNodesOfCategory($this->children[$id], $acc);
-            }
-        }
+    // private function getLastNodesOfCategory(array $ids, array $acc = [])
+    // {
+    //     foreach ($ids as $id) {
+    //         if (!array_key_exists($id, $this->children)) {
+    //             $acc[$id] = $id;
+    //         } else {
+    //             $acc += $this->getLastNodesOfCategory($this->children[$id], $acc);
+    //         }
+    //     }
 
-        return $acc;
-    }
+    //     return $acc;
+    // }
 
     private function updateLastNodesAndSendResults(array $result)
     {

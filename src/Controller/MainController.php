@@ -49,8 +49,8 @@ class MainController extends AbstractController
         $rawArr = $categoryRepository->getRawTree();
         $result = $builder->build($rawArr);
 
-        $lastNodesParents = $result['lastNodeParents'];
-        $allChildren = $result['allChildren'];
+        $parents = $result['parents'];
+        $lastChildren = $result['lastChildren'];
         // $products = $productRepository->getPaginatedValues($query, $activeCategories, $page);
         // $productsNotPad = $productRepository->findByNameField($query, $activeCategories);
         // $categories = $productRepository->getCategoriesFromSearch($query, $activeCategories);
@@ -59,8 +59,8 @@ class MainController extends AbstractController
             // 'notPaginated' => $productsNotPad,
             'all' => $allRecords,
             'categories' => [],
-            'lastNodesParents' => $lastNodesParents,
-            'allChildren' => $allChildren,
+            'parents' => $parents,
+            'lastChildren' => $lastChildren,
             'query' => $query,
             'page' => $page,
             'brands' => $brands

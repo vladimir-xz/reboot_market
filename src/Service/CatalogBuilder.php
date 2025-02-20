@@ -43,8 +43,8 @@ class CatalogBuilder
         $treeToDisplay = $buildCatalog($mainNode);
 
         return [
-            'lastNodeParents' => $lastNodesAndParents['lastNodeParents'],
-            'allChildren' => $lastNodesAndParents['allChildren'],
+            'parents' => $treeOfParents,
+            'lastChildren' => $lastNodesAndParents['lastChildren'],
             'catalog' => $treeToDisplay
         ];
     }
@@ -53,16 +53,9 @@ class CatalogBuilder
         array $array,
         array $treeOfChildren,
         array $predecesors = [],
-        array $allChildren = [],
     ) {
         $collection = new ArrayCollection($array);
-        return $collection->reduce(function ($acc, $index) use ($treeOfChildren, $predecesors, $allChildren) {
-            if (empty($allChildren)) {
-                $newAllChildren = [];
-            } else {
-                $newAllChildren = array_map(fn($children) => $children + [$index => $index], $allChildren);
-            }
-
+        return $collection->reduce(function ($acc, $index) use ($treeOfChildren, $predecesors) {
             if (array_key_exists($index, $treeOfChildren)) {
                 $newPredecesors = [$index => $index] + $predecesors;
 
@@ -70,20 +63,20 @@ class CatalogBuilder
                     $treeOfChildren[$index],
                     $treeOfChildren,
                     $newPredecesors,
-                    $newAllChildren + [$index => []],
                 );
 
-                $acc['allChildren'] = array_replace_recursive($acc['allChildren'], $result['allChildren']);
+                $acc['lastChildren'] = array_replace_recursive($acc['lastChildren'], $result['lastChildren']);
                 $acc['lastNodeParents'] += $result['lastNodeParents'];
             } else {
                 $lastNodeParents = [$index => $predecesors];
+                $newLastChildren = array_map(fn($children) => [$index => $index], $predecesors);
 
                 $acc['lastNodeParents'] += $lastNodeParents;
-                $acc['allChildren'] = array_replace_recursive($acc['allChildren'], $newAllChildren);
+                $acc['lastChildren'] = array_replace_recursive($acc['lastChildren'], $newLastChildren);
             }
 
             return $acc;
-        }, ['lastNodeParents' => [], 'allChildren' => []]);
+        }, ['lastNodeParents' => [], 'lastChildren' => []]);
 
         // $betweenResults = ['lastNodeParents' => [], 'allChildren' => []];
         // $this->loggerInterface->info('We start');
