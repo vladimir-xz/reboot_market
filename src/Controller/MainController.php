@@ -60,9 +60,9 @@ class MainController extends AbstractController
             // 'notPaginated' => $productsNotPad,
             'all' => $allRecords,
             'categories' => [],
-            'parents' => $parents,
-            'tree' => $tree,
-            'lastChildren' => $lastChildren,
+            'parents' => json_encode($parents),
+            'tree' => json_encode($tree),
+            'lastChildren' => json_encode($lastChildren),
             'query' => $query,
             'page' => $page,
             'brands' => $brands
