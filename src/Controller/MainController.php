@@ -49,6 +49,7 @@ class MainController extends AbstractController
         $rawArr = $categoryRepository->getRawTree();
         $result = $builder->build($rawArr);
 
+        $tree = $result['catalog'];
         $parents = $result['parents'];
         $lastChildren = $result['lastChildren'];
         // $products = $productRepository->getPaginatedValues($query, $activeCategories, $page);
@@ -60,6 +61,7 @@ class MainController extends AbstractController
             'all' => $allRecords,
             'categories' => [],
             'parents' => $parents,
+            'tree' => $tree,
             'lastChildren' => $lastChildren,
             'query' => $query,
             'page' => $page,

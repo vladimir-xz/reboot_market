@@ -147,7 +147,6 @@ class ProductSearch extends AbstractController
     {
         // TODO: refactor this when mapRecords return []
         $allRecords = $this->productRepository->getAllProductsWithCategoryAndFilters($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
-        $this->logger->info(print_r($this->filters, true));
         $map = $this->mapAllRecords->mapRecords($allRecords, true);
 
         if ($this->includedCategories) {
@@ -155,13 +154,10 @@ class ProductSearch extends AbstractController
             $categories['included'] = $this->includedCategories;
             $categories['excluded'] = $this->excludedCategories;
         } else {
-            $this->logger->info('This is map value: ');
-            $this->logger->info(print_r($map, true));
             $categories['neutral'] = $map['categories'] ?? [];
             $categories['excluded'] = $this->excludedCategories;
         }
         $count = $map['count'] ?? 1;
-        $this->logger->info($count);
         $maxNbPages = ceil($count / 12);
 
 
