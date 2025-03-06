@@ -49,6 +49,8 @@ class MainController extends AbstractController
         $rawArr = $categoryRepository->getRawTree();
         $result = $builder->build($rawArr);
 
+        $env = getenv('APP_ENV');
+
         $tree = $result['catalog'];
         $parents = $result['parents'];
         $lastChildren = $result['lastChildren'];
@@ -59,6 +61,7 @@ class MainController extends AbstractController
         return $this->render('homepage.html.twig', [
             // 'notPaginated' => $productsNotPad,
             'all' => $allRecords,
+            'env' => $env,
             'categories' => [],
             'parents' => json_encode($parents),
             'tree' => json_encode($tree),
