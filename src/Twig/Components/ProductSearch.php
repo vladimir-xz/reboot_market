@@ -15,6 +15,7 @@ use Symfony\UX\LiveComponent\ComponentToolsTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 use Symfony\UX\LiveComponent\Metadata\UrlMapping;
 use App\Service\MapAllRecords;
+use App\Service\CatalogBuilder;
 use Pagerfanta\Pagerfanta;
 use Psr\Log\LoggerInterface;
 
@@ -24,6 +25,9 @@ class ProductSearch extends AbstractController
     use DefaultActionTrait;
     use ComponentToolsTrait;
 
+    private array $catalog;
+    private array $children;
+    private array $parents;
     #[LiveProp]
     public int $page = 1;
     #[LiveProp]
@@ -32,6 +36,10 @@ class ProductSearch extends AbstractController
     public array $includedCategories = [];
     #[LiveProp(writable: true, url: new UrlMapping(as: 'f'))]
     public array $filters = [];
+    #[LiveProp(writable: true, url: new UrlMapping(as: 'c'))]
+    public array $lastNodesChosen = [];
+    #[LiveProp(writable: true, url: new UrlMapping(as: 'c'))]
+    public array $lastNodesExcluded = [];
     #[LiveProp(writable: true, url: new UrlMapping(as: 'e'))]
     public array $excludedCategories = [];
     #[LiveProp]
@@ -45,8 +53,16 @@ class ProductSearch extends AbstractController
     public function __construct(
         private ProductRepository $productRepository,
         private MapAllRecords $mapAllRecords,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        CategoryRepository $categoryRepository,
+        CatalogBuilder $builder,
     ) {
+        $rawArr = $categoryRepository->getRawTree();
+        $result = $builder->build($rawArr);
+
+        $this->catalog = $result['catalog'];
+        $this->children = $result['lastChildren'];
+        $this->parents = $result['parents'];
     }
 
     #[LiveListener('receiveQuery')]
@@ -80,7 +96,6 @@ class ProductSearch extends AbstractController
         $this->sendCategoriesForTree();
     }
 
-    #[LiveListener('receiveCategories')]
     public function receiveCategories(#[LiveArg] array $newCategories)
     {
         $this->logger->info('receiving categories');
@@ -161,9 +176,7 @@ class ProductSearch extends AbstractController
         $maxNbPages = ceil($count / 12);
 
 
-        $this->emit('redraw', [
-            'newCatalogs' => $categories,
-        ]);
+        $this->defineActiveCatalogs($categories);
         $this->dispatchBrowserEvent('product:updateFilters', [
             'filters' => $map
         ]);
@@ -175,5 +188,133 @@ class ProductSearch extends AbstractController
     public function getProducts()
     {
         return $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
+    }
+
+    public function defineActiveCatalogs(array $newCatalogs = [])
+    {
+        $alreadyProceededIds = [];
+        $this->lastNodesChosen = $newCatalogs['included'] ?? [];
+        $this->lastNodesExcluded = $newCatalogs['excluded'] ?? [];
+        $allParents = $this->parents;
+        $buildMapWithStatuses = function ($ids, $status) use (&$alreadyProceededIds, $allParents) {
+            if (!$ids) {
+                return [];
+            }
+
+            $result = [];
+            foreach ($ids as $index => $id) {
+                if (array_key_exists($id, $alreadyProceededIds)) {
+                    continue;
+                }
+                $result[$id] = ['isLastNode' => true, 'status' => $status];
+                $alreadyProceededIds[$id] = $id;
+                while (array_key_exists($id, $allParents)) {
+                    $id = $this->parents[$id];
+
+                    if (array_key_exists($id, $alreadyProceededIds)) {
+                        break;
+                    }
+                    $alreadyProceededIds[$id] = $id;
+                    $result[$id] = ['isLastNode' => false, 'status' => $status];
+                }
+            }
+
+            return $result;
+        };
+        $activeCategories = $buildMapWithStatuses($newCatalogs['active'] ?? [], 'active');
+        $includedCategories = $buildMapWithStatuses($newCatalogs['included'] ?? [], 'included');
+        $excludedCategories = $buildMapWithStatuses($newCatalogs['excluded'] ?? [], 'excluded');
+        $neutralCategories = $buildMapWithStatuses($newCatalogs['neutral'] ?? [], 'neutral');
+        // $activeCollection = new ArrayCollection($newCatalogs['active'] ?? []);
+        // $activeCategories = $activeCollection->reduce(fn($acc, $index) => $acc + $this->parents[$index], []);
+
+        // $chosenCollection = new ArrayCollection($newCatalogs['chosen'] ?? []);
+        // $chosenWithActive = $chosenCollection->reduce(fn($acc, $index) => $acc + $this->parents[$index], []);
+        // $chosenCategories = array_diff_key($chosenWithActive, $activeCategories);
+
+        // $excludedCollection = new ArrayCollection($newCatalogs['excluded'] ?? []);
+        // $excludedWithActive = $excludedCollection->reduce(fn($acc, $index) => $acc + $this->parents[$index], []);
+        // $excludedCategories = array_diff_key($excludedWithActive, $activeCategories, $chosenCategories);
+
+        // $neutralCollection = new ArrayCollection($newCatalogs['neutral'] ?? []);
+        // $neutralCategories = $neutralCollection->reduce(fn($acc, $index) => $acc + $this->parents[$index], []);
+
+        $treeMap = $activeCategories + $excludedCategories + $includedCategories + $neutralCategories;
+
+        $this->dispatchBrowserEvent('catalog:renew', [
+            'treeMap' => $treeMap,
+        ]);
+    }
+
+    #[LiveAction]
+    public function revertCategories(#[LiveArg] int $newId)
+    {
+        $lastNodes = $this->children[$newId];
+
+        $collection = new ArrayCollection($lastNodes);
+        $ifAnyExistInActive = $collection->exists(fn($key, $value) => array_key_exists($key, $this->lastNodesChosen));
+        $ifRevertExclude = array_diff_key($lastNodes, $this->lastNodesExcluded) === [];
+
+        if ($ifRevertExclude) {
+            $result['excluded'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
+        } elseif ($ifAnyExistInActive) {
+            $result['included'] = array_diff_key($this->lastNodesChosen, $lastNodes);
+        } else {
+            $choosenWithoutExcluded = array_diff_key($lastNodes, $this->lastNodesExcluded);
+            $result['included'] = $choosenWithoutExcluded + $this->lastNodesChosen;
+        }
+
+        $this->updateLastNodesAndSendResults($result);
+    }
+
+    #[LiveAction]
+    public function excludeCategories(#[LiveArg] int $newId)
+    {
+        $lastNodes = $this->children[$newId];
+
+
+        $ifRevertExclude = array_diff_key($lastNodes, $this->lastNodesExcluded) === [];
+
+        if ($ifRevertExclude) {
+            $result['excluded'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
+        } else {
+            $result['excluded'] = $lastNodes + $this->lastNodesExcluded;
+            $result['included'] = array_diff_key($this->lastNodesChosen, $lastNodes);
+        }
+
+        $this->updateLastNodesAndSendResults($result);
+    }
+
+    #[LiveAction]
+    public function includeCategories(#[LiveArg] int $newId)
+    {
+        $lastNodes = $this->children[$newId];
+
+
+        $collection = new ArrayCollection($lastNodes);
+        $ifAllExistInActive = !$collection->exists(fn($key, $value) => !array_key_exists($key, $this->lastNodesChosen));
+
+        if ($ifAllExistInActive) {
+            $result['included'] = array_diff_key($this->lastNodesChosen, $lastNodes);
+        } else {
+            $result['excluded'] = array_diff_key($this->lastNodesExcluded, $lastNodes);
+            $result['included'] = $this->lastNodesChosen + $lastNodes;
+        }
+
+        $this->updateLastNodesAndSendResults($result);
+    }
+
+    private function updateLastNodesAndSendResults(array $result)
+    {
+        if (array_key_exists('included', $result)) {
+            $this->lastNodesChosen = $result['included'];
+        }
+        if (array_key_exists('excluded', $result)) {
+            $this->lastNodesExcluded = $result['excluded'];
+        }
+
+        // $this->dispatchBrowserEvent('catalog:loadProducts');
+
+        $this->receiveCategories($result);
     }
 }

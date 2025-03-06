@@ -19,10 +19,9 @@ final class CatalogTree
     ) {
         $rawArr = $categoryRepository->getRawTree();
         $result = $builder->build($rawArr);
-        $logger->alert('Are we building this again?');
 
-        // $this->catalog = $result['catalog'];
+        $this->catalog = $result['catalog'];
 
-        $this->catalog = json_decode($result['catalog'], true);
+        // $this->catalog = json_decode($result['catalog'], true);
     }
 }

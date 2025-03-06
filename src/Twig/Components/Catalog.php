@@ -39,12 +39,12 @@ final class Catalog
         $rawArr = $categoryRepository->getRawTree();
         $result = $builder->build($rawArr);
 
-        // $this->catalog = $result['catalog'];
-        // $this->children = $result['lastChildren'];
-        // $this->parents = $result['parents'];
+        $this->catalog = $result['catalog'];
+        $this->children = $result['lastChildren'];
+        $this->parents = $result['parents'];
 
-        $this->children = json_decode($result['lastChildren'], true);
-        $this->parents = json_decode($result['parents'], true);
+        // $this->children = json_decode($result['lastChildren'], true);
+        // $this->parents = json_decode($result['parents'], true);
 
         $this->logger = $logger;
     }

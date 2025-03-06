@@ -1,5 +1,11 @@
 <div {{ attributes.defaults(stimulus_controller('product')) }}  
-    data-action="catalog:setMax@window->product#setNewMax product:update->product#setNewMaxAndClearScroll filter:new@window->product#filter"
+    data-action="
+        catalog:setMax@window->product#setNewMax 
+        product:update->product#setNewMaxAndClearScroll 
+        filter:new@window->product#filter
+        catalog-tree:revert@window->product#revert 
+        catalog-tree:update@window->product#update
+    "
     class="relative"    
 >
 {%  set paginator = this.products  %}

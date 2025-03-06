@@ -48,4 +48,16 @@ export default class extends Controller {
         console.log(content)
     }
 
+    revert({ detail }) {
+        this.component.action('revertCategories', { newId: detail.id });
+    }
+
+    update({detail: params}) {
+        if (params.exclude) {
+            this.component.action('excludeCategories', { newId: params.id});
+        } else {
+            this.component.action('includeCategories', { newId: params.id});
+        }
+    }
+
 }
