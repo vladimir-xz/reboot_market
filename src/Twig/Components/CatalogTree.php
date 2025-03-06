@@ -21,6 +21,8 @@ final class CatalogTree
         $result = $builder->build($rawArr);
         $logger->alert('Are we building this again?');
 
-        $this->catalog = $result['catalog'];
+        // $this->catalog = $result['catalog'];
+
+        $this->catalog = json_decode($result['catalog'], true);
     }
 }
