@@ -20,6 +20,7 @@ ENV LOG_CHANNEL stderr
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
 RUN composer install --working-dir=/var/www/html
+RUN composer require symfony/profiler-pack
 
 RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
