@@ -12,14 +12,14 @@ ENV RUN_SCRIPTS 1
 ENV REAL_IP_HEADER 1
 
 # Laravel config
-ENV APP_ENV staging
+ENV APP_ENV dev
 ENV APP_DEBUG true
 ENV LOG_CHANNEL stderr
 
 # Allow composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN composer install --no-dev --working-dir=/var/www/html
+RUN composer install --working-dir=/var/www/html
 
 RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
