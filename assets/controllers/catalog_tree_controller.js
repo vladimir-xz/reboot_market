@@ -35,13 +35,18 @@ export default class extends Controller {
     }
 
     onClick(event) {
-        if (event.target.tagName === 'P') {
-            // this.dispatch("load")
-            this.dispatch("revert", { detail: {id: event.target.parentElement.id }})
+        console.log(window.location.pathname)
+        if (window.location.pathname != '/search') {
+            Turbo.visit('/search')
         } else {
-            const nextElement = event.target.nextElementSibling
-            if (nextElement && nextElement.tagName === 'DIV') {
-                nextElement.classList.toggle("hidden")
+            if (event.target.tagName === 'P') {
+                // this.dispatch("load")
+                this.dispatch("revert", { detail: {id: event.target.parentElement.id }})
+            } else {
+                const nextElement = event.target.nextElementSibling
+                if (nextElement && nextElement.tagName === 'DIV') {
+                    nextElement.classList.toggle("hidden")
+                }
             }
         }
     }
