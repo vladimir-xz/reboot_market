@@ -167,11 +167,6 @@ class ProductSearch extends AbstractController
         $this->dispatchBrowserEvent('product:update', ['max' => $maxNbPages]);
     }
 
-    public function getProducts()
-    {
-        return $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
-    }
-
     #[LiveAction]
     public function revertCategories(#[LiveArg] int $newId)
     {
@@ -194,5 +189,10 @@ class ProductSearch extends AbstractController
         $result = $this->catalogHandler->includeCategories($newId, $this->includedCategories, $this->excludedCategories);
 
         $this->updateCategoriesAndLabels($result);
+    }
+
+    public function getProducts()
+    {
+        return $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
     }
 }

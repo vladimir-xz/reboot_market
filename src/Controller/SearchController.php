@@ -48,13 +48,19 @@ final class SearchController extends AbstractController
         $filter = $this->mapAllRecords->mapRecords($allProducts);
 
 
-        if ($excludedCategories || $includedCategories) {
+        if ($query || $excludedCategories || $includedCategories) {
             $allRecords = $this->productRep->getAllProductsWithCategoryAndFilters($query, $includedCategories, $excludedCategories, $filters);
             $map = $this->mapAllRecords->mapRecords($allRecords, true);
 
-            $categories['active'] = $map['categories'] ?? [];
-            $categories['included'] = $includedCategories;
-            $categories['excluded'] = $excludedCategories;
+            if ($includedCategories) {
+                $categories['active'] = $map['categories'] ?? [];
+                $categories['included'] = $includedCategories;
+                $categories['excluded'] = $excludedCategories;
+            } else {
+                $categories['neutral'] = $map['categories'] ?? [];
+                $categories['excluded'] = $excludedCategories;
+            }
+
             $treeMap = $this->catHandler->prepareNewCatalogsForDrawing($categories);
             $maxNbPages = ceil(count($allRecords) / 12);
         } else {
