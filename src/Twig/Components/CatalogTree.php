@@ -25,7 +25,6 @@ final class CatalogTree
         LoggerInterface $log,
         CatalogHandler $builder,
     ) {
-        $log->warning('Creating new catalog');
         $this->catalog = $builder->getCatalog();
 
         // $this->catalog = json_decode($result['catalog'], true);

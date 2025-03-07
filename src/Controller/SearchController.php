@@ -27,8 +27,6 @@ final class SearchController extends AbstractController
     public function index(Request $request)
     {
         $allParams = $request->query->all();
-        $this->logger->info('this is page');
-        $this->logger->info(print_r($request->query->all(), true));
         $page = $allParams['p'] ?? 1;
         $query = $allParams['q'] ?? '';
         $excludedCategories = $allParams['e'] ?? [];
@@ -115,8 +113,6 @@ final class SearchController extends AbstractController
     public function getNewProductsForScroll(Request $request)
     {
         $allParams = $request->query->all();
-        $this->logger->info('this is page');
-        $this->logger->info(print_r($request->query->all(), true));
         $page = $allParams['p'] ?? 1;
         $query = $allParams['q'] ?? '';
         $excludedCategories = $allParams['e'] ?? [];
@@ -135,8 +131,6 @@ final class SearchController extends AbstractController
         $paginator = $this->productRep->getPaginatedValues($query, $includedCategories, $excludedCategories, $filters, $page);
         $maxNbPages = $paginator->getNbPages();
         if ($page > $maxNbPages) {
-            $this->logger->info($maxNbPages);
-            $this->logger->info($page);
             die();
         }
 
@@ -151,8 +145,6 @@ final class SearchController extends AbstractController
     public function getProductsForScroll(Request $request)
     {
         $allParams = $request->query->all();
-        $this->logger->info('this is page');
-        $this->logger->info(print_r($request->query->get('p'), true));
         $page = $allParams['p'] ?? 1;
         $query = $allParams['q'] ?? '';
         $excludedCategories = $allParams['e'] ?? [];
@@ -178,7 +170,6 @@ final class SearchController extends AbstractController
     #[Route('/_filter_options', name: 'filter_options')]
     public function getFilterOptions(Request $request)
     {
-        $this->logger->info('Lazy loaded filters');
         $allProducts = $this->productRep->getAllWithSpecs();
 
         // $filter = array_reduce(function (array $accumulator, Product $value): array {

@@ -120,7 +120,7 @@ class CatalogHandler
 
     public function revertCategories(int $newId, array $lastNodesChosen, array $lastNodesExcluded)
     {
-        $lastNodes = $this->children[$newId];
+        $lastNodes = $this->children[$newId] ?? [$newId => $newId];
 
         $collection = new ArrayCollection($lastNodes);
         $ifAnyExistInActive = $collection->exists(fn($key, $value) => array_key_exists($key, $lastNodesChosen));
@@ -143,7 +143,7 @@ class CatalogHandler
 
     public function excludeCategories(int $newId, array $lastNodesChosen, array $lastNodesExcluded)
     {
-        $lastNodes = $this->children[$newId];
+        $lastNodes = $this->children[$newId] ?? [$newId => $newId];
 
 
         $ifRevertExclude = array_diff_key($lastNodes, $lastNodesExcluded) === [];
@@ -161,7 +161,7 @@ class CatalogHandler
 
     public function includeCategories(int $newId, array $lastNodesChosen, array $lastNodesExcluded)
     {
-        $lastNodes = $this->children[$newId];
+        $lastNodes = $this->children[$newId] ?? [$newId => $newId];
 
 
         $collection = new ArrayCollection($lastNodes);
