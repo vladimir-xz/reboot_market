@@ -165,6 +165,19 @@
       @apply opacity-60;
     }
 
+    .menu_parent::after {
+      content: ''; /* Required for the pseudo-element to render */
+      display: inline-block;
+      width: 16px; /* Desired width of the arrow */
+      height: 16px; /* Desired height of the arrow */
+      background-image: url('./down-arrow.png'); /* Path to your image */
+      background-size: contain; /* Ensures the image fits within the specified dimensions */
+      background-repeat: no-repeat; /* Prevents the image from repeating */
+      background-position: center; /* Centers the image within the pseudo-element */
+      margin-right: 16px; /* Optional: Adds spacing between the text and the arrow */
+      vertical-align: middle; 
+    }
+
 
 /* 
     .include_box input:checked .check_box {
