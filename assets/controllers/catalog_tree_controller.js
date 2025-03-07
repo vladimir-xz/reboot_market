@@ -12,8 +12,13 @@ export default class extends Controller {
 
     async initialize() {
         console.log('catalog tree has been initalized')
-        // const lastNodes = this.component.valueStore.props.activeLastNodes;
-        // this.component.emit('redraw', { newCatalogs: lastNodes });
+        this.component = await getComponent(this.element);
+        console.log(this.component.valueStore.props)
+        if (this.component.valueStore.props.treeMap) {
+            const detail = this.component.valueStore.props
+            this.renew({ detail })
+            this.component.valueStore.props.treeMap = []
+        }
     }
 
     // historyPush() {
@@ -25,8 +30,21 @@ export default class extends Controller {
     // }
 
     check(event) {
-        // this.dispatch("load")
-        this.dispatch("update", { detail: event.params })
+        if (event.params.exclude) {
+            if (window.location.pathname != '/search') {
+                console.log('Not a /search path')
+                Turbo.visit('/_new_search?cat=ex_' + event.params.id)
+            } else {
+                this.dispatch("exclude", { detail: {id: event.params.id }})
+            }
+        } else {
+            if (window.location.pathname != '/search') {
+                Turbo.visit('/_new_search?cat=in_' + event.params.id)
+            } else {
+                this.dispatch("include", { detail: {id: event.params.id }})
+            }
+        }
+        // this.dispatch("update", { detail: event.params })
         // if (event.params.exclude) {
         //     this.component.action('excludeCategories', { newId: event.params.id});
         // } else {
@@ -36,19 +54,19 @@ export default class extends Controller {
 
     onClick(event) {
         console.log(window.location.pathname)
-        if (window.location.pathname != '/search') {
-            Turbo.visit('/search')
-        } else {
             if (event.target.tagName === 'P') {
                 // this.dispatch("load")
-                this.dispatch("revert", { detail: {id: event.target.parentElement.id }})
+                if (window.location.pathname != '/search') {
+                    Turbo.visit('/_new_search?cat=rev_' + event.target.parentElement.id)
+                } else {
+                    this.dispatch("revert", { detail: {id: event.target.parentElement.id }})
+                }
             } else {
                 const nextElement = event.target.nextElementSibling
                 if (nextElement && nextElement.tagName === 'DIV') {
                     nextElement.classList.toggle("hidden")
                 }
             }
-        }
     }
 
     open(nextElement) {
@@ -110,6 +128,7 @@ export default class extends Controller {
     renew(event) {
         // this.sendNewResult()
         // this.setMax()
+        console.log(event)
         const treeMap = event.detail.treeMap
         this.nodeTargets.forEach((element) => {
             const elementId = Number(element.id)

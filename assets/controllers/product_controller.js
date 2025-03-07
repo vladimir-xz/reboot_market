@@ -13,9 +13,8 @@ export default class extends Controller {
     async initialize() {
         this.component = await getComponent(this.element);
         this.currentPage = 1
-        console.log(this.component)
         this.maxPages = this.component.valueStore.props.maxNbPages
-        console.log('this is max pages: ', this.maxPages)
+        console.log(this.component.valueStore.props.maxNbPages, ' - this is max nbPages')
     }
 
     connect() {
@@ -51,13 +50,31 @@ export default class extends Controller {
     revert({ detail }) {
         this.component.action('revertCategories', { newId: detail.id });
     }
-
-    update({detail: params}) {
-        if (params.exclude) {
-            this.component.action('excludeCategories', { newId: params.id});
-        } else {
-            this.component.action('includeCategories', { newId: params.id});
-        }
+    
+    exclude({ detail }) {
+        this.component.action('excludeCategories', { newId: detail.id});
     }
+
+    include({ detail }) {
+        this.component.action('includeCategories', { newId: detail.id});
+    }
+
+    // update({detail: params}) {
+    //     console.log('Updating')
+    //     if (params.exclude) {
+    //         if (window.location.pathname != '/search') {
+    //             console.log('Not a /search path')
+    //             Turbo.visit('/search?cat=ex_' + params.id)
+    //         } else {
+    //             this.component.action('excludeCategories', { newId: params.id});
+    //         }
+    //     } else {
+    //         if (window.location.pathname != '/search') {
+    //             Turbo.visit('/search?cat=in_' + params.id)
+    //         } else {
+    //             this.component.action('includeCategories', { newId: params.id});
+    //         }
+    //     }
+    // }
 
 }

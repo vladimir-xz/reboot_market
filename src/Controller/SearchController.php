@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Repository\ProductRepository;
+use App\Service\CatalogHandler;
 use App\Service\MapAllRecords;
+use PhpParser\Node\Stmt\Break_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,8 +15,12 @@ use Psr\Log\LoggerInterface;
 
 final class SearchController extends AbstractController
 {
-    public function __construct(private LoggerInterface $logger, private ProductRepository $productRep, private MapAllRecords $mapAllRecords)
-    {
+    public function __construct(
+        private LoggerInterface $logger,
+        private ProductRepository $productRep,
+        private MapAllRecords $mapAllRecords,
+        private CatalogHandler $catHandler,
+    ) {
     }
 
     #[Route('/search', name: 'search')]
@@ -41,14 +47,60 @@ final class SearchController extends AbstractController
         $allProducts = $this->productRep->getAllWithSpecs();
         $filter = $this->mapAllRecords->mapRecords($allProducts);
 
+
+        if ($excludedCategories || $includedCategories) {
+            $allRecords = $this->productRep->getAllProductsWithCategoryAndFilters($query, $includedCategories, $excludedCategories, $filters);
+            $map = $this->mapAllRecords->mapRecords($allRecords, true);
+
+            $categories['active'] = $map['categories'] ?? [];
+            $categories['included'] = $includedCategories;
+            $categories['excluded'] = $excludedCategories;
+            $treeMap = $this->catHandler->prepareNewCatalogsForDrawing($categories);
+        }
+
         // TODO: change to count when mapping
         $maxNbPages = ceil(count($filter) / 12);
 
         return $this->render('search/index.html.twig', [
+            'query' => $query,
+            'included' => $includedCategories,
+            'excluded' => $excludedCategories,
             'filter' => $filter,
+            'treeMap' => $treeMap ?? [],
+            'activeFilters' => $filters,
             'maxNbPages' => $maxNbPages,
-            'categories' => $categories ?? [],
         ]);
+    }
+
+    #[Route('/_new_search', name: 'new_search')]
+    public function setNewQueryParam(Request $request)
+    {
+        $newCategory = $request->query->get('cat', null);
+        $query = $request->query->getString('q', '');
+        if ($newCategory) {
+            [$action, $id] = explode('_', $newCategory);
+            switch ($action) {
+                case 'rev':
+                    $result = $this->catHandler->revertCategories($id, [], []);
+                    break;
+                case 'ex':
+                    $result = $this->catHandler->excludeCategories($id, [], []);
+                    break;
+                case 'in':
+                    $result = $this->catHandler->includeCategories($id, [], []);
+                    break;
+                default:
+                    die();
+            }
+        }
+
+        $url = $this->generateUrl('search', [
+            'q' => $query,
+            'i' => $result['included'] ?? [],
+            'e' => $result['e'] ?? []
+        ]);
+
+        return $this->redirect($url);
     }
 
     #[Route('/_new_product_scroll', name: 'new_product_scroll')]
@@ -110,11 +162,7 @@ final class SearchController extends AbstractController
 
         $paginator = $this->productRep->getPaginatedValues($query, $includedCategories, $excludedCategories, $filters, $page);
         $maxNbPages = $paginator->getNbPages();
-        if ($page > $maxNbPages) {
-            $this->logger->info($maxNbPages);
-            $this->logger->info($page);
-            die();
-        }
+
         $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
         return $this->renderBlock('search/infiniteScroll.html.twig', 'scroll_block', ['paginator' => $paginator]);
     }

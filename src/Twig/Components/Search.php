@@ -24,6 +24,9 @@ final class Search
     #[LiveAction]
     public function searching()
     {
+        $this->dispatchBrowserEvent('search:checkPath', [
+            'query' => $this->query,
+        ]);
         $this->emit('receiveQuery', [
             'query' => $this->query,
         ]);

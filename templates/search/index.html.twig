@@ -1,3 +1,8 @@
+{% set hasIncluded = not included is empty   %}
+{% set hasExcluded = not excluded is empty   %}
+{% set hasFilters = not activeFilters is empty   %}
+
+
 {% extends 'layout.html.twig' %}
 
 {% block meta %}
@@ -8,7 +13,7 @@
 
     <div class="mx-8 mt-2" data-controller="filter" data-action="productFilters:remove@window->filter#removeAll product:updateFilters@window->filter#updateValidFilters">
         <div class="flex justify-between px-4 pb-2">
-            <twig:Labels />
+            <twig:Labels :query="query" :hasIncluded="hasIncluded" :hasExcluded="hasExcluded" :hasFilters="hasFilters"/>
 
             <button 
                 data-action="filter#toggle"
@@ -39,7 +44,7 @@
         </div>
     </div>
 
-        <twig:ProductSearch/>
+        <twig:ProductSearch :query="query" :includedCategories="included" :excludedCategories="excluded" :filters="activeFilters"/>
         {# <div
             data-controller='product-list' data-action="catalog:reset@window->product-list#resetPage catalog:load@window->product-list#loadingState" 
             data-product-list-page-value="{{ maxNbPages  }}" 

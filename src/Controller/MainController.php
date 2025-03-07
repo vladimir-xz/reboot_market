@@ -9,6 +9,7 @@ use App\Entity\MainCategory;
 use App\Repository\MainCategoryRepository;
 use App\Repository\ProductRepository;
 use App\Repository\CategoryRepository;
+use App\Service\CatalogHandler;
 use App\Service\MapAllRecords;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,15 +23,10 @@ class MainController extends AbstractController
     #[Route('/', name: 'homepage', methods: ['GET', 'HEAD'])]
     public function homepage(
         Request $request,
-        CatalogBuilder $builder,
+        CatalogHandler $builder,
         ProductRepository $productRepository,
-        MapAllRecords $mapAllRecords,
-        CategoryRepository $categoryRepository,
         LoggerInterface $logger
     ): Response {
-
-        $logger->info('normal load query');
-        $logger->info(print_r($request->query->all(), true));
         $allParams = $request->query->all();
         $page = $allParams['page'] ?? 1;
         $query = $allParams['q'] ?? '';
@@ -44,28 +40,12 @@ class MainController extends AbstractController
         }
         $brands = json_encode($brands);
 
-        $allRecords = $productRepository->getAllProductsWithCategoryAndFilters($query, $activeCategories, [], ['brand' => ['Dell' => 'Dell'], 'type' => ['server' => 'server']]);
-
-        $rawArr = $categoryRepository->getRawTree();
-        $result = $builder->build($rawArr);
-
-        $env = getenv('APP_ENV');
-
-        $tree = $result['catalog'];
-        $parents = $result['parents'];
-        $lastChildren = $result['lastChildren'];
         // $products = $productRepository->getPaginatedValues($query, $activeCategories, $page);
         // $productsNotPad = $productRepository->findByNameField($query, $activeCategories);
         // $categories = $productRepository->getCategoriesFromSearch($query, $activeCategories);
 
         return $this->render('homepage.html.twig', [
-            // 'notPaginated' => $productsNotPad,
-            'all' => $allRecords,
-            'env' => $env,
-            'categories' => [],
-            'parents' => json_encode($parents),
-            'tree' => json_encode($tree),
-            'lastChildren' => json_encode($lastChildren),
+            'treeMap' => [],
             'query' => $query,
             'page' => $page,
             'brands' => $brands
