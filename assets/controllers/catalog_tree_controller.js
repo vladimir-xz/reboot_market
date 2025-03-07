@@ -54,12 +54,13 @@ export default class extends Controller {
 
     onClick(event) {
         console.log(window.location.pathname)
+        console.log(event.target.parentElement.parentElement.id)
             if (event.target.tagName === 'P') {
                 // this.dispatch("load")
                 if (window.location.pathname != '/search') {
-                    Turbo.visit('/_new_search?cat=rev_' + event.target.parentElement.id)
+                    Turbo.visit('/_new_search?cat=rev_' + event.target.parentElement.parentElement.id)
                 } else {
-                    this.dispatch("revert", { detail: {id: event.target.parentElement.id }})
+                    this.dispatch("revert", { detail: {id: event.target.parentElement.parentElement.id }})
                 }
             } else {
                 const nextElement = event.target.nextElementSibling

@@ -86,6 +86,7 @@ final class SearchController extends AbstractController
         $query = $request->query->getString('q', '');
         if ($newCategory) {
             [$action, $id] = explode('_', $newCategory);
+            var_dump($id);
             switch ($action) {
                 case 'rev':
                     $result = $this->catHandler->revertCategories($id, [], []);
