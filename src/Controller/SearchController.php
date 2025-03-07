@@ -56,10 +56,11 @@ final class SearchController extends AbstractController
             $categories['included'] = $includedCategories;
             $categories['excluded'] = $excludedCategories;
             $treeMap = $this->catHandler->prepareNewCatalogsForDrawing($categories);
+            $maxNbPages = ceil(count($allRecords) / 12);
+        } else {
+            // TODO: change to count when mapping
+            $maxNbPages = ceil(count($allProducts) / 12);
         }
-
-        // TODO: change to count when mapping
-        $maxNbPages = ceil(count($filter) / 12);
 
         return $this->render('search/index.html.twig', [
             'query' => $query,
