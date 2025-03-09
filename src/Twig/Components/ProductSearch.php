@@ -94,6 +94,7 @@ class ProductSearch extends AbstractController
             ]);
         }
         $this->includedCategories = $newCategories['included'];
+        $this->logger->warning(print_r($newCategories['included'], true));
         if (empty($newCategories['excluded']) && $this->excludedCategories) {
             $this->emit('changeIfExcluded', [
                 'newValue' => false,
@@ -137,6 +138,7 @@ class ProductSearch extends AbstractController
 
     private function sendCategoriesForTree()
     {
+        $hydr = http_build_query(['i' => $this->includedCategories]);
         // TODO: refactor this when mapRecords return []
         $allRecords = $this->productRepository->getAllProductsWithCategoryAndFilters($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
         $map = $this->mapAllRecords->mapRecords($allRecords, true);
@@ -172,6 +174,7 @@ class ProductSearch extends AbstractController
     {
         $result = $this->catalogHandler->revertCategories($newId, $this->includedCategories, $this->excludedCategories);
 
+        $this->logger->info('Here we have a revert result: ' . print_r($result, true));
         $this->updateCategoriesAndLabels($result);
     }
 
@@ -194,5 +197,15 @@ class ProductSearch extends AbstractController
     public function getProducts()
     {
         return $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
+    }
+
+    public function hydrateCatalog(array $url)
+    {
+        return http_build_query(['i' => $url], '', '&', PHP_QUERY_RFC3986);
+    }
+
+    public function dehydrateCatalog($url)
+    {
+        return http_build_query(['i' => $url], '', '&', PHP_QUERY_RFC3986);
     }
 }

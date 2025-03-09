@@ -24,6 +24,7 @@ export default class extends Controller {
                     console.log('Max number: ', this.maxPages)
                     this.currentPage = this.currentPage + 1
                     console.log('Current page: ', this.currentPage)
+                    console.log(window.location.search)
                     const searchParams = new URLSearchParams(window.location.search)
                     searchParams.set("p", this.currentPage)
                     const url = "/_product_scroll?" + searchParams.toString()

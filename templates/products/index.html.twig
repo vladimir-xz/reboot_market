@@ -1,0 +1,29 @@
+{% extends 'layout.html.twig' %}
+
+{% block page_contents %}
+
+    <div class="flex">
+        <div class="w-3/4 ">
+            {%  for image in product.images   %}
+                <img class="" src="{{ asset(image.path) }}" alt="Image">
+            {%  endfor  %}
+        </div>
+        <div class="w-1/4">
+            <ul>
+                <li><h1>{{  product.name    }}</h1></li>
+                <li>{{  product.condition   }}</li>
+                <li>{{  product.length  }}</li>
+                {% for specification in product.specifications %}
+                <li>{{  specification.property  }}: {{  specification.value }}</li>
+                {%  endfor  %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="">
+        {{  product.description }}
+    </div>
+
+
+
+{% endblock %}

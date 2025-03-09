@@ -36,6 +36,19 @@ class ProductRepository extends ServiceEntityRepository
         ];
     }
 
+    public function findOneByIdJoinedToSpecificationsAndImages(int $productId): ?Product
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.specifications', "s")
+            ->leftJoin('p.images', "i")
+            ->select('p', 's', 'i')
+            ->andWhere('p.id = :val')
+            ->setParameter('val', $productId)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
     /**
     * @return Product[] Returns an array of Product objects
     */
@@ -95,6 +108,8 @@ class ProductRepository extends ServiceEntityRepository
     public function getPaginatedValues(string $query, array $catInclude, array $catExclude, array $filters, int $page, int $maxPerPage = 12): Pagerfanta
     {
         $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.images', 'i')
+            ->select('p', 'i')
             ->orderBy('p.id', 'ASC');
 
         if ($query !== '') {
