@@ -28,11 +28,12 @@ class ProductRepository extends ServiceEntityRepository
         $this->allowedFilters = [
             'Height' => 'Height',
             'Form-factor' => 'Form-factor',
+            'Generation' => 'Generation',
             'price' => 'price',
             'type' => 'type',
             'brand' => 'brand',
             'product' => ['brand', 'type', 'price'],
-            'specs' => ['Form-factor', 'Height']
+            'specs' => ['Form-factor', 'Height', 'Generation']
         ];
     }
 
@@ -42,7 +43,7 @@ class ProductRepository extends ServiceEntityRepository
             ->leftJoin('p.specifications', "s")
             ->leftJoin('p.images', "i")
             ->leftJoin('p.related', "r")
-            ->innerJoin('r.images', 'ri')
+            ->leftJoin('r.images', 'ri')
             ->select('p', 's', 'i', 'PARTIAL r.{id, name, price}', 'ri')
             ->andWhere('p.id = :val')
             ->setParameter('val', $productId)
@@ -178,7 +179,7 @@ class ProductRepository extends ServiceEntityRepository
 
         foreach ($filters as $key => $filterValues) {
             if (!array_key_exists($key, $this->allowedFilters)) {
-                throw new Exception('Not allowed key value');
+                throw new Exception('Not allowed key value - ' . $key);
             }
 
             if ($key === 'price') {

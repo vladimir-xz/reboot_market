@@ -14,40 +14,31 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $category1 = new Category();
-        $category2 = new Category();
         $category3 = new Category();
         $category4 = new Category();
         $category5 = new Category();
         $category1->setName('Servers');
-        $category2->setName('Storages');
         $category3->setName('Network Equipment');
         $category4->setName('Components');
         $category5->setName('Others');
         $manager->persist($category1);
-        $manager->persist($category2);
         $manager->persist($category3);
         $manager->persist($category4);
         $manager->persist($category5);
 
         $category6 = new Category();
         $category7 = new Category();
-        $category8 = new Category();
-        $category9 = new Category();
+
         $category10 = new Category();
         $category6->setName('Dell');
         $category7->setName('HP');
         $category1->addChild($category6);
         $category1->addChild($category7);
-        $category8->setName('Dell');
-        $category9->setName('HP');
-        $category2->addChild($category8);
-        $category2->addChild($category9);
         $category10->setName('Switches');
         $category3->addChild($category10);
         $manager->persist($category6);
         $manager->persist($category7);
-        $manager->persist($category8);
-        $manager->persist($category9);
+
         $manager->persist($category10);
 
 
@@ -88,10 +79,10 @@ class AppFixtures extends Fixture
         $category18 = new Category();
         $category19 = new Category();
         $category20 = new Category();
-        $category17->setName('2.5 FormFactor');
-        $category18->setName('3.5 FormFactor');
-        $category19->setName('2.5 FormFactor');
-        $category20->setName('3.5 FormFactor');
+        $category17->setName('1U');
+        $category18->setName('2U');
+        $category19->setName('1U');
+        $category20->setName('2U');
 
         $category6->addChild($category17);
         $category6->addChild($category18);
@@ -115,11 +106,19 @@ class AppFixtures extends Fixture
         $specification4 = new Specification();
         $specification4->setProperty('Height');
         $specification4->setValue('2U');
+        $specification5 = new Specification();
+        $specification5->setProperty('Generation');
+        $specification5->setValue('7');
+        $specification6 = new Specification();
+        $specification6->setProperty('Generation');
+        $specification6->setValue('8');
 
         $manager->persist($specification1);
         $manager->persist($specification2);
         $manager->persist($specification3);
         $manager->persist($specification4);
+        $manager->persist($specification5);
+        $manager->persist($specification6);
 
         $r620 = new Product();
         $image1 = new Image();
@@ -234,6 +233,7 @@ class AppFixtures extends Fixture
         $category19->addProduct($dl360_25);
         $dl360_25->addSpecification($specification1);
         $dl360_25->addSpecification($specification3);
+        $dl360_25->addSpecification($specification5);
         $dl360_25->setDescription('Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam in lorem sit amet leo accumsan lacinia. Aliquam id dolor. Integer lacinia. Curabitur vitae diam non enim vestibulum interdum. Aliquam in lorem sit amet leo accumsan lacinia. Maecenas lorem. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Aenean fermentum risus id tortor. Duis bibendum, lectus ut viverra rhoncus, dolor nunc faucibus libero, eget facilisis enim ipsum id lacus. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Nullam dapibus fermentum ipsum. Etiam posuere lacus quis dolor. Cras pede libero, dapibus nec, pretium sit amet, tempor quis. In enim a arcu imperdiet malesuada.
 
             Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Quisque tincidunt scelerisque libero. Aliquam ante. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Duis risus. Integer lacinia. Cras pede libero, dapibus nec, pretium sit amet, tempor quis. Maecenas aliquet accumsan leo. Nullam eget nisl. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Duis viverra diam non justo. Fusce tellus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Aliquam erat volutpat. Etiam dui sem, fermentum vitae, sagittis id, malesuada in, quam. Fusce suscipit libero eget elit.');
@@ -258,6 +258,7 @@ class AppFixtures extends Fixture
         $category19->addProduct($dl360_35);
         $dl360_35->addSpecification($specification1);
         $dl360_35->addSpecification($specification3);
+        $dl360_35->addSpecification($specification5);
         $dl360_35->setDescription('Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam in lorem sit amet leo accumsan lacinia. Aliquam id dolor. Integer lacinia. Curabitur vitae diam non enim vestibulum interdum. Aliquam in lorem sit amet leo accumsan lacinia. Maecenas lorem. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Aenean fermentum risus id tortor. Duis bibendum, lectus ut viverra rhoncus, dolor nunc faucibus libero, eget facilisis enim ipsum id lacus. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Nullam dapibus fermentum ipsum. Etiam posuere lacus quis dolor. Cras pede libero, dapibus nec, pretium sit amet, tempor quis. In enim a arcu imperdiet malesuada.
 
             Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Quisque tincidunt scelerisque libero. Aliquam ante. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Duis risus. Integer lacinia. Cras pede libero, dapibus nec, pretium sit amet, tempor quis. Maecenas aliquet accumsan leo. Nullam eget nisl. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Duis viverra diam non justo. Fusce tellus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Aliquam erat volutpat. Etiam dui sem, fermentum vitae, sagittis id, malesuada in, quam. Fusce suscipit libero eget elit.');
@@ -279,6 +280,7 @@ class AppFixtures extends Fixture
         $category19->addProduct($dl160);
         $dl160->addSpecification($specification1);
         $dl160->addSpecification($specification3);
+        $dl160->addSpecification($specification6);
         $dl160->setDescription('Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam in lorem sit amet leo accumsan lacinia. Aliquam id dolor. Integer lacinia. Curabitur vitae diam non enim vestibulum interdum. Aliquam in lorem sit amet leo accumsan lacinia. Maecenas lorem. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Aenean fermentum risus id tortor. Duis bibendum, lectus ut viverra rhoncus, dolor nunc faucibus libero, eget facilisis enim ipsum id lacus. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Nullam dapibus fermentum ipsum. Etiam posuere lacus quis dolor. Cras pede libero, dapibus nec, pretium sit amet, tempor quis. In enim a arcu imperdiet malesuada.
 
             Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Quisque tincidunt scelerisque libero. Aliquam ante. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Duis risus. Integer lacinia. Cras pede libero, dapibus nec, pretium sit amet, tempor quis. Maecenas aliquet accumsan leo. Nullam eget nisl. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Duis viverra diam non justo. Fusce tellus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Aliquam erat volutpat. Etiam dui sem, fermentum vitae, sagittis id, malesuada in, quam. Fusce suscipit libero eget elit.');
@@ -391,9 +393,9 @@ class AppFixtures extends Fixture
         $dl380->setWeight(mt_rand(1000, 1500));
         $dl380->setAmount(mt_rand(1, 10));
         $dl380->setBrand('HP');
-        $category19->addProduct($dl380);
+        $category20->addProduct($dl380);
         $dl380->addSpecification($specification1);
-        $dl380->addSpecification($specification3);
+        $dl380->addSpecification($specification4);
         $dl380->setDescription('Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam in lorem sit amet leo accumsan lacinia. Aliquam id dolor. Integer lacinia. Curabitur vitae diam non enim vestibulum interdum. Aliquam in lorem sit amet leo accumsan lacinia. Maecenas lorem. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Aenean fermentum risus id tortor. Duis bibendum, lectus ut viverra rhoncus, dolor nunc faucibus libero, eget facilisis enim ipsum id lacus. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Nullam dapibus fermentum ipsum. Etiam posuere lacus quis dolor. Cras pede libero, dapibus nec, pretium sit amet, tempor quis. In enim a arcu imperdiet malesuada.
 
             Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Quisque tincidunt scelerisque libero. Aliquam ante. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Duis risus. Integer lacinia. Cras pede libero, dapibus nec, pretium sit amet, tempor quis. Maecenas aliquet accumsan leo. Nullam eget nisl. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Duis viverra diam non justo. Fusce tellus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Aliquam erat volutpat. Etiam dui sem, fermentum vitae, sagittis id, malesuada in, quam. Fusce suscipit libero eget elit.');
