@@ -26,6 +26,4 @@ RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
 RUN php bin/console asset-map:compile
 
-RUN php bin/console doctrine:migrations:migrate
-
 CMD ["/start.sh"]
