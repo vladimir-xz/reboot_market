@@ -12,7 +12,7 @@ ENV RUN_SCRIPTS 1
 ENV REAL_IP_HEADER 1
 
 # Laravel config
-ENV APP_ENV dev
+ENV APP_ENV prod
 ENV APP_DEBUG true
 ENV LOG_CHANNEL stderr
 
@@ -28,4 +28,4 @@ RUN php bin/console asset-map:compile
 
 RUN php bin/console doctrine:migrations:migrate
 
-CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate", "/start.sh"]
+CMD ["/start.sh"]
