@@ -28,4 +28,4 @@ RUN php bin/console asset-map:compile
 
 RUN php bin/console doctrine:migrations:migrate
 
-CMD ["/start.sh"]
+CMD ["bash", "-c", "php bin/console doctrine:migrations:migrate", "/start.sh"]
