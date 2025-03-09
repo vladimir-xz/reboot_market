@@ -456,7 +456,7 @@ class AppFixtures extends Fixture
 
         $hdd1_2 = new Product();
         $image1 = new Image();
-        $image1->setPath('images/COMPONENTS/HDD/HDD.jpg');
+        $image1->setPath('images/COMPONENTS/HDD/HDD_12Tb.jpg');
         $hdd1_2->addImage($image1);
         $hdd1_2->setName('HDD ');
         $hdd1_2->setType('component');

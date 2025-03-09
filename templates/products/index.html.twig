@@ -2,7 +2,6 @@
 
 {% block page_contents %}
 
-    {{  dump(product)   }}
     <div class="flex gap-4">
         <div class="w-1/2 ">
             <div class="">
@@ -24,12 +23,17 @@
                 {%  endfor  %}
                 <li>Available: {{   product.getAmount   }} pieces. </li>
             </ul>
+            <h3>Related products:</h3>
             <div class="flex gap-4">
                 {%  for recomended in product.related   %}
                     <div class="w-40">
-                        <img src="{{ asset(recomended.firstImagePath) }}" alt="">
-                        <p>{{   recomended.name   }}</p>
-                        <p>{{   recomended.price    }}</p>
+                        <a href="{{ path('product.index', {id: recomended.id}) }}">
+                            <img src="{{ asset(recomended.firstImagePath) }}" alt="">
+                        </a>
+                        <a href="{{ path('product.index', {id: recomended.id}) }}">
+                            <p>{{   recomended.name   }}</p>
+                        </a>
+                        <p>{{   recomended.price    }} $</p>
                     </div>
                 {%  endfor  %}
             </div>
