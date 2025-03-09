@@ -2,21 +2,37 @@
 
 {% block page_contents %}
 
-    <div class="flex">
-        <div class="w-3/4 ">
-            {%  for image in product.images   %}
-                <img class="" src="{{ asset(image.path) }}" alt="Image">
-            {%  endfor  %}
+    {{  dump(product)   }}
+    <div class="flex gap-4">
+        <div class="w-1/2 ">
+            <div class="">
+                <img class="" src="{{ asset(product.firstImagePath) }}" alt="Main image">
+            </div>
+            <div class="flex justify-center mt-4">
+                {%  for image in product.images   %}
+                    <img class="w-24" src="{{ asset(image.path) }}" alt="Image">
+                {%  endfor  %}
+            </div>
         </div>
-        <div class="w-1/4">
-            <ul>
-                <li><h1>{{  product.name    }}</h1></li>
+        <div class="w-1/2">
+            <ul class="leading-10">
+                <li><h1 class="font-bold">{{  product.name    }}</h1></li>
                 <li>{{  product.condition   }}</li>
                 <li>{{  product.length  }}</li>
                 {% for specification in product.specifications %}
                 <li>{{  specification.property  }}: {{  specification.value }}</li>
                 {%  endfor  %}
+                <li>Available: {{   product.getAmount   }} pieces. </li>
             </ul>
+            <div class="flex gap-4">
+                {%  for recomended in product.related   %}
+                    <div class="w-40">
+                        <img src="{{ asset(recomended.firstImagePath) }}" alt="">
+                        <p>{{   recomended.name   }}</p>
+                        <p>{{   recomended.price    }}</p>
+                    </div>
+                {%  endfor  %}
+            </div>
         </div>
     </div>
 

@@ -59,10 +59,17 @@ class Product
     #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'product')]
     private Collection $images;
 
+    /**
+     * @var Collection<int, self>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class)]
+    private Collection $related;
+
     public function __construct()
     {
         $this->specifications = new ArrayCollection();
         $this->images = new ArrayCollection();
+        $this->related = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -248,6 +255,30 @@ class Product
                 $image->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getRelated(): Collection
+    {
+        return $this->related;
+    }
+
+    public function addRelated(self $related): static
+    {
+        if (!$this->related->contains($related)) {
+            $this->related->add($related);
+        }
+
+        return $this;
+    }
+
+    public function removeRelated(self $related): static
+    {
+        $this->related->removeElement($related);
 
         return $this;
     }
