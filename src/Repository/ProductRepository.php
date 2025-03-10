@@ -37,14 +37,15 @@ class ProductRepository extends ServiceEntityRepository
         ];
     }
 
-    public function findOneByIdJoinedToSpecificationsAndImages(int $productId): ?Product
+    public function findOneByIdJoinedToAllRelatedTables(int $productId): ?Product
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.specifications', "s")
             ->leftJoin('p.images', "i")
             ->leftJoin('p.related', "r")
             ->leftJoin('r.images', 'ri')
-            ->select('p', 's', 'i', 'PARTIAL r.{id, name, price}', 'ri')
+            ->leftJoin('p.description', "d")
+            ->select('p', 's', 'i', 'PARTIAL r.{id, name, price}', 'ri', 'd')
             ->andWhere('p.id = :val')
             ->setParameter('val', $productId)
             ->getQuery()
@@ -112,7 +113,8 @@ class ProductRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.images', 'i')
-            ->select('p', 'i')
+            ->leftJoin('p.description', 'd')
+            ->select('p', 'd', 'i')
             ->orderBy('p.id', 'ASC');
 
         if ($query !== '') {
@@ -145,10 +147,28 @@ class ProductRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.specifications', 's')
-            ->addSelect('s')
+            ->leftJoin('p.description', 'd')
+            ->addSelect('s', 'd')
             ->getQuery()
             ->getResult()
         ;
+    }
+
+    public function getRecentlyAdded(int $maxResult = 10)
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.images', "i")
+            ->leftJoin('p.description', "d")
+            ->select('p', 'i', 'd')
+            ->orderBy('p.createdAt', 'DESC')
+        ;
+
+        $adapter = new QueryAdapter($qb);
+        $pagerfanta = new Pagerfanta($adapter);
+
+        $pagerfanta->setMaxPerPage($maxResult);
+
+        return $pagerfanta;
     }
 
     private function addQuerySearch(QueryBuilder $qb, string $query): QueryBuilder

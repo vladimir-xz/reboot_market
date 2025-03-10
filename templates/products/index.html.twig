@@ -5,7 +5,7 @@
     <div class="flex gap-4">
         <div class="w-1/2 ">
             <div class="">
-                <img class="" src="{{ asset(product.firstImagePath) }}" alt="Main image">
+                <img class="" src="{{ asset(product.mainImagePath) }}" alt="Main image">
             </div>
             <div class="flex justify-center mt-4">
                 {%  for image in product.images   %}
@@ -28,7 +28,7 @@
                 {%  for recomended in product.related   %}
                     <div class="w-40">
                         <a href="{{ path('product.index', {id: recomended.id}) }}">
-                            <img src="{{ asset(recomended.firstImagePath) }}" alt="">
+                            <img src="{{ asset(recomended.mainImagePath) }}" alt="">
                         </a>
                         <a href="{{ path('product.index', {id: recomended.id}) }}">
                             <p>{{   recomended.name   }}</p>
@@ -41,7 +41,7 @@
     </div>
 
     <div class="">
-        {{  product.description }}
+        {{  product.description.text }}
     </div>
 
 

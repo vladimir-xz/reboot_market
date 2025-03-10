@@ -1,0 +1,9 @@
+<div{{ attributes }} >
+    <!-- component html -->
+    <h2>Recently added products:</h2>
+    <div class="flex flex-nowrap overflow-hidden gap-4 mt-4">
+        {%  for card in cards.currentPageResults  %} 
+            <twig:Card :product="card"/>
+        {%  endfor  %}
+    </div>
+</div>

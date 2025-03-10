@@ -20,6 +20,9 @@ class Image
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
+    #[ORM\Column(options: ["default" => false])]
+    private ?bool $isMain = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,6 +48,18 @@ class Image
     public function setProduct(?Product $product): static
     {
         $this->product = $product;
+
+        return $this;
+    }
+
+    public function isMain(): ?bool
+    {
+        return $this->isMain;
+    }
+
+    public function setIsMain(bool $isMain): static
+    {
+        $this->isMain = $isMain;
 
         return $this;
     }

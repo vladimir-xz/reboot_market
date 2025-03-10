@@ -13,7 +13,7 @@ class ProductController extends AbstractController
     public function index(int $id, ProductRepository $repository): Response
     {
 
-        $product = $repository->findOneByIdJoinedToSpecificationsAndImages($id);
+        $product = $repository->findOneByIdJoinedToAllRelatedTables($id);
 
         if (!$product) {
             throw $this->createNotFoundException('The product does not exist');

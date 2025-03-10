@@ -40,6 +40,8 @@ class MainController extends AbstractController
         }
         $brands = json_encode($brands);
 
+        $recentlyAdded = $productRepository->getRecentlyAdded();
+
         // $products = $productRepository->getPaginatedValues($query, $activeCategories, $page);
         // $productsNotPad = $productRepository->findByNameField($query, $activeCategories);
         // $categories = $productRepository->getCategoriesFromSearch($query, $activeCategories);
@@ -48,7 +50,8 @@ class MainController extends AbstractController
             'treeMap' => [],
             'query' => $query,
             'page' => $page,
-            'brands' => $brands
+            'brands' => $brands,
+            'recents' => $recentlyAdded,
             // 'array' => $array,
         ]);
     }

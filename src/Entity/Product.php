@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Product
 {
     #[ORM\Id]
@@ -33,9 +34,6 @@ class Product
 
     #[ORM\Column]
     private ?int $amount = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
@@ -65,11 +63,43 @@ class Product
     #[ORM\ManyToMany(targetEntity: self::class)]
     private Collection $related;
 
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    #[ORM\OneToOne(mappedBy: 'product', cascade: ['persist', 'remove'])]
+    private ?ProductDescription $description = null;
+
     public function __construct()
     {
         $this->specifications = new ArrayCollection();
         $this->images = new ArrayCollection();
         $this->related = new ArrayCollection();
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -149,18 +179,6 @@ class Product
         return $this;
     }
 
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
     public function getCategory(): ?Category
     {
         return $this->category;
@@ -212,12 +230,12 @@ class Product
         return $this;
     }
 
-    public function getbrand(): ?string
+    public function getBrand(): ?string
     {
         return $this->brand;
     }
 
-    public function setbrand(string $brand): static
+    public function setBrand(string $brand): static
     {
         $this->brand = $brand;
 
@@ -232,8 +250,14 @@ class Product
         return $this->images;
     }
 
-    public function getFirstImagePath(): string
+    public function getMainImagePath(): string
     {
+        foreach ($this->images as $image) {
+            if ($image->isMain()) {
+                return $image->getPath();
+            }
+        }
+
         return $this->images[0]->getPath();
     }
 
@@ -279,6 +303,23 @@ class Product
     public function removeRelated(self $related): static
     {
         $this->related->removeElement($related);
+
+        return $this;
+    }
+
+    public function getDescription(): ?ProductDescription
+    {
+        return $this->description;
+    }
+
+    public function setDescription(ProductDescription $description): static
+    {
+        // set the owning side of the relation if necessary
+        if ($description->getProduct() !== $this) {
+            $description->setProduct($this);
+        }
+
+        $this->description = $description;
 
         return $this;
     }
