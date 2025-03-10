@@ -14,7 +14,7 @@ class MapAllRecords
     public function mapRecords(array $records, bool $ifWithCategories = false)
     {
         if (empty($records)) {
-            return [];
+            return ['categories' => []];
         }
 
         $logger = $this->logger;

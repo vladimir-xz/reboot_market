@@ -291,7 +291,7 @@ class AppFixtures extends Fixture
         $image1 = new Image();
         $image2 = new Image();
         $image1->setPath('images/NETWORK/CISCO/ASA5515_FRONT.jpg');
-        $image2->setPath('images/SERVERS/HP/ASA5515_BACK.jpg');
+        $image2->setPath('images/NETWORK/CISCO/ASA5515_BACK.jpg');
         $asa5515->addImage($image1);
         $asa5515->addImage($image2);
         $asa5515->setName('Cisco ASA5515 ');
@@ -384,10 +384,10 @@ class AppFixtures extends Fixture
 
         $dl380 = new Product();
         $image1 = new Image();
-        $image1->setPath('images/STORAGES/HP/DL380_G7_FRONT.jpg');
+        $image1->setPath('images/SERVERS/HP/DL380_G7_FRONT.jpg');
         $dl380->addImage($image1);
         $dl380->setName('ProLiant HP DL380 G7 ');
-        $dl380->setType('storage');
+        $dl380->setType('server');
         $dl380->setCondition('used');
         $dl380->setPrice(mt_rand(10, 100));
         $dl380->setWeight(mt_rand(1000, 1500));

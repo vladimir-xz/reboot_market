@@ -126,9 +126,10 @@ class ProductSearch extends AbstractController
             $this->filters[$filterKey][$newValue] = $newValue;
         }
 
-        if ($wasEmpty == $this->filters) {
+        $ifNowEpty = empty($this->filters);
+        if ($wasEmpty !== $ifNowEpty) {
             $this->emit('makeFiltered', [
-                'newValue' => empty($this->filters),
+                'newValue' => !$ifNowEpty,
             ]);
         }
 
