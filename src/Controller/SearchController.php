@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\ProductRepository;
 use App\Service\CatalogHandler;
 use App\Service\MapAllRecords;
+use Exception;
 use PhpParser\Node\Stmt\Break_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,19 +49,9 @@ final class SearchController extends AbstractController
 
         if ($query || $excludedCategories || $includedCategories) {
             $allRecords = $this->productRep->getAllProductsWithCategoryAndFilters($query, $includedCategories, $excludedCategories, $filters);
-            $map = $this->mapAllRecords->mapRecords($allRecords, true);
-
-            if ($includedCategories) {
-                $categories['active'] = $map['categories'] ?? [];
-                $categories['included'] = $includedCategories;
-                $categories['excluded'] = $excludedCategories;
-            } else {
-                $categories['neutral'] = $map['categories'] ?? [];
-                $categories['excluded'] = $excludedCategories;
-            }
-
-            $treeMap = $this->catHandler->prepareNewCatalogsForDrawing($categories);
-            $maxNbPages = ceil(count($allRecords) / 12);
+            $count = count($allRecords) === 0 ? 1 : count($allRecords);
+            $maxNbPages = ceil($count / 12);
+            $result = $this->catHandler->prepareNewCatalogsForDrawing($allRecords, $includedCategories, $excludedCategories,);
         } else {
             // TODO: change to count when mapping
             $maxNbPages = ceil(count($allProducts) / 12);
@@ -71,7 +62,8 @@ final class SearchController extends AbstractController
             'included' => $includedCategories,
             'excluded' => $excludedCategories,
             'filter' => $filter,
-            'treeMap' => $treeMap ?? [],
+            'treeMap' => $result['mappedCatalogs'] ?? [],
+            'recordsMap' => $result['mappedRecords'] ?? [],
             'activeFilters' => $filters,
             'maxNbPages' => $maxNbPages,
         ]);
@@ -84,7 +76,6 @@ final class SearchController extends AbstractController
         $query = $request->query->getString('q', '');
         if ($newCategory) {
             [$action, $id] = explode('_', $newCategory);
-            var_dump($id);
             switch ($action) {
                 case 'rev':
                     $result = $this->catHandler->revertCategories($id, [], []);
@@ -96,17 +87,16 @@ final class SearchController extends AbstractController
                     $result = $this->catHandler->includeCategories($id, [], []);
                     break;
                 default:
-                    die();
+                    throw new Exception('Unknown action to handle the catalog');
             }
         }
 
-        $url = $this->generateUrl('search', [
-            'q' => $query,
-            'i' => $result['included'] ?? [],
-            'e' => $result['e'] ?? []
-        ]);
+        $decodedArray = urldecode(http_build_query($result));
 
-        return $this->redirect($url);
+
+        $url = $this->generateUrl('search');
+
+        return $this->redirect($url . '?q=' . $query . '&' . $decodedArray);
     }
 
     #[Route('/_new_product_scroll', name: 'new_product_scroll')]

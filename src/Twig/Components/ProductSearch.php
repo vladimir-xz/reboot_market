@@ -45,7 +45,6 @@ class ProductSearch extends AbstractController
 
     public function __construct(
         private ProductRepository $productRepository,
-        private MapAllRecords $mapAllRecords,
         private LoggerInterface $logger,
         private CatalogHandler $catalogHandler,
     ) {
@@ -84,27 +83,27 @@ class ProductSearch extends AbstractController
 
     public function updateCategoriesAndLabels(array $newCategories)
     {
-        if (empty($newCategories['included']) && $this->includedCategories) {
+        if (empty($newCategories['i']) && $this->includedCategories) {
             $this->emit('changeIfIncluded', [
                 'newValue' => false,
             ]);
-        } elseif ($newCategories['included'] && empty($this->includedCategories)) {
+        } elseif ($newCategories['i'] && empty($this->includedCategories)) {
             $this->emit('changeIfIncluded', [
                 'newValue' => true,
             ]);
         }
-        $this->includedCategories = $newCategories['included'];
-        $this->logger->warning(print_r($newCategories['included'], true));
-        if (empty($newCategories['excluded']) && $this->excludedCategories) {
+        $this->includedCategories = $newCategories['i'];
+        $this->logger->warning(print_r($newCategories['i'], true));
+        if (empty($newCategories['e']) && $this->excludedCategories) {
             $this->emit('changeIfExcluded', [
                 'newValue' => false,
             ]);
-        } elseif ($newCategories['excluded'] && empty($this->excludedCategories)) {
+        } elseif ($newCategories['e'] && empty($this->excludedCategories)) {
             $this->emit('changeIfExcluded', [
                 'newValue' => true,
             ]);
         }
-        $this->excludedCategories = $newCategories['excluded'];
+        $this->excludedCategories = $newCategories['e'];
 
         $this->sendCategoriesForTree();
     }
@@ -138,31 +137,19 @@ class ProductSearch extends AbstractController
 
     private function sendCategoriesForTree()
     {
-        $hydr = http_build_query(['i' => $this->includedCategories]);
         // TODO: refactor this when mapRecords return []
         $allRecords = $this->productRepository->getAllProductsWithCategoryAndFilters($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
-        $map = $this->mapAllRecords->mapRecords($allRecords, true);
-
-        if ($this->includedCategories) {
-            $categories['active'] = $map['categories'] ?? [];
-            $categories['included'] = $this->includedCategories;
-            $categories['excluded'] = $this->excludedCategories;
-        } else {
-            $categories['neutral'] = $map['categories'] ?? [];
-            $categories['excluded'] = $this->excludedCategories;
-        }
-        $count = $map['count'] ?? 1;
+        $count = count($allRecords) === 0 ? 1 : count($allRecords);
         $maxNbPages = ceil($count / 12);
 
-
-        $treeMap = $this->catalogHandler->prepareNewCatalogsForDrawing($categories);
+        $result = $this->catalogHandler->prepareNewCatalogsForDrawing($allRecords, $this->includedCategories, $this->excludedCategories);
 
         $this->dispatchBrowserEvent('catalog:renew', [
-            'treeMap' => $treeMap,
+            'treeMap' => $result['mappedCatalogs'],
         ]);
 
         $this->dispatchBrowserEvent('product:updateFilters', [
-            'filters' => $map
+            'filters' => $result['mappedRecords']
         ]);
 
         // TODO: assign explicitly the perPage amount

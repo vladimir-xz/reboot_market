@@ -5,6 +5,7 @@ namespace App\Service;
 use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
 use App\Repository\CategoryRepository;
+use App\Service\MapAllRecords;
 
 class CatalogHandler
 {
@@ -12,7 +13,7 @@ class CatalogHandler
     private array $children;
     private array $parents;
 
-    public function __construct(private LoggerInterface $loggerInterface, CategoryRepository $categoryRepository,)
+    public function __construct(private LoggerInterface $loggerInterface, private MapAllRecords $mapAllRecords, CategoryRepository $categoryRepository,)
     {
         $rawArr = $categoryRepository->getRawTree();
         // $tree = '{"1":{"parent_id":null,"name":"Servers","id":1,"children":[{"parent_id":1,"name":"Dell","id":6,"children":[{"parent_id":6,"name":"2.5 FormFactor","id":17},{"parent_id":6,"name":"3.5 FormFactor","id":18}]},{"parent_id":1,"name":"HP","id":7,"children":[{"parent_id":7,"name":"2.5 FormFactor","id":19},{"parent_id":7,"name":"3.5 FormFactor","id":20}]}]},"2":{"parent_id":null,"name":"Storage","id":2,"children":[{"parent_id":2,"name":"Dell","id":8},{"parent_id":2,"name":"HP","id":9}]},"3":{"parent_id":null,"name":"Network Equipment","id":3,"children":[{"parent_id":3,"name":"Switches","id":10}]},"4":{"parent_id":null,"name":"Components","id":4,"children":[{"parent_id":4,"name":"RAM","id":11},{"parent_id":4,"name":"CPUs (Processors)","id":12},{"parent_id":4,"name":"Drives","id":13},{"parent_id":4,"name":"Network cards","id":14},{"parent_id":4,"name":"Power supplies","id":15}]},"5":{"parent_id":null,"name":"Others","id":5,"children":[{"parent_id":5,"name":"Racks","id":16}]}}';
@@ -127,15 +128,15 @@ class CatalogHandler
         $ifRevertExclude = array_diff_key($lastNodes, $lastNodesExcluded) === [];
 
         if ($ifRevertExclude) {
-            $result['excluded'] = array_diff_key($lastNodesExcluded, $lastNodes);
-            $result['included'] = $lastNodesChosen;
+            $result['e'] = array_diff_key($lastNodesExcluded, $lastNodes);
+            $result['i'] = $lastNodesChosen;
         } elseif ($ifAnyExistInActive) {
-            $result['included'] = array_diff_key($lastNodesChosen, $lastNodes);
-            $result['excluded'] = $lastNodesExcluded;
+            $result['i'] = array_diff_key($lastNodesChosen, $lastNodes);
+            $result['e'] = $lastNodesExcluded;
         } else {
             $choosenWithoutExcluded = array_diff_key($lastNodes, $lastNodesExcluded);
-            $result['included'] = $choosenWithoutExcluded + $lastNodesChosen;
-            $result['excluded'] = $lastNodesExcluded;
+            $result['i'] = $choosenWithoutExcluded + $lastNodesChosen;
+            $result['e'] = $lastNodesExcluded;
         }
 
         return $result;
@@ -149,11 +150,11 @@ class CatalogHandler
         $ifRevertExclude = array_diff_key($lastNodes, $lastNodesExcluded) === [];
 
         if ($ifRevertExclude) {
-            $result['excluded'] = array_diff_key($lastNodesExcluded, $lastNodes);
-            $result['included'] = $lastNodesChosen;
+            $result['e'] = array_diff_key($lastNodesExcluded, $lastNodes);
+            $result['i'] = $lastNodesChosen;
         } else {
-            $result['excluded'] = $lastNodes + $lastNodesExcluded;
-            $result['included'] = array_diff_key($lastNodesChosen, $lastNodes);
+            $result['e'] = $lastNodes + $lastNodesExcluded;
+            $result['i'] = array_diff_key($lastNodesChosen, $lastNodes);
         }
 
         return $result;
@@ -168,22 +169,39 @@ class CatalogHandler
         $ifAllExistInActive = !$collection->exists(fn($key, $value) => !array_key_exists($key, $lastNodesChosen));
 
         if ($ifAllExistInActive) {
-            $result['included'] = array_diff_key($lastNodesChosen, $lastNodes);
-            $result['excluded'] = $lastNodesExcluded;
+            // included categories
+            $result['i'] = array_diff_key($lastNodesChosen, $lastNodes);
+            // excluded categories
+            $result['e'] = $lastNodesExcluded;
         } else {
-            $result['excluded'] = array_diff_key($lastNodesExcluded, $lastNodes);
-            $result['included'] = $lastNodesChosen + $lastNodes;
+            $result['e'] = array_diff_key($lastNodesExcluded, $lastNodes);
+            $result['i'] = $lastNodesChosen + $lastNodes;
         }
 
         return $result;
     }
 
-    public function prepareNewCatalogsForDrawing(array $newCatalogs)
+    public function prepareNewCatalogsForDrawing(array $allRecords, array $includedCategories, array $excludedCategories)
     {
-        $activeCategories = $this->buildMapWithStatusesFromLastNodes($newCatalogs['active'] ?? [], 'active');
-        $includedCategories = $this->buildMapWithStatusesFromLastNodes($newCatalogs['included'] ?? [], 'included');
-        $excludedCategories = $this->buildMapWithStatusesFromLastNodes($newCatalogs['excluded'] ?? [], 'excluded');
-        $neutralCategories = $this->buildMapWithStatusesFromLastNodes($newCatalogs['neutral'] ?? [], 'neutral');
+        $mappedRecords = $this->mapAllRecords->mapRecords($allRecords, true);
+
+        if ($includedCategories) {
+            $onlyIncluded = array_diff_key($includedCategories, $mappedRecords['categories']);
+            $activeCategories = $this->buildMapWithStatusesFromLastNodes($mappedRecords['categories'], 'active');
+            $includedCategories = $this->buildMapWithStatusesFromLastNodes($onlyIncluded, 'included');
+            $excludedCategories = $this->buildMapWithStatusesFromLastNodes($excludedCategories, 'excluded');
+
+            $mappedCatalogRecords = $activeCategories + $excludedCategories + $includedCategories;
+        } else {
+            // neutral
+            $neutralCategories = $this->buildMapWithStatusesFromLastNodes($mappedRecords['categories'], 'neutral');
+            $excludedCategories = $this->buildMapWithStatusesFromLastNodes($excludedCategories, 'excluded');
+
+            $mappedCatalogRecords = $neutralCategories + $excludedCategories;
+        }
+
+        return ['mappedCatalogs' => $mappedCatalogRecords, 'mappedRecords' => $mappedRecords];
+
         // $activeCollection = new ArrayCollection($newCatalogs['active'] ?? []);
         // $activeCategories = $activeCollection->reduce(fn($acc, $index) => $acc + $this->parents[$index], []);
 
@@ -197,8 +215,6 @@ class CatalogHandler
 
         // $neutralCollection = new ArrayCollection($newCatalogs['neutral'] ?? []);
         // $neutralCategories = $neutralCollection->reduce(fn($acc, $index) => $acc + $this->parents[$index], []);
-
-        return $activeCategories + $excludedCategories + $includedCategories + $neutralCategories;
     }
 
     public function getAllChildrenOfNode(int $id)
