@@ -316,7 +316,6 @@ class AppFixtures extends Fixture
         $image1 = new Image();
         $image1->setPath('images/NETWORK/LINE_CARDS/EX8200-8XS.jpg');
         $lineEx82->addImage($image1);
-        $lineEx82->addImage($image2);
         $lineEx82->setName('Juniper EX8200-8XS ');
         $lineEx82->setType('network equipment');
         $lineEx82->setCondition('used');
