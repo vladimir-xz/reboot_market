@@ -28,16 +28,19 @@ class AppFixtures extends Fixture
 
         $category6 = new Category();
         $category7 = new Category();
-
+        $category8 = new Category();
         $category10 = new Category();
         $category6->setName('Dell');
         $category7->setName('HP');
         $category1->addChild($category6);
         $category1->addChild($category7);
+        $category8->setName('Line cards');
         $category10->setName('Switches');
+        $category3->addChild($category8);
         $category3->addChild($category10);
         $manager->persist($category6);
         $manager->persist($category7);
+        $manager->persist($category8);
 
         $manager->persist($category10);
 
@@ -290,8 +293,8 @@ class AppFixtures extends Fixture
         $asa5515 = new Product();
         $image1 = new Image();
         $image2 = new Image();
-        $image1->setPath('images/NETWORK/CISCO/ASA5515_FRONT.jpg');
-        $image2->setPath('images/NETWORK/CISCO/ASA5515_BACK.jpg');
+        $image1->setPath('images/NETWORK/SWITCHES/ASA5515_FRONT.jpg');
+        $image2->setPath('images/NETWORK/SWITCHES/ASA5515_BACK.jpg');
         $asa5515->addImage($image1);
         $asa5515->addImage($image2);
         $asa5515->setName('Cisco ASA5515 ');
@@ -306,6 +309,26 @@ class AppFixtures extends Fixture
 
             Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Quisque tincidunt scelerisque libero. Aliquam ante. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Duis risus. Integer lacinia. Cras pede libero, dapibus nec, pretium sit amet, tempor quis. Maecenas aliquet accumsan leo. Nullam eget nisl. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Duis viverra diam non justo. Fusce tellus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Aliquam erat volutpat. Etiam dui sem, fermentum vitae, sagittis id, malesuada in, quam. Fusce suscipit libero eget elit.');
         $manager->persist($asa5515);
+        $manager->persist($image1);
+        $manager->persist($image2);
+
+        $lineEx82 = new Product();
+        $image1 = new Image();
+        $image1->setPath('images/NETWORK/LINE_CARDS/EX8200-8XS.jpg');
+        $lineEx82->addImage($image1);
+        $lineEx82->addImage($image2);
+        $lineEx82->setName('Juniper EX8200-8XS ');
+        $lineEx82->setType('network equipment');
+        $lineEx82->setCondition('used');
+        $lineEx82->setPrice(mt_rand(10, 100));
+        $lineEx82->setWeight(mt_rand(100, 1000));
+        $lineEx82->setAmount(mt_rand(1, 10));
+        $lineEx82->setBrand('Juniper');
+        $category8->addProduct($lineEx82);
+        $lineEx82->setDescription('Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam in lorem sit amet leo accumsan lacinia. Aliquam id dolor. Integer lacinia. Curabitur vitae diam non enim vestibulum interdum. Aliquam in lorem sit amet leo accumsan lacinia. Maecenas lorem. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Aenean fermentum risus id tortor. Duis bibendum, lectus ut viverra rhoncus, dolor nunc faucibus libero, eget facilisis enim ipsum id lacus. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Nullam dapibus fermentum ipsum. Etiam posuere lacus quis dolor. Cras pede libero, dapibus nec, pretium sit amet, tempor quis. In enim a arcu imperdiet malesuada.
+
+            Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Quisque tincidunt scelerisque libero. Aliquam ante. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Duis risus. Integer lacinia. Cras pede libero, dapibus nec, pretium sit amet, tempor quis. Maecenas aliquet accumsan leo. Nullam eget nisl. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Duis viverra diam non justo. Fusce tellus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Aliquam erat volutpat. Etiam dui sem, fermentum vitae, sagittis id, malesuada in, quam. Fusce suscipit libero eget elit.');
+        $manager->persist($lineEx82);
         $manager->persist($image1);
         $manager->persist($image2);
 
