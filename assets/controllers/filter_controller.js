@@ -43,7 +43,7 @@ export default class extends Controller {
             const elementId = element.id
             const parentModel = element.parentElement.parentElement.dataset.model
             element.nextElementSibling.classList.remove("filter_active", "filter_passive")
-            if (elementId in filters[parentModel]) {
+            if (filters.hasOwnProperty(parentModel) && elementId in filters[parentModel]) {
                 element.nextElementSibling.classList.add('filter_active')
 
             } else {

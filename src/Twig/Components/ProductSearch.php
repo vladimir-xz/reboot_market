@@ -142,6 +142,7 @@ class ProductSearch extends AbstractController
         $count = count($allRecords) === 0 ? 1 : count($allRecords);
         $maxNbPages = ceil($count / 12);
 
+        $this->maxNbPages = $maxNbPages;
         $result = $this->catalogHandler->prepareNewCatalogsForDrawing($allRecords, $this->includedCategories, $this->excludedCategories);
 
         $this->dispatchBrowserEvent('catalog:renew', [

@@ -11,7 +11,7 @@ class MapAllRecords
     {
     }
 
-    public function mapRecords(array $records, bool $ifWithCategoriesAndCount = false)
+    public function mapRecords(array $records, bool $ifWithCategories = false)
     {
         if (empty($records)) {
             return [];
@@ -19,7 +19,7 @@ class MapAllRecords
 
         $logger = $this->logger;
         $collection = new ArrayCollection($records);
-        $result = $collection->reduce(function (array $accumulator, $record) use ($ifWithCategoriesAndCount, $logger) {
+        $result = $collection->reduce(function (array $accumulator, $record) use ($ifWithCategories) {
             $company = $record->getBrand();
             $price = $record->getPrice();
             $type = $record->getType();
@@ -44,12 +44,9 @@ class MapAllRecords
                 $accumulator[$property][$propValue] = $propValue;
             }
 
-            if ($ifWithCategoriesAndCount) {
-                $count = $accumulator['count'] ?? 0;
+            if ($ifWithCategories) {
                 $categoryId = $record->getCategory()->getId();
                 $accumulator['categories'][$categoryId] = $categoryId;
-                $count++;
-                $accumulator['count'] = $count;
             }
 
             return $accumulator;
