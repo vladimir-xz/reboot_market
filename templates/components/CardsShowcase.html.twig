@@ -1,9 +1,20 @@
 <div    {{ attributes.defaults(stimulus_controller('cards-showcase')) }}>
     <!-- component html -->
     <h2>Recently added products:</h2>
-    <div class="flex flex-nowrap overflow-hidden gap-4 mt-4">
-        {%  for card in cards.currentPageResults  %} 
-            <twig:Card :product="card"/>
-        {%  endfor  %}
+    <div class="flex justify-between items-center relative">
+        {# <div class="icon">
+            <div class="arrow"></div>
+          </div> #}
+        <div class="absolute w-12 h-9 left-0">
+            <div class="arrow arrow_right h-1.5 bg-teal-900 shadow-md relative w-11/12"></div>
+          </div>
+        <div class="flex flex-nowrap overflow-hidden gap-4 mt-4 items-center w-5/6 ml-16">
+            {%  for card in cards.currentPageResults  %} 
+                <twig:Card :product="card"/>
+            {%  endfor  %}
+        </div>
+        <div class="absolute w-12 h-9 right-0">
+            <div class="arrow arrow_left h-1.5 bg-teal-900 shadow-md relative w-11/12"></div>
+        </div>
     </div>
 </div>

@@ -178,6 +178,47 @@
       vertical-align: middle; 
     }
 
+    .icon {
+      position: absolute;
+      top: 50%;
+      left: 0%; 
+      @apply w-20 h-16;
+      cursor: pointer;
+    }
+
+    .arrow::after, .arrow::before {
+      content: '';
+      position: absolute;
+      @apply w-7/12 h-1.5;
+      @apply bg-teal-900;
+    }
+
+    .arrow_right::after {
+      top: -7px;
+      left: -4px;
+      transform: rotate(-45deg);
+    }
+    
+    .arrow_right::before {
+      top: 7px;
+      left: -4px;
+      box-shadow: 0 3px 5px rgba(0, 0, 0, .2);
+      transform: rotate(45deg);
+    }
+    
+    .arrow_left::after {
+      top: -7px;
+      right: -4px;
+      transform: rotate(45deg);
+    }
+    
+    .arrow_left::before {
+      top: 7px;
+      right: -4px;
+      box-shadow: 0 3px 5px rgba(0, 0, 0, .2);
+      transform: rotate(-45deg);
+    }
+
 
 /* 
     .include_box input:checked .check_box {
