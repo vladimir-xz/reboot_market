@@ -13,7 +13,7 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body class="bg-neutral-100" >
+    <body class="bg-neutral-100 min-h-screen" >
         <header class="w-full bg-teal-700 dark:bg-gray-900">
             <div class="flex items-center justify-between px-8">
                 <a href="{{ path('homepage')  }}">
@@ -48,5 +48,8 @@
         {% block content %}
 
         {% endblock %}
+        <footer class="w-full bg-teal-700 dark:bg-gray-900 h-24 mt-16">
+
+        </footer>
     </body>
 </html>

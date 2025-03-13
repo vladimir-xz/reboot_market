@@ -1,20 +1,29 @@
-<div    {{ attributes.defaults(stimulus_controller('cards-showcase')) }}>
+<div    {{ attributes.defaults(stimulus_controller('cards-snap')) }}>
     <!-- component html -->
     <h2>Recently added products:</h2>
-    <div class="flex justify-between items-center relative">
+    <div class="flex justify-between items-center relative overflow-hidden">
         {# <div class="icon">
             <div class="arrow"></div>
           </div> #}
-        <div class="absolute w-12 h-9 left-0">
+        <button class="absolute w-12 h-9 left-0" data-action="cards-snap#previous">
             <div class="arrow arrow_right h-1.5 bg-teal-900 shadow-md relative w-11/12"></div>
-          </div>
-        <div class="flex flex-nowrap overflow-hidden gap-4 mt-4 items-center w-5/6 ml-16 hover:-translate-x-24">
+        </button>
+        <div 
+            data-cards-snap-target="container"
+            class="relative snap-x scroll-smooth overflow-x-auto flex gap-4 mt-4 items-center w-5/6 ml-16">        
+
             {%  for card in cards.currentPageResults  %} 
-                <twig:Card :product="card"/>
+                <twig:CardSnap :product="card"/>
             {%  endfor  %}
         </div>
-        <div class="absolute w-12 h-9 right-0">
+        <button 
+            class="absolute w-12 h-9 right-0" 
+            data-action="cards-snap#next"
+        >
             <div class="arrow arrow_left h-1.5 bg-teal-900 shadow-md relative w-11/12"></div>
-        </div>
+        </button>
+        {# <div class="absolute w-12 h-9 right-0">
+            <div class="arrow arrow_left h-1.5 bg-teal-900 shadow-md relative w-11/12"></div>
+        </div> #}
     </div>
 </div>

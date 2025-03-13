@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  *::-webkit-scrollbar {
+    width: 0;
+  }
+  
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  *::-webkit-scrollbar-thumb {
+    background: transparent;
+    border: none;
+  }
+}
+
 @layer components {
     .carousel__button {
         @apply bg-teal-900 translate-x-6;
@@ -176,14 +191,6 @@
       background-position: center; /* Centers the image within the pseudo-element */
       margin-right: 16px; /* Optional: Adds spacing between the text and the arrow */
       vertical-align: middle; 
-    }
-
-    .icon {
-      position: absolute;
-      top: 50%;
-      left: 0%; 
-      @apply w-20 h-16;
-      cursor: pointer;
     }
 
     .arrow::after, .arrow::before {
