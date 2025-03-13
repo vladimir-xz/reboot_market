@@ -1,0 +1,28 @@
+<div {{ attributes.defaults(stimulus_controller('buy')) }} class="flex">
+    <!-- component html --> 
+    <button data-action="buy#decr">
+    -
+    </button>
+
+    <input
+        type="number"
+        value="1"
+        min="0" 
+        max="100"
+        data-buy-target="input"
+        data-stock-max="{{  max  }}"
+    />
+    <button
+    data-action="buy#incr"
+    >
+    +
+    </button>
+    <button
+        data-action="buy#send"
+        data-name="{{   name    }}"
+        data-prod-id="{{    prodId  }}"
+        data-price="{{  price   }}"
+    >
+        Add to cart
+    </button> 
+</div>

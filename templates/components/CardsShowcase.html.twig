@@ -8,7 +8,7 @@
         <div class="absolute w-12 h-9 left-0">
             <div class="arrow arrow_right h-1.5 bg-teal-900 shadow-md relative w-11/12"></div>
           </div>
-        <div class="flex flex-nowrap overflow-hidden gap-4 mt-4 items-center w-5/6 ml-16">
+        <div class="flex flex-nowrap overflow-hidden gap-4 mt-4 items-center w-5/6 ml-16 hover:-translate-x-24">
             {%  for card in cards.currentPageResults  %} 
                 <twig:Card :product="card"/>
             {%  endfor  %}
