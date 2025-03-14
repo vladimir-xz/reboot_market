@@ -51,7 +51,7 @@ final class SearchController extends AbstractController
             $allRecords = $this->productRep->getAllProductsWithCategoryAndFilters($query, $includedCategories, $excludedCategories, $filters);
             $count = count($allRecords) === 0 ? 1 : count($allRecords);
             $maxNbPages = ceil($count / 12);
-            $result = $this->catHandler->prepareNewCatalogsForDrawing($allRecords, $includedCategories, $excludedCategories,);
+            $result = $this->catHandler->prepareNewCatalogsForDrawing($allRecords, $includedCategories, $excludedCategories);
         } else {
             // TODO: change to count when mapping
             $maxNbPages = ceil(count($allProducts) / 12);

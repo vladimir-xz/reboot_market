@@ -1,6 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
+
+<div id="cart-popup" class="hidden relative">
+    <twig:CartPopup loading="lazy"/>
+</div>
+
 <div class="flex">
 
     <div class="w-1/4">

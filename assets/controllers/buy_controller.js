@@ -19,7 +19,7 @@ export default class extends Controller {
 
   incr() {
     const input = this.inputTarget
-    if (Number(input.dataset.stockMax) > Number(input.value)) {
+    if (Number(input.getAttribute('max')) > Number(input.value)) {
       this.inputTarget.value++
     } else {
       this.inputTarget.value = Number(input.dataset.stockMax)
@@ -37,8 +37,8 @@ export default class extends Controller {
 
   checkInput() {
     const input = this.inputTarget
-    if (Number(input.dataset.stockMax) < Number(input.value)) {
-      this.inputTarget.value = input.dataset.stockMax
+    if (Number(input.getAttribute('max')) < Number(input.value)) {
+      this.inputTarget.value = input.getAttribute('max')
     } else if (this.minValue > Number(input.value)) {
       this.inputTarget.value = this.minValue
     }
@@ -46,10 +46,11 @@ export default class extends Controller {
 
   send(event) {
     this.dispatch("add", { detail: { 
-      id: event.target.dataset.prodId,
+      id: Number(event.target.dataset.prodId),
       name: event.target.dataset.name,
-      price: event.target.dataset.price,
-      amount: this.inputTarget.value,
+      price: Number(event.target.dataset.price),
+      amount: Number(this.inputTarget.value),
+      max: Number(this.inputTarget.getAttribute('max'))
     } })
   }
   

@@ -14,5 +14,6 @@
             <div class="">In stock: {{  product.amount  }}</div>
             <div class="">{{  product.price  }} Dollars</div>
         </div>
+        <twig:BuyButton :prodId="product.id" :price="product.price" :max="product.amount" :name="product.name"/>
     </div>
 </div>

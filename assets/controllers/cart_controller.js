@@ -4,23 +4,33 @@ export default class extends Controller {
   static targets = [ "figure" ]
 
   add({ detail  }) {
-    let cart = getCart();
-    const existingProduct = cart.find(item => item.id === detail.id);
+    let cart = this.getCart();
+    const existingProduct = cart.ids?.[Number(detail.id)];
     
     if (existingProduct) {
       // Update quantity if product exists
-      existingProduct.quantity += detail.amount || 1;
+      if (detail.max < existingProduct.amount + detail.amount) {
+        alert(`The selected quantity could not be added to the shopping cart because it exceeds the available stock. ${detail.amount} are currently in stock.`)
+        return
+      }
+
+      existingProduct.amount += detail.amount || 1;
+      cart.total += detail.price * detail.amount
     } else {
       // Add new product
-      cart.push({
-        id: detail.id,
+      cart.ids = cart.ids || {};
+      cart.ids[Number(detail.id)] = ({
         name: detail.name,
         price: detail.price,
         amount: detail.amount || 1
-      });
+      })
+      cart.total = Number(cart.total) || 0;
+      cart.total += Number(detail.price) * Number(detail.amount)
     }
     
-    saveCart(cart);
+    this.saveCart(cart);
+    const cartPopup = document.getElementById('cart-popup')
+    cartPopup.classList.remove('hidden')
   }
 
   getCart() {
@@ -32,15 +42,18 @@ export default class extends Controller {
         try {
         return JSON.parse(decodeURIComponent(cartCookie.split('=')[1]));
         } catch (e) {
-        return [];
+        return {};
         }
     }
-    return [];
+    return {};
   }
   
   // Function to save cart to cookies
   saveCart(cart) {
-    const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toUTCString();
+    const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
+    console.log(cart)
+    console.log(JSON.stringify(cart))
     document.cookie = `cart=${encodeURIComponent(JSON.stringify(cart))}; expires=${expires}; path=/`;
+    console.log(document.cookie)
   }
 }
