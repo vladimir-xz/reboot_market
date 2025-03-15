@@ -46,7 +46,6 @@ final class SearchController extends AbstractController
         $allProducts = $this->productRep->getAllWithSpecs();
         $filter = $this->mapAllRecords->mapRecords($allProducts);
 
-
         if ($query || $excludedCategories || $includedCategories) {
             $allRecords = $this->productRep->getAllProductsWithCategoryAndFilters($query, $includedCategories, $excludedCategories, $filters);
             $count = count($allRecords) === 0 ? 1 : count($allRecords);

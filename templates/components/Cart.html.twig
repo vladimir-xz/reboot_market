@@ -1,5 +1,14 @@
-<div {{ attributes.defaults(stimulus_controller('cart')) }} data-action="buy:add@window->cart#add">
+<div {{ attributes.defaults(stimulus_controller('cart')) }} data-action="buy:add@window->cart#add" class="cart relative w-48">
     <!-- component html -->
+    <div class="flex">
         <p>Shopping cart:</p>
-        <p data-cart-target="figure">1000</p>
+        <p data-cart-target="figure">{{   this.total  }}</p>
+        <p>$</p>
+    </div>
+
+    <div class="cart_menu absolute hidden py-4 bg-neutral-100 text-black z-10">
+        {%   for product in this.products   %}
+            <a href="">{{   product.name   }}</a>
+        {%   endfor   %}
+    </div>
 </div>

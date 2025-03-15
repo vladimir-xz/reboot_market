@@ -13,15 +13,17 @@ final class CartPopup extends AbstractController
 {
     use DefaultActionTrait;
 
-    public ?string $cart;
+    public ?\stdClass $cart;
+    public ?int $total;
 
     public function __construct(RequestStack $requestStack, private LoggerInterface $logger)
     {
-        $this->cart = $requestStack->getCurrentRequest()->cookies->get('cart');
+        $this->cart = json_decode($requestStack->getCurrentRequest()->cookies->get('cart', ''));
+        $this->total = $this->cart?->total ?? 0;
     }
 
     public function getProducts()
     {
-        return $this->cart ?? 'Cart is emty';
+        return (array) $this->cart?->ids ?? 'Cart is emty';
     }
 }

@@ -226,6 +226,10 @@
       transform: rotate(-45deg);
     }
 
+    .cart:hover .cart_menu {
+      @apply flex flex-col;
+    }
+
 
 /* 
     .include_box input:checked .check_box {

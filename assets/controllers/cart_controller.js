@@ -29,6 +29,7 @@ export default class extends Controller {
     }
     
     this.saveCart(cart);
+    this.figureTarget.innerHTML = cart.total
     const cartPopup = document.getElementById('cart-popup')
     cartPopup.classList.remove('hidden')
   }
