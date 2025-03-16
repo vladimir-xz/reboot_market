@@ -16,14 +16,23 @@ final class CartPopup extends AbstractController
     public ?\stdClass $cart;
     public ?int $total;
 
-    public function __construct(RequestStack $requestStack, private LoggerInterface $logger)
+    public function __construct(private RequestStack $requestStack, private LoggerInterface $logger)
     {
-        $this->cart = json_decode($requestStack->getCurrentRequest()->cookies->get('cart', ''));
+    }
+
+    public function setProductsAndTotal()
+    {
+        $this->cart = json_decode($this->requestStack->getCurrentRequest()->cookies->get('cart', ''));
         $this->total = $this->cart?->total ?? 0;
     }
 
     public function getProducts()
     {
         return (array) $this->cart?->ids ?? 'Cart is emty';
+    }
+
+    public function getTotal()
+    {
+        return $this->total;
     }
 }

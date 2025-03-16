@@ -1,0 +1,29 @@
+<div {{ attributes.defaults(stimulus_controller('modal')) }} data-modal-close-value="login" class="w-96 bg-neutral-200">
+    <div class="flex justify-between">
+        <p>Login</p>
+        <button type="button" aria-label="Close" data-action="modal#close"><span aria-hidden="true">×</span></button>
+    </div>
+    <form action="post">
+        <div class="">
+            <input id="email" type="email" name="email">
+            <label for="email">Email</label>
+        </div>
+        <div class="">
+            <input type="password" name="password" id="password">
+            <label for="password">Password</label>
+        </div>
+        <div class="">
+            <button>Log in</button>
+        </div>
+        <div class="">
+            <a href="">Create new account</a>
+            <a href="">Forgot your password?</a>
+        </div>
+    </form>
+</div>
+
+
+{% macro placeholder(props) %}
+    {# This content will (only) be rendered as loading content #}
+    <span class="loader"></span>
+{% endmacro %}

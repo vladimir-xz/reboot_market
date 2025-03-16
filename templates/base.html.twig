@@ -37,7 +37,11 @@
                 </div>
     
                 <div class="text-neutral-200 flex gap-4">
-                    <a href="">Log in</a>
+                    {%   if app.user   %}
+                        <button>Log out</button>
+                    {%   else   %}
+                        <a href="#login" data-turbo="false">Log in</a>
+                    {%   endif   %}
                     <twig:Cart/>
                 </div>
             </div>
@@ -50,5 +54,13 @@
         <footer class="w-full bg-teal-700 dark:bg-gray-900 h-24 mt-16">
 
         </footer>
+
+        <div id="login" class="modal hidden target:flex fixed justify-center items-center top-0 left-0 w-full h-full z-50">
+            <twig:Login loading="lazy"/>
+        </div>
+        <div id="cart-popup" class="hidden flex fixed justify-center items-center top-0 left-0 w-full h-full z-50">
+            <twig:CartPopup loading="lazy"/>
+        </div>
+
     </body>
 </html>

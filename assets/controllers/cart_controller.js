@@ -30,8 +30,7 @@ export default class extends Controller {
     
     this.saveCart(cart);
     this.figureTarget.innerHTML = cart.total
-    const cartPopup = document.getElementById('cart-popup')
-    cartPopup.classList.remove('hidden')
+    document.getElementById('cart-popup').classList.remove('hidden')
   }
 
   getCart() {
@@ -52,9 +51,6 @@ export default class extends Controller {
   // Function to save cart to cookies
   saveCart(cart) {
     const expires = new Date(Date.now() + 60 * 60 * 1000).toUTCString();
-    console.log(cart)
-    console.log(JSON.stringify(cart))
     document.cookie = `cart=${encodeURIComponent(JSON.stringify(cart))}; expires=${expires}; path=/`;
-    console.log(document.cookie)
   }
 }
