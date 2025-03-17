@@ -19,8 +19,7 @@ class ProductDescription
     #[ORM\Column(type: Types::TEXT)]
     private ?string $text = null;
 
-    #[ORM\OneToOne(inversedBy: 'description', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\OneToOne(mappedBy: 'description', cascade: ['persist', 'remove'])]
     private ?Product $product = null;
 
     public function getId(): ?int

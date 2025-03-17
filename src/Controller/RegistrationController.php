@@ -19,7 +19,6 @@ final class RegistrationController extends AbstractController
     #[Route('/registration', name: 'registraiton')]
     public function index(Request $request, LoggerInterface $log): Response
     {
-        $validator = Validation::createValidator();
         $user = new User();
 
         // dummy code - add some example tags to the task
@@ -32,19 +31,6 @@ final class RegistrationController extends AbstractController
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
-
-        // $input = ['password' => $form["password"]->getData(), 'repeatPassword' => $form["repeatPassword"]->getData()];
-
-        // $constraint = new Assert\Collection([
-        //     'password' => new Assert\Length(['min' => 8]),
-        //     'repeatPassword' => new Assert\Callback(['callback' => function ($value, ExecutionContextInterface $ec) {
-        //         if ($ec->getRoot()['password'] !== $value) {
-        //             $ec->addViolation('Passwords do not match');
-        //         }
-        //     }]),
-        // ]);
-
-        // $violations = $validator->validate($input, $constraint);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // ... do your form processing, like saving the Task and Tag entities

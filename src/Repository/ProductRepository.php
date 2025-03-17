@@ -20,7 +20,6 @@ use Psr\Log\LoggerInterface;
 class ProductRepository extends ServiceEntityRepository
 {
     private array $allowedFilters;
-    private array $selects = [];
 
     public function __construct(ManagerRegistry $registry, private LoggerInterface $logger)
     {
@@ -74,17 +73,6 @@ class ProductRepository extends ServiceEntityRepository
 
     public function getAllProductsWithCategoryAndFilters(string $query = '', array $catInclude = [], array $catExclude = [], array $filters = []): array
     {
-        // if ($query === '' && empty($catInclude) && empty($catInclude) && empty($filters)) {
-        //     return [];
-        // }
-
-        // $qb = $this->createQueryBuilder('p')
-        //     ->leftJoin('p.category', 'c')
-        //     ->select('DISTINCT c.id');
-
-        $this->logger->info('This is filters inside of repository');
-        $this->logger->info(print_r($filters, true));
-
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.category', 'c')
             ->leftJoin('p.specifications', "s")
@@ -113,8 +101,7 @@ class ProductRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.images', 'i')
-            ->leftJoin('p.description', 'd')
-            ->select('p', 'd', 'i')
+            ->select('p', 'i')
             ->orderBy('p.id', 'ASC');
 
         if ($query !== '') {
@@ -147,8 +134,7 @@ class ProductRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.specifications', 's')
-            ->leftJoin('p.description', 'd')
-            ->addSelect('s', 'd')
+            ->addSelect('s')
             ->getQuery()
             ->getResult()
         ;
@@ -158,8 +144,7 @@ class ProductRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.images', "i")
-            ->leftJoin('p.description', "d")
-            ->select('p', 'i', 'd')
+            ->select('p', 'i')
             ->orderBy('p.createdAt', 'DESC')
         ;
 
