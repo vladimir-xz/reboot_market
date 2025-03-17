@@ -38,7 +38,9 @@
     
                 <div class="text-neutral-200 flex gap-4">
                     {%   if app.user   %}
-                        <button>Log out</button>
+                        <a class="btn btn-danger" value="Delete" href="{{ path('logout', {'token': csrf_token('authenticate') }) }}">
+                            Log out
+                        </a>
                     {%   else   %}
                         <a href="#login" data-turbo="false">Log in</a>
                     {%   endif   %}

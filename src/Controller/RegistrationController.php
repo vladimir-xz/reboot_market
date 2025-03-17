@@ -10,6 +10,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -17,8 +20,13 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 final class RegistrationController extends AbstractController
 {
     #[Route('/registration', name: 'registraiton')]
-    public function index(Request $request, LoggerInterface $log): Response
-    {
+    public function index(
+        Request $request,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $entityManager,
+        Security $security,
+        LoggerInterface $log
+    ): Response {
         $user = new User();
 
         // dummy code - add some example tags to the task
@@ -34,7 +42,17 @@ final class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             // ... do your form processing, like saving the Task and Tag entities
-            $log->info(print_r($form->getData(), true));
+            $hashedPassword = $passwordHasher->hashPassword(
+                $user,
+                $user->getPassword()
+            );
+
+            $user->setPassword($hashedPassword);
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            $security->login($user);
+
             return $this->redirectToRoute('homepage');
         }
 
