@@ -85,10 +85,12 @@ class Product
     }
 
     #[ORM\PrePersist]
-    public function setCreatedAtValue(): void
+    public function setCreatedAtValue(): static
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
@@ -97,9 +99,11 @@ class Product
     }
 
     #[ORM\PreUpdate]
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): void
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = new \DateTimeImmutable();
+
+        return $this;
     }
 
     public function getId(): ?int
