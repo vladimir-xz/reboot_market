@@ -7,6 +7,7 @@ use App\Entity\Category;
 use App\Entity\Specification;
 use App\Entity\Image;
 use App\Entity\ProductDescription;
+use App\Entity\Country;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -14,6 +15,16 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
+        $country1 = new Country();
+        $country2 = new Country();
+        $country3 = new Country();
+        $country1->setName('Czech Republic');
+        $country2->setName('Germany');
+        $country3->setName('France');
+        $manager->persist($country1);
+        $manager->persist($country2);
+        $manager->persist($country3);
+
         $category1 = new Category();
         $category3 = new Category();
         $category4 = new Category();

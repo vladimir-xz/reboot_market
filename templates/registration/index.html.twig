@@ -1,20 +1,36 @@
-{% extends 'base.html.twig' %}
+{% extends 'layout.html.twig' %}
 
 {% block title %}Hello RegistrationController!{% endblock %}
 
-{% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+{% block page_contents %}
+
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <h1>Hello! ✅</h1>
 
     This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/home/vova_xz/reboot_market/src/Controller/RegistrationController.php</code></li>
-        <li>Your template at <code>/home/vova_xz/reboot_market/templates/registration/index.html.twig</code></li>
-    </ul>
+    {{ form_start(form) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.password) }}
+        {{ form_row(form.repeatPassword) }}
+        {{ form_row(form.formOfAddress) }}
+        {{ form_row(form.firstName) }}
+        {{ form_row(form.lastName) }}
+        {{ form_row(form.company) }}
+        {{ form_row(form.vatNumber) }}
+
+            {% for address in form.addresses %}
+                {{ form_row(address.firstLine) }}
+                {{ form_row(address.secondLine) }}
+                {{ form_row(address.town) }}
+                {{ form_row(address.postcode) }}
+                {{ form_row(address.country) }}
+            {% endfor %}
+
+            
+        {{ form_row(form.agreeTerms)    }}
+        {{ form_row(form.register)    }}
+
+    {{ form_end(form) }}
 </div>
 {% endblock %}

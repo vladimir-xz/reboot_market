@@ -59,6 +59,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Address::class, mappedBy: 'belongsTo', orphanRemoval: true, cascade: ['persist'])]
     private Collection $addresses;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $vatNumber = null;
+
     public function __construct()
     {
         $this->addresses = new ArrayCollection();
@@ -240,6 +243,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $address->setBelongsTo(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getVatNumber(): ?string
+    {
+        return $this->vatNumber;
+    }
+
+    public function setVatNumber(?string $vatNumber): static
+    {
+        $this->vatNumber = $vatNumber;
 
         return $this;
     }
