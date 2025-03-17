@@ -230,10 +230,7 @@
       @apply flex flex-col;
     }
 
-    /* Hide the modal by default */
-    .modal {
-      background: rgba(0, 0, 0, 0.5);
-    }
+
 
 
 /* 

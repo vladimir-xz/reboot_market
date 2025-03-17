@@ -11,14 +11,16 @@ export default class extends Controller {
       }
 
     async initialize() {
+        this.background = document.getElementById(this.closeValue)
         window.addEventListener('click', (e) => {
-            if (e.target !== this.element) {
-                window.location.hash = '';
+            if (e.target === this.background) {
+                this.close()
             }
         });
     }
 
     close() {
-        document.getElementById(this.closeValue).classList.add('hidden')
+        window.location.hash = '';
+        this.background.classList.add('hidden')
     }
 }
