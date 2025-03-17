@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use Psr\Log\LoggerInterface;
 use App\Entity\User;
 use App\Entity\Address;
 use Symfony\Component\Form\AbstractType;
@@ -11,13 +12,29 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Validator\Constraints\Collection;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\PasswordStrength;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\IsTrue;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Context\ExecutionContext;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class UserType extends AbstractType
 {
+    public function __construct(private LoggerInterface $log)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $log = $this->log;
         $builder
             ->add('email', EmailType::class)
             ->add('password', PasswordType::class, [
@@ -25,18 +42,30 @@ class UserType extends AbstractType
             ])
             ->add('repeatPassword', PasswordType::class, [
                 'mapped' => false,
-                'attr' => ['autocomplete' => 'new-password']
+                'attr' => ['autocomplete' => 'new-password'],
+                'constraints' => [new Callback(['callback' => function ($value, ExecutionContextInterface $ec) {
+                    $current = $ec->getRoot()->getData()->getPassword() ?? null;
+                    if ($current !== $value) {
+                        $ec->addViolation('Passwords do not match');
+                    }
+                }])],
             ])
-            ->add('formOfAddress', TextType::class, [
+            ->add('formOfAddress', ChoiceType::class, [
+                'choices'  => User::PREFIXES,
                 'attr' => ['autocomplete' => 'honorific-prefix']
             ])
-            ->add('firstName', TextType::class)
-            ->add('lastName', TextType::class)
+            ->add('firstName', TextType::class, ['required' => false])
+            ->add('lastName', TextType::class, ['required' => false])
             ->add('company', TextType::class, [
-                'attr' => ['autocomplete' => 'organization']
+                'attr' => ['autocomplete' => 'organization'],
+                'required' => false
             ])
-            ->add('vatNumber', TextType::class)
-            ->add('agreeTerms', CheckboxType::class, ['mapped' => false])
+            ->add('vatNumber', TextType::class, ['label' => 'VAT Number', 'required' => false])
+            ->add('agreeTerms', CheckboxType::class, [
+                'required' => false,
+                'mapped' => false,
+                'constraints' => new IsTrue(['message' => 'You should agree with terms'])
+            ])
             ->add('register', SubmitType::class)
         ;
 
@@ -49,6 +78,15 @@ class UserType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'validation_groups' => function (FormInterface $form): array {
+                $data = $form->getData();
+
+                if ('Company' === $data->getFormOfAddress()) {
+                    return ['company', 'Default'];
+                }
+
+                return ['person', 'Default'];
+            }
         ]);
     }
 }

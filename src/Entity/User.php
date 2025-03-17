@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -15,12 +16,25 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const PREFIXES = [
+        'Mrs.' => 'Mrs.',
+        'Mr.' => 'Mr.',
+        'Miss' => 'Miss',
+        'Ms.' => 'Ms.',
+        'Dr.' => 'Dr.',
+        'Company' => 'Company'
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\Email(
+        message: 'The email {{ value }} is not a valid email.',
+    )]
+    #[Assert\NotBlank]
     private ?string $email = null;
 
     /**
@@ -33,18 +47,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 6, minMessage: 'Password should have 6 characters or more')]
     private ?string $password = null;
 
     #[ORM\Column(length: 8, nullable: true)]
+    #[Assert\Choice(choices: User::PREFIXES, message: 'Choose a valid prefix.')]
+    #[Assert\NotBlank]
     private ?string $formOfAddress = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(groups: ['person'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(groups: ['person'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(groups: ['company'])]
     private ?string $company = null;
 
     #[ORM\Column]
@@ -60,6 +81,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $addresses;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(groups: ['company'])]
     private ?string $vatNumber = null;
 
     public function __construct()
