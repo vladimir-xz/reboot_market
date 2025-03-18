@@ -20,6 +20,7 @@ security:
                 login_path: login
                 check_path: login
                 enable_csrf: true
+                failure_path_parameter: back_to
             logout:
                 path: logout
                 # where to redirect after logout

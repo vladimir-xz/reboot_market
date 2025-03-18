@@ -3,41 +3,18 @@
         <p>Login</p>
         <button type="button" aria-label="Close" data-action="modal#close"><span aria-hidden="true">×</span></button>
     </div>
-    <form method="post" action="{{  path('login')   }}">
-        {% if this.errors %}
-            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-        {% endif %}
+    {{ form_start(form) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.password) }}
 
-        {% if app.user %}
-            <div class="mb-3">
-                You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('logout') }}">Logout</a>
-            </div>
-        {% endif %}
-
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-        <label for="username">Email</label>
-        <input type="email" value="{{ this.lastUsername }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
-        <label for="password">Password</label>
-        <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
-
-        <input type="hidden" name="_csrf_token"
-               value="{{ csrf_token('authenticate') }}"
+        <button
+            data-action="live#action:prevent"
+            data-live-action-param="login"
         >
-
-        
-            {# Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-            See https://symfony.com/doc/current/security/remember_me.html #}
-
-            <div class="checkbox mb-3">
-                <input type="checkbox" name="_remember_me" id="_remember_me">
-                <label for="_remember_me">Remember me</label>
-            </div>
-       
-
-        <button class="btn btn-lg btn-primary" type="submit">
-            Sign in
+            Log in
         </button>
-    </form>
+    {{ form_end(form) }}
+
     <div class="">
         <a href="{{    path('registraiton')    }}">Create new account</a>
     </div>
