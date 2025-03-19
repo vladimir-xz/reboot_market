@@ -10,6 +10,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Form\FormInterface;
@@ -49,6 +50,10 @@ class LoginType extends AbstractType
                         }
                     }])
                 ],
+            ])
+            ->add('remember_me', CheckboxType::class, [
+                'required' => false,
+                'mapped' => false,
             ])
         ;
     }

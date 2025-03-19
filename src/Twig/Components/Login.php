@@ -16,6 +16,7 @@ use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 
 #[AsLiveComponent]
 final class Login extends AbstractController
@@ -33,7 +34,7 @@ final class Login extends AbstractController
         private AuthenticationUtils $authenticationUtils,
         private LoggerInterface $log,
         private Security $security,
-        private UserRepository $userRepository
+        private UserRepository $userRepository,
     ) {
     }
 
@@ -43,14 +44,16 @@ final class Login extends AbstractController
         $this->submitForm();
 
         $submittedToken = $request->getPayload()->get('token');
-
         if ($this->isCsrfTokenValid('user_login', $submittedToken)) {
-            $this->log->info('not valid csrf');
             throw new \Exception('Not valid csrf token');
         }
 
         $user = $this->getForm()->getData();
-        $this->security->login($user);
+        $this->security->login(
+            $user,
+            authenticatorName: 'form_login',
+            badges: $this->getForm()['remember_me']->getData() ? [(new RememberMeBadge())->enable()] : []
+        );
 
         return $this->redirect($request->headers->get('referer'));
     }
