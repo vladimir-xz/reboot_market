@@ -5,11 +5,14 @@
 {% block body %}
     <h1>Category index</h1>
 
-    <table class="table">
+    <a href="{{ path('admin') }}">Back to admin lobby</a>
+    <table class="table-auto">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Name</th>
+                <th>Parent name</th>
+                <th>Next children</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -18,6 +21,18 @@
             <tr>
                 <td>{{ category.id }}</td>
                 <td>{{ category.name }}</td>
+                <td>
+                    {% if not category.parent is null %}
+                        {{  category.parent.id  }}: {{    category.parent.name    }}
+                    {% endif %}
+                </td>
+                <td>
+                    <ul>
+                        {%    for child in category.children    %}
+                            <li>{{  child.id  }}: {{   child.name   }}</li>
+                        {%    endfor    %}
+                    </ul>
+                </td>
                 <td>
                     <a href="{{ path('admin.category.show', {'id': category.id}) }}">show</a>
                     <a href="{{ path('admin.category.edit', {'id': category.id}) }}">edit</a>
@@ -32,4 +47,8 @@
     </table>
 
     <a href="{{ path('admin.category.new') }}">Create new</a>
+
+    <div class="my-4">
+        <a href="{{ path('admin') }}">Back to admin lobby</a>
+    </div>
 {% endblock %}

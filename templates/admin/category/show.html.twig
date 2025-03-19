@@ -23,4 +23,8 @@
     <a href="{{ path('admin.category.edit', {'id': category.id}) }}">edit</a>
 
     {{ include('admin/category/_delete_form.html.twig') }}
+
+    <div class="my-4">
+        <a href="{{ path('admin') }}">Back to admin lobby</a>
+    </div>
 {% endblock %}

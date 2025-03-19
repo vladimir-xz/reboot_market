@@ -30,6 +30,17 @@ class CategoryRepository extends ServiceEntityRepository
         ];
     }
 
+    public function getAllWithChildrenAndParents()
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.children', 'cc')
+            ->leftJoin('c.parent', 'cp')
+            ->select('c', 'cc', 'cp')
+            ->orderBy('c.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getRawTree(): array
     {
         $conn = $this->getEntityManager()->getConnection();
@@ -46,7 +57,7 @@ class CategoryRepository extends ServiceEntityRepository
         }
 
         $qb = $this->createQueryBuilder('c', 'c.id')
-            ->from('App\Entity\Product', 'p') // Switch to Product as the root entity
+            ->from('App\Entity\Product', 'p')
             ->leftJoin('p.category', 'c')
             ->select('DISTINCT c.id');
 
