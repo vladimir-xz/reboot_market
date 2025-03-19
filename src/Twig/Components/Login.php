@@ -44,16 +44,15 @@ final class Login extends AbstractController
 
         $submittedToken = $request->getPayload()->get('token');
 
-        // 'delete-item' is the same value used in the template to generate the token
         if ($this->isCsrfTokenValid('user_login', $submittedToken)) {
             $this->log->info('not valid csrf');
+            throw new \Exception('Not valid csrf token');
         }
 
-        $email = $this->getForm()->getData()->getEmail();
-        $user = $this->userRepository->findOneBy(['email' => $email]);
+        $user = $this->getForm()->getData();
         $this->security->login($user);
 
-        return $this->redirectToRoute($request->headers->get('referer'));
+        return $this->redirect($request->headers->get('referer'));
     }
 
     protected function instantiateForm(): FormInterface
