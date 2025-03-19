@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -31,10 +32,10 @@ class LoginType extends AbstractType
         $passwordHasher = $this->passwordHasher;
         $builder
             ->add('email', EmailType::class, [
+                'constraints' => new NotBlank(['message' => 'Please, write the email', 'groups' => ['login']]),
                 'setter' => function (User &$user, ?string $email, FormInterface $form) use ($userRepository): void {
                     if ($email) {
-                        $desiredUser = $userRepository->findOneBy(['email' => $email]);
-                        $user = $desiredUser;
+                        $user = $userRepository->findOneBy(['email' => $email]) ?? new User();
                     }
                 },
             ])
@@ -43,12 +44,13 @@ class LoginType extends AbstractType
                 'always_empty' => false,
                 // 'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
+                    new NotBlank(['message' => 'Please, write the password', 'groups' => ['login']]),
                     new Callback(['callback' => function ($value, ExecutionContextInterface $ec) use ($passwordHasher) {
-                        $user = $ec->getRoot()->getData() ?? new User();
-                        if (!$value || !$passwordHasher->isPasswordValid($user, $value)) {
+                        $user = $ec->getRoot()->getData();
+                        if ($value && !$passwordHasher->isPasswordValid($user, $value)) {
                             $ec->addViolation('Wrong username or password');
                         }
-                    }])
+                    }], ['login'])
                 ],
             ])
             ->add('remember_me', CheckboxType::class, [
@@ -69,6 +71,7 @@ class LoginType extends AbstractType
             // an arbitrary string used to generate the value of the token
             // using a different string for each form improves its security
             'csrf_token_id'   => 'user_login',
+            'validation_groups' => ['login']
         ]);
     }
 }

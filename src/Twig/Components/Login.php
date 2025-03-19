@@ -52,7 +52,7 @@ final class Login extends AbstractController
         $this->security->login(
             $user,
             authenticatorName: 'form_login',
-            badges: $this->getForm()['remember_me']->getData() ? [(new RememberMeBadge())->enable()] : []
+            badges: $this->getForm()->get('remember_me')->getData() ? [(new RememberMeBadge())->enable()] : []
         );
 
         return $this->redirect($request->headers->get('referer'));

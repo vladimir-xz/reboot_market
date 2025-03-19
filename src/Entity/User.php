@@ -35,6 +35,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         message: 'The email {{ value }} is not a valid email.',
     )]
     #[Assert\NotBlank]
+    #[Assert\Unique]
     private ?string $email = null;
 
     /**
