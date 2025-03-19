@@ -43,11 +43,6 @@ final class Login extends AbstractController
     {
         $this->submitForm();
 
-        $submittedToken = $request->getPayload()->get('token');
-        if ($this->isCsrfTokenValid('user_login', $submittedToken)) {
-            throw new \Exception('Not valid csrf token');
-        }
-
         $user = $this->getForm()->getData();
         $this->security->login(
             $user,
