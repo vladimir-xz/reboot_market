@@ -53,7 +53,7 @@ class LoginType extends AbstractType
                     }], ['login'])
                 ],
             ])
-            ->add('remember_me', CheckboxType::class, [
+            ->add('rememberMe', CheckboxType::class, [
                 'required' => false,
                 'mapped' => false,
             ])
