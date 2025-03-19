@@ -3,7 +3,7 @@
         <p>Login</p>
         <button type="button" aria-label="Close" data-action="modal#close"><span aria-hidden="true">×</span></button>
     </div>
-    {{ form_start(form) }}
+    {{ form_start(form, {attr: {'data-model': 'norender|*'}}) }}
         {{ form_row(form.email) }}
         {{ form_row(form.password) }}
 

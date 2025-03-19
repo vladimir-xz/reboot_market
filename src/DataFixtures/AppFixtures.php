@@ -373,7 +373,6 @@ class AppFixtures extends Fixture
 
         $lineEx82 = new Product();
         $image1 = new Image();
-        $description = new ProductDescription();
         $image1->setPath('images/NETWORK/LINE_CARDS/EX8200-8XS.jpg');
         $image1->setIsMain(true);
         $lineEx82->addImage($image1);
@@ -385,12 +384,6 @@ class AppFixtures extends Fixture
         $lineEx82->setAmount(mt_rand(1, 10));
         $lineEx82->setBrand('Juniper');
         $category8->addProduct($lineEx82);
-        $description->setText(
-            'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam in lorem sit amet leo accumsan lacinia. Aliquam id dolor. Integer lacinia. Curabitur vitae diam non enim vestibulum interdum. Aliquam in lorem sit amet leo accumsan lacinia. Maecenas lorem. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Aenean fermentum risus id tortor. Duis bibendum, lectus ut viverra rhoncus, dolor nunc faucibus libero, eget facilisis enim ipsum id lacus. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Nullam dapibus fermentum ipsum. Etiam posuere lacus quis dolor. Cras pede libero, dapibus nec, pretium sit amet, tempor quis. In enim a arcu imperdiet malesuada.
-
-            Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Quisque tincidunt scelerisque libero. Aliquam ante. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Duis risus. Integer lacinia. Cras pede libero, dapibus nec, pretium sit amet, tempor quis. Maecenas aliquet accumsan leo. Nullam eget nisl. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Duis viverra diam non justo. Fusce tellus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nullam justo enim, consectetuer nec, ullamcorper ac, vestibulum in, elit. Aliquam erat volutpat. Etiam dui sem, fermentum vitae, sagittis id, malesuada in, quam. Fusce suscipit libero eget elit.'
-        );
-        $lineEx82->setDescription($description);
         $manager->persist($lineEx82);
         $manager->persist($image1);
         $manager->persist($description);
