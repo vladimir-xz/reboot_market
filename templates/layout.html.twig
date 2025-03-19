@@ -1,16 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block content %}
+{% block body %}
 
 <div class="flex">
 
     <div class="w-1/4">
         {# <twig:Catalog :lastNodesChosen="categories"/> #}
-        <twig:CatalogTree/>
+        <twig:CatalogTree />
     </div>
 
     <main class="w-3/4 px-8">
-        {% block page_contents %}{% endblock %}
+        {% block content %}{% endblock %}
     </main>
 </div>
 {% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Specification index{% endblock %}
+
+{% block body %}
+    <h1>Specification index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Property</th>
+                <th>Value</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for specification in specifications %}
+            <tr>
+                <td>{{ specification.id }}</td>
+                <td>{{ specification.property }}</td>
+                <td>{{ specification.value }}</td>
+                <td>
+                    <a href="{{ path('specification.show', {'id': specification.id}) }}">show</a>
+                    <a href="{{ path('specification.edit', {'id': specification.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('specification.new') }}">Create new</a>
+
+    <div class="my-4">
+        <a href="{{ path('admin') }}">Back to admin lobby</a>
+    </div>
+{% endblock %}

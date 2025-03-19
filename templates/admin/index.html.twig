@@ -1,0 +1,15 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Hello MainAdminController!{% endblock %}
+
+{% block content %}
+<div class="">
+    <ul>
+        <li><a href="{{    path('user.index')    }}">All users</a></li>
+        <li><a href="{{    path('admin.category.index')    }}">All categories</a></li>
+        <li><a href="{{    path('admin.product.index')    }}">All products</a></li>
+        <li><a href="{{    path('country.index')    }}">All countries</a></li>
+        <li><a href="{{    path('specification.index')    }}">All specifications</a></li>
+    </ul>
+</div>
+{% endblock %}

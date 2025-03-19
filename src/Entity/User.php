@@ -35,7 +35,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         message: 'The email {{ value }} is not a valid email.',
     )]
     #[Assert\NotBlank]
-    #[Assert\Unique]
     private ?string $email = null;
 
     /**
@@ -233,7 +232,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     #[ORM\PreUpdate]
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
+    public function setUpdatedAt(): static
     {
         $this->updatedAt = new \DateTimeImmutable();
 

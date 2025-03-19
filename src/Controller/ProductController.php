@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class ProductController extends AbstractController
 {
-    #[Route('/products/{id}', name: 'product.index', methods: ['GET', 'HEAD'])]
+    #[Route('/product/{id}', name: 'product.index', methods: ['GET', 'HEAD'])]
     public function index(Request $request, int $id, ProductRepository $repository): Response
     {
 
