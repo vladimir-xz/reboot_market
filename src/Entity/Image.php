@@ -41,12 +41,7 @@ class Image
     public function setPath(string $path): static
     {
         if ($this->path) {
-            try {
-                $filesystem = new \Symfony\Component\Filesystem\Filesystem();
-                $filesystem->remove($this->path);
-            } catch (IOExceptionInterface $e) {
-                throw new Exception(sprintf('Error deleting file: %s', $e->getMessage()));
-            }
+            $this->deleteImage();
         }
         $this->path = $path;
 
@@ -80,7 +75,6 @@ class Image
     #[ORM\PreRemove]
     public function deleteImage()
     {
-        error_log('deleting entity ' . $this->path);
         try {
             $filesystem = new \Symfony\Component\Filesystem\Filesystem();
             $filesystem->remove($this->path);

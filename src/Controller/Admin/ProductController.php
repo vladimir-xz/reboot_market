@@ -46,9 +46,9 @@ final class ProductController extends AbstractController
             // this condition is needed because the 'brochure' field is not required
             // so the PDF file must be processed only when a file is uploaded
             if ($images) {
-                for ($i = 0; $i < count($images); $i++) {
-                    $image = $images[$i];
-                    $imageFile = $form->get('images')[$i]->get('uploadImages')->getData();
+                foreach ($form->get('images') as $imageData) {
+                    $image = $imageData->getData();
+                    $imageFile = $imageData->get('uploadImages')->getData();
                     $fullFilePath = $imageUploader->upload($imageFile, $product);
 
                     $image->setPath($fullFilePath);
