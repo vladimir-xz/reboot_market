@@ -27,7 +27,8 @@ class AddressType extends AbstractType
             ->add('secondLine', TextType::class, ['label' => 'House No.',])
             ->add('town', TextType::class)
             ->add('postcode', TextType::class)
-            ->add('country', ChoiceType::class, [
+            ->add('country', EntityType::class, [
+                'class' => Country::class,
                 'choices' => $this->countryRepository->findAll(),
                 'choice_value' => 'id',
                 'choice_label' => function (?Country $country): string {

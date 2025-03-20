@@ -30,7 +30,7 @@ final class UserController extends AbstractController
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user, [
-            'require_due_date' => true,
+            'admin_clearance' => true,
         ]);
         $form->handleRequest($request);
 

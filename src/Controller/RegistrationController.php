@@ -13,9 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Validation;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 
 final class RegistrationController extends AbstractController
 {
@@ -51,7 +49,11 @@ final class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $security->login($user);
+            $security->login(
+                $user,
+                authenticatorName: 'form_login',
+                badges: [(new RememberMeBadge())->enable()]
+            );
 
             return $this->redirectToRoute('homepage');
         }

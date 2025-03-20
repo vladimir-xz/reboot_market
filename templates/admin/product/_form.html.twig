@@ -1,4 +1,29 @@
-{{ form_start(form) }}
+{# {{ form_start(form) }}
     {{ form_widget(form) }}
+    {% for description in form.description %}
+        {{ form_row(description.text) }}
+    {% endfor %}
     <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }} #}
+
+{{ form_start(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.condition) }}
+    {{ form_row(form.weight) }}
+    {{ form_row(form.length) }}
+    {{ form_row(form.price) }}
+    {{ form_row(form.amount) }}
+    {{ form_row(form.type) }}
+    {{ form_row(form.brand) }}
+    {{ form_row(form.category) }}
+    {{ form_row(form.specifications) }}
+    {{ form_row(form.related) }}
+    {{ form_row(form.description) }}
+
+    {# {% for description in form.description %}
+        {{ form_row(description.text) }}
+    {% endfor %} #}
+
+    <button class="btn">{{ button_label|default('Save') }}</button>
+
 {{ form_end(form) }}

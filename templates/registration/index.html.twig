@@ -9,28 +9,6 @@
     <h1>Hello! ✅</h1>
 
     This friendly message is coming from:
-    {{ form_start(form) }}
-        {{ form_row(form.email) }}
-        {{ form_row(form.password) }}
-        {{ form_row(form.repeatPassword) }}
-        {{ form_row(form.formOfAddress) }}
-        {{ form_row(form.firstName) }}
-        {{ form_row(form.lastName) }}
-        {{ form_row(form.company) }}
-        {{ form_row(form.vatNumber) }}
-
-            {% for address in form.addresses %}
-                {{ form_row(address.firstLine) }}
-                {{ form_row(address.secondLine) }}
-                {{ form_row(address.town) }}
-                {{ form_row(address.postcode) }}
-                {{ form_row(address.country) }}
-            {% endfor %}
-
-            
-        {{ form_row(form.agreeTerms)    }}
-        {{ form_row(form.register)    }}
-
-    {{ form_end(form) }}
+    {{ include('registration/_form.html.twig', {'button_label': 'Register'}) }}
 </div>
 {% endblock %}
