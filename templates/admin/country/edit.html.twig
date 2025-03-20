@@ -3,6 +3,7 @@
 {% block title %}Edit Country{% endblock %}
 
 {% block body %}
+<div class="w-1/2 mx-auto">
     <h1>Edit Country</h1>
 
     {{ include('admin/country/_form.html.twig', {'button_label': 'Update'}) }}
@@ -14,4 +15,5 @@
     <div class="my-4">
         <a href="{{ path('admin') }}">Back to admin lobby</a>
     </div>
+</div>
 {% endblock %}

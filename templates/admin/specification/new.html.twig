@@ -3,6 +3,7 @@
 {% block title %}New Specification{% endblock %}
 
 {% block body %}
+<div class="w-1/2 mx-auto">
     <h1>Create new Specification</h1>
 
     {{ include('admin/specification/_form.html.twig') }}
@@ -12,4 +13,5 @@
     <div class="my-4">
         <a href="{{ path('admin') }}">Back to admin lobby</a>
     </div>
+</div>
 {% endblock %}

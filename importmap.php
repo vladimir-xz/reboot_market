@@ -28,4 +28,22 @@ return [
     '@symfony/ux-live-component' => [
         'path' => './vendor/symfony/ux-live-component/assets/dist/live_controller.js',
     ],
+    '@tailwindcss/forms' => [
+        'version' => '0.5.10',
+    ],
+    'mini-svg-data-uri' => [
+        'version' => '1.4.4',
+    ],
+    'tailwindcss/plugin' => [
+        'version' => '3.4.17',
+    ],
+    'tailwindcss/defaultTheme' => [
+        'version' => '3.4.17',
+    ],
+    'tailwindcss/colors' => [
+        'version' => '3.4.17',
+    ],
+    'picocolors' => [
+        'version' => '1.1.1',
+    ],
 ];

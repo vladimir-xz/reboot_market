@@ -22,9 +22,14 @@ class AddressType extends AbstractType
     {
         $builder
             ->add('firstLine', TextType::class, [
-                'label' => 'Street', 'attr' => ['autocomplete' => 'address-line1']
+                'label' => 'Street',
+                'attr' => ['autocomplete' => 'address-line1'],
+                'help' => 'Street address, company name',
             ])
-            ->add('secondLine', TextType::class, ['label' => 'House No.',])
+            ->add('secondLine', TextType::class, [
+                'label' => 'House No.',
+                'help' => 'Building, unit, suite, unit, floor',
+            ])
             ->add('town', TextType::class)
             ->add('postcode', TextType::class)
             ->add('country', EntityType::class, [

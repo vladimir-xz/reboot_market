@@ -74,7 +74,7 @@ class Product
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\OneToOne(inversedBy: 'product', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(inversedBy: 'product', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private ?ProductDescription $description = null;
 
     public function __construct()

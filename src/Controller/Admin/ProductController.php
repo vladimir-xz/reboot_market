@@ -40,12 +40,7 @@ final class ProductController extends AbstractController
 
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // $imageFile = $form->get('image')->getData();
-            $images = $form->getData()->getImages();
-
-            // this condition is needed because the 'brochure' field is not required
-            // so the PDF file must be processed only when a file is uploaded
-            if ($images) {
+            if ($form->getData()->getImages()) {
                 foreach ($form->get('images') as $imageData) {
                     $image = $imageData->getData();
                     $imageFile = $imageData->get('uploadImages')->getData();
@@ -78,12 +73,29 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'admin.product.edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Product $product, EntityManagerInterface $entityManager): Response
-    {
+    public function edit(
+        Request $request,
+        Product $product,
+        EntityManagerInterface $entityManager,
+        ImageUploader $imageUploader,
+    ): Response {
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->getData()->getImages()) {
+                foreach ($form->get('images') as $imageData) {
+                    $image = $imageData->getData();
+                    $imageFile = $imageData->get('uploadImages')->getData();
+                    $fullFilePath = $imageUploader->upload($imageFile, $product);
+
+                    $image->setPath($fullFilePath);
+                    $entityManager->persist($image);
+                    $product->addImage($image);
+                }
+                // $imageFile = $form->get('images')[0]->get('uploadImages')->getData();
+            }
+
             $entityManager->flush();
 
             return $this->redirectToRoute('admin.product.index', [], Response::HTTP_SEE_OTHER);

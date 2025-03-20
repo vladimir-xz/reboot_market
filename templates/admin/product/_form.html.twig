@@ -15,7 +15,7 @@
         data-form-collection-index-value="{{ form.images|length > 0 ? form.images|last.vars.name + 1 : 0 }}"
         data-form-collection-prototype-value="{{ form_widget(form.images.vars.prototype)|e('html_attr') }}"
     >
-        <ul {{ stimulus_target('form-collection', 'collectionContainer') }}>
+        <ul {{ stimulus_target('form-collection', 'collectionContainer') }} class="flex flex-wrap ">
             {{  form_row(form.images)  }}
         </ul>
         <button type="button" {{ stimulus_action('form-collection', 'addCollectionElement') }}>Add an Image</button>

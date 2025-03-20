@@ -38,7 +38,7 @@ class ProductType extends AbstractType
                 'choices' => ['Used' => 'used', 'New' => 'new', 'Refurbished' => 'refurbished']
             ])
             ->add('weight', NumberType::class)
-            ->add('length', NumberType::class, ['required' => false,])
+            ->add('length', NumberType::class, ['required' => false, ])
             ->add('price', NumberType::class)
             ->add('amount', NumberType::class)
             ->add('type', TextType::class)
@@ -73,6 +73,7 @@ class ProductType extends AbstractType
             ])
             ->add('description', DescriptionType::class, ['required' => false,])
             ->add('images', CollectionType::class, [
+                'label' => ' ',
                 'entry_type' => ImageType::class,
                 'allow_add' => true,
                 'by_reference' => false,
