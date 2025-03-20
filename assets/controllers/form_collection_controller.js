@@ -11,19 +11,15 @@ export default class extends Controller {
     {
         const item = document.createElement('li');
         item.innerHTML = this.prototypeValue.replace(/__name__/g, this.indexValue);
-
-        const removeFormButton = document.createElement('button');
-        removeFormButton.innerText = 'Delete this tag';
-    
-        item.append(removeFormButton);
-    
-        removeFormButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            // remove the li for the tag form
-            item.remove();
-        });
-
         this.collectionContainerTarget.appendChild(item);
         this.indexValue++;
+    }
+
+    remove(event)
+    {
+        event.preventDefault();
+        event.target.parentElement.parentElement.remove()
+        // remove the li for the tag form
+        // item.remove();
     }
 }
