@@ -9,6 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -57,18 +58,13 @@ class UserType extends AbstractType
                 ->add('Edit', SubmitType::class)
             ;
         } else {
-            $builder->add('password', PasswordType::class, [
-                    'attr' => ['autocomplete' => 'new-password']
-                ])
-                ->add('repeatPassword', PasswordType::class, [
-                    'mapped' => false,
-                    'attr' => ['autocomplete' => 'new-password'],
-                    'constraints' => [new Callback(['callback' => function ($value, ExecutionContextInterface $ec) {
-                        $current = $ec->getRoot()->getData()->getPassword() ?? null;
-                        if ($current !== $value) {
-                            $ec->addViolation('Passwords do not match');
-                        }
-                    }])],
+            $builder->add('password', RepeatedType::class, [
+                    'type' => PasswordType::class,
+                    'invalid_message' => 'The password fields must match.',
+                    'options' => ['attr' => ['autocomplete' => 'new-password']],
+                    'required' => true,
+                    'first_options'  => ['label' => 'Password'],
+                    'second_options' => ['label' => 'Repeat Password'],
                 ])
                 ->add('agreeTerms', CheckboxType::class, [
                     'required' => false,
@@ -81,6 +77,7 @@ class UserType extends AbstractType
 
         $builder->add('addresses', CollectionType::class, [
             'entry_type' => AddressType::class,
+            'allow_add' => true,
         ]);
     }
 

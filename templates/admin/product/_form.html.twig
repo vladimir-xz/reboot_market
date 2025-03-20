@@ -1,11 +1,3 @@
-{# {{ form_start(form) }}
-    {{ form_widget(form) }}
-    {% for description in form.description %}
-        {{ form_row(description.text) }}
-    {% endfor %}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }} #}
-
 {{ form_start(form) }}
     {{ form_row(form.name) }}
     {{ form_row(form.condition) }}
@@ -19,11 +11,14 @@
     {{ form_row(form.specifications) }}
     {{ form_row(form.related) }}
     {{ form_row(form.description) }}
-
-    {# {% for description in form.description %}
-        {{ form_row(description.text) }}
-    {% endfor %} #}
+    <div {{ stimulus_controller('form-collection') }}
+        data-form-collection-index-value="{{ form.images|length > 0 ? form.images|last.vars.name + 1 : 0 }}"
+        data-form-collection-prototype-value="{{ form_widget(form.images.vars.prototype)|e('html_attr') }}"
+    >
+        <ul {{ stimulus_target('form-collection', 'collectionContainer') }}></ul>
+        <button type="button" {{ stimulus_action('form-collection', 'addCollectionElement') }}>Add an Image</button>
+    </div>
 
     <button class="btn">{{ button_label|default('Save') }}</button>
-
 {{ form_end(form) }}
+

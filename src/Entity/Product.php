@@ -54,7 +54,7 @@ class Product
     /**
      * @var Collection<int, Image>
      */
-    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'product')]
+    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'product', cascade: ['persist'])]
     private Collection $images;
 
     /**

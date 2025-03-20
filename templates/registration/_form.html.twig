@@ -1,7 +1,6 @@
 {{ form_start(form) }}
     {{ form_row(form.email) }}
     {{ form_row(form.password) }}
-    {{ form_row(form.repeatPassword) }}
     {{ form_row(form.formOfAddress) }}
     {{ form_row(form.firstName) }}
     {{ form_row(form.lastName) }}
@@ -19,7 +18,5 @@
         
     {{ form_row(form.agreeTerms)    }}
     {{ form_row(form.register)    }}
-    
-    <button class="btn">{{ button_label|default('Save') }}</button>
 
 {{ form_end(form) }}

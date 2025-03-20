@@ -71,7 +71,13 @@ class ProductType extends AbstractType
                 'multiple' => true,
                 'required' => false,
             ])
-            ->add('description', DescriptionType::class, ['required' => false,]);
+            ->add('description', DescriptionType::class, ['required' => false,])
+            ->add('images', CollectionType::class, [
+                'entry_type' => ImageType::class,
+                'allow_add' => true,
+                'by_reference' => false,
+                'allow_delete' => true,
+            ])
         ;
     }
 

@@ -1,6 +1,6 @@
 <div{{ attributes }} class="flex-auto w-60 bg-neutral-50 snap-start" data-cards-snap-target="card">
     <a href="{{ path('product.index', {id: product.id}) }}">
-        <img class="h-40 object-contain" src="{{ asset(product.mainImagePath) }}" alt="Server">
+        <img class="h-40 object-contain" src="{{ asset(product.mainImagePath ?? '') }}" alt="Server">
     </a>
 
     <div class="p-4">
