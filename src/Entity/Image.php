@@ -4,8 +4,13 @@ namespace App\Entity;
 
 use App\Repository\ImageRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Image
 {
     #[ORM\Id]
@@ -35,6 +40,14 @@ class Image
 
     public function setPath(string $path): static
     {
+        if ($this->path) {
+            try {
+                $filesystem = new \Symfony\Component\Filesystem\Filesystem();
+                $filesystem->remove($this->path);
+            } catch (IOExceptionInterface $e) {
+                throw new Exception(sprintf('Error deleting file: %s', $e->getMessage()));
+            }
+        }
         $this->path = $path;
 
         return $this;
@@ -62,5 +75,17 @@ class Image
         $this->isMain = $isMain;
 
         return $this;
+    }
+
+    #[ORM\PreRemove]
+    public function deleteImage()
+    {
+        error_log('deleting entity ' . $this->path);
+        try {
+            $filesystem = new \Symfony\Component\Filesystem\Filesystem();
+            $filesystem->remove($this->path);
+        } catch (IOExceptionInterface $e) {
+            throw new Exception(sprintf('Error deleting file: %s', $e->getMessage()));
+        }
     }
 }
