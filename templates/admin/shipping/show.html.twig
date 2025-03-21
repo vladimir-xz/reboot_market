@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}shipping{% endblock %}
+
+{% block body %}
+    <h1>shipping</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ shipping.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ shipping.name }}</td>
+            </tr>
+            <tr>
+                <th>Countries</th>
+                <td>                    
+                    <ul>
+                        {% for country in shipping.country   %}
+                            <li>{{   country.name   }}</li>
+                        {% endfor   %}
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('shipping.index') }}">back to list</a>
+
+    <a href="{{ path('shipping.edit', {'id': shipping.id}) }}">edit</a>
+
+    {{ include('admin/shipping/_delete_form.html.twig') }}
+
+    <div class="my-4">
+        <a href="{{ path('admin') }}">Back to admin lobby</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}shipping index{% endblock %}
+
+{% block body %}
+    <h1>shipping index</h1>
+
+    <a href="{{ path('admin') }}">Back to admin lobby</a>
+    <table class="table-auto">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Countries</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for shipping in shippings %}
+                <tr>
+                    <td>
+                        <a href="{{ path('shipping.show', {'id': shipping.id}) }}">
+                            <div class="">{{ shipping.id }}</div>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ path('shipping.show', {'id': shipping.id}) }}">
+                            <div class="">{{ shipping.name }}</div>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ path('shipping.show', {'id': shipping.id}) }}">
+                            <div class="">
+                                <ul>
+                                    {% for country in shipping.country   %}
+                                        <li>{{   country.name   }}</li>
+                                    {% endfor   %}
+                                </ul>
+                            </div>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ path('shipping.edit', {'id': shipping.id}) }}">edit</a>
+                    </td>
+                </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('shipping.new') }}">Create new</a>
+
+    <div class="my-4">
+        <a href="{{ path('admin') }}">Back to admin lobby</a>
+    </div>
+{% endblock %}

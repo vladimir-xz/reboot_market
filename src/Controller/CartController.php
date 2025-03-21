@@ -64,6 +64,7 @@ final class CartController extends AbstractController
         return $this->render('cart/index.html.twig', [
             'cart' => $cart,
             'result' => $result,
+            'treeMap' => [],
             'allShippingMethods' => $allShippingMethods,
             'totalWeight' => $result['totalWeight'],
             'freightData' => $freightData ?? [],
