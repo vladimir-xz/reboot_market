@@ -35,6 +35,8 @@ class Product
     #[ORM\Column]
     private ?int $amount = null;
 
+    private ?int $amountInCart = null;
+
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
@@ -184,6 +186,18 @@ class Product
     public function setAmount(int $amount): static
     {
         $this->amount = $amount;
+
+        return $this;
+    }
+
+    public function getAmountInCart(): ?int
+    {
+        return $this->amountInCart;
+    }
+
+    public function setAmountInCart(int $amount): static
+    {
+        $this->amountInCart = $amount;
 
         return $this;
     }

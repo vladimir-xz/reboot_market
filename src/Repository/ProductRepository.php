@@ -71,6 +71,15 @@ class ProductRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
+    public function findSomeByIds(array $ids)
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.id IN (:val)')
+            ->setParameter('val', $ids)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getAllProductsWithCategoryAndFilters(string $query = '', array $catInclude = [], array $catExclude = [], array $filters = []): array
     {
         $qb = $this->createQueryBuilder('p')
