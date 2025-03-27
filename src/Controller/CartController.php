@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Address;
 use App\Entity\Product;
+use App\Repository\CountryRepository;
 use App\Repository\FreightRateRepository;
 use App\Repository\FreightRepository;
 use App\Repository\ProductRepository;
@@ -25,22 +27,43 @@ final class CartController extends AbstractController
         Security $security,
         FreightPreparator $freightPreparator,
         FreightRateRepository $freightRateRepository,
+        CountryRepository $countryRepository,
         LoggerInterface $log,
     ): Response {
         $cart = json_decode($request->cookies->get('cart', '{}'), true);
+        if (!$cart) {
+            return $this->render('cart/index.html.twig', [
+                'products' => [],
+                'productsTotal' => null,
+                'allCountries' => [],
+                'treeMap' => [],
+                'address' => null,
+                'allMethods' => null,
+                'currentMethod' => null,
+                'totalWeight' => null,
+                'freightPrice' => null,
+                'totalPrice' => null,
+            ]);
+        }
+
         $ids = array_keys($cart['ids'] ?? []);
         $products = new ArrayCollection($productRep->findSomeByIds($ids));
-
-
-        $result = $products->reduce(function ($acc, Product $product) use ($cart): array {
+        $result = $products->reduce(function (array $acc, Product $product) use ($cart): array {
             if (!isset($acc['products'])) {
                 $acc['products'] = [];
                 $acc['totalPrice'] = 0;
                 $acc['totalWeight'] = 0;
+                $acc['errors'] = [];
             }
 
             $amountInCart = $cart['ids'][$product->getId()]['amount'] ?? 1;
-            $product->setAmountInCart($amountInCart);
+
+            if ($product->hasEnoughInStockAndNotNegative($amountInCart)) {
+                $product->setAmountInCart($amountInCart);
+            } else {
+                $product->setAmountInCart($product->getAmount());
+                $acc['erorrs'][$product->getId()] = ['Not enough in stock'];
+            }
 
             $acc['products'][] = $product;
             $acc['totalPrice'] += $product->getPrice() * $amountInCart;
@@ -51,24 +74,30 @@ final class CartController extends AbstractController
 
         /** @var \App\Entity\User $user */
         $user = $security->getUser();
+        $address = $user?->getAddresses()[0] ?? new Address();
+        $countries = $countryRepository->findAll();
         if ($user) {
-            $allShippingMethods = $user->getAddresses()[0]->getCountry()->getShippingMethods();
+            $allShippingMethods = $address->getCountry()->getShippingMethods();
             $freightData = $freightPreparator::prepareData(
-                $user->getAddresses()[0],
+                $address,
                 $result['totalWeight'],
                 $allShippingMethods[0],
             );
-            $freightPrice = $freightRateRepository->findPriceForAdress($freightData);
+            $freightRate = $freightRateRepository->findPriceForAdress($freightData);
+            $priceWithDelivery = $freightRate['price'] + $result['totalPrice'];
         }
 
         return $this->render('cart/index.html.twig', [
-            'cart' => $cart,
-            'result' => $result,
-            'treeMap' => [],
-            'allShippingMethods' => $allShippingMethods,
+            'products' => $result['products'],
             'totalWeight' => $result['totalWeight'],
-            'freightData' => $freightData ?? [],
-            'freightPrice' => $freightPrice ?? 0,
+            'productsTotal' => $result['totalPrice'],
+            'allCountries' => $countries,
+            'treeMap' => [],
+            'allMethods' => $allShippingMethods ?? null,
+            'currentMethod' => $allShippingMethods[0] ?? null,
+            'address' => $address,
+            'freightPrice' => $freightPrice ?? null,
+            'totalPrice' => $priceWithDelivery ?? null,
         ]);
     }
 }

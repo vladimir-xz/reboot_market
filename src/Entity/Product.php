@@ -346,4 +346,9 @@ class Product
 
         return $this;
     }
+
+    public function hasEnoughInStockAndNotNegative(int $amount)
+    {
+        return $amount <= $this->amount && $amount > 0;
+    }
 }

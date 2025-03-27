@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
 
 class AddressType extends AbstractType
 {
@@ -25,6 +26,9 @@ class AddressType extends AbstractType
                 'label' => 'Street',
                 'attr' => ['autocomplete' => 'address-line1'],
                 'help' => 'Street address, company name',
+                'constraints' => [
+                    new Length(['min' => 10]),
+                ],
             ])
             ->add('secondLine', TextType::class, [
                 'label' => 'House No.',
@@ -39,6 +43,7 @@ class AddressType extends AbstractType
                 'choice_label' => function (?Country $country): string {
                     return $country ? ucfirst($country->getName()) : '';
                 },
+                'placeholder' => 'Choose a country',
             ])
         ;
     }

@@ -27,11 +27,11 @@ class FreightRateRepository extends ServiceEntityRepository
             ->andWhere('f.postcode = :val2')
             ->setParameter('val2', $freightData->getPostcode())
             ->andWhere('f.country = :val3')
-            ->setParameter(':val3', $freightData->getCountry())
+            ->setParameter('val3', $freightData->getCountry())
             ->andWhere('f.shippingMethod = :val4')
             ->setParameter('val4', $freightData->getShippingMethod())
             ->getQuery()
-            ->getSingleColumnResult();
+            ->getOneOrNullResult();
     }
 
     //    /**

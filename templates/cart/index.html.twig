@@ -4,9 +4,27 @@
 
 {% block content %}
 <div>
-    {{   dump(cart)    }}
-    {{   dump(result)   }}
-    {{   dump(freightPrice)   }}
-    {{   dump(freightData)   }}
+    <div class="flex gap-4">
+        <div class="w-3/5">
+            {% if not products is empty %}
+                {%  for product in products  %}
+                    <twig:ProductInCart :product="product"/>
+                {%  endfor   %}
+            {%  else  %}
+                <p>No products in a cart</p>
+            {%  endif  %}
+        </div>
+        <div class="w-2/5 p-4">
+            <twig:PurchaseForm
+                :address="address"
+                :countries="allCountries"
+                :shippingMethod="currentMethod"
+                :totalWeight="totalWeight"
+                :productsTotal="productsTotal"
+                :totalPrice="totalPrice"
+                :freightPrice="freightPrice"
+            />
+        </div>
+    </div>
 </div>
 {% endblock %}

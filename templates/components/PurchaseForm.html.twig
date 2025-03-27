@@ -1,0 +1,107 @@
+<div{{ attributes }}>
+    {{  this.setPricesIfEnoughData}}
+
+    <!-- component html -->
+    {{ dump(_errors)}}
+    {% if not _errors is empty %}
+        <p>erros not empty</p>
+        {%  for error in _errors %}
+            <p>First error</p>
+            {{ dump(error)}}
+        {%  endfor  %}
+    {% endif %}
+
+    <div class="mb-6">
+        {% if _errors.has('address.firstLine') %}
+            <div class="error">
+                {{ _errors.get('address.firstLine') }}
+            </div>
+        {% endif %}
+        <label class="block text-gray-800 required" for="address_firstLine">Street</label>
+        <input class="mt-1 w-full {{ _errors.has('address.firstLine') ? 'is-invalid' : '' }}" data-model="on(change)|address.firstLine" type="text" id="address_firstLine" required="required" autocomplete="address-line1" aria-describedby="address_firstLine_help">
+        <div class="">Street address, company name</div>
+    </div>
+    <div class="mb-6">
+        {% if _errors.has('address.secondLine') %}
+            <div class="error">
+                {{ _errors.get('address.secondLine') }}
+            </div>
+        {% endif %}
+        <label class="block text-gray-800 required" for="address_secondLine">House No.</label>
+        <input type="text" data-model="on(change)|address.secondLine" id="address_secondLine" required="required" aria-describedby="address_secondLine_help" class="mt-1 w-full {{ _errors.has('address.secondLine') ? 'is-invalid' : '' }}">
+        <div class="">Building, unit, suite, unit, floor</div>
+    </div>
+    <div class="mb-6">
+        {% if _errors.has('address.town') %}
+            <div class="error">
+                {{ _errors.get('address.town') }}
+            </div>
+        {% endif %}
+        <label class="block text-gray-800 required" for="address_town">Town</label>
+        <input type="text" data-model="on(change)|address.town" id="address_town" required="required" class="mt-1 w-full {{ _errors.has('address.town') ? 'is-invalid' : '' }}">
+    </div>
+    <div class="mb-6">
+        {% if _errors.has('address.postcode') %}
+            <div class="error">
+                {{ _errors.get('address.postcode') }}
+            </div>
+        {% endif %}
+        <label class="block text-gray-800 required" for="address_postcode">Postcode</label>
+        <input type="text" data-model="on(change)|address.postcode" id="address_postcode" required="required" class="mt-1 w-full {{ _errors.has('address.postcode') ? 'is-invalid' : '' }}">
+    </div>
+
+    <div class="mb-6">
+        {% if _errors.has('address.country') %}
+            <div class="error">
+                {{ _errors.get('address.country') }}
+            </div>
+        {% endif %}
+        <label class="block text-gray-800 required" for="address_country">Country</label>
+        <select data-model="on(change)|country" id="address_country" required="required" class="mt-1 w-full">
+            <option value="" {{ country == null ? "selected='selected'" : ''}}>Choose a country</option>
+            {%   for countryLoop in countries   %}
+                <option value="{{ countryLoop.id  }}" {{ countryLoop == address.country ? "selected='selected'" : ''}}>
+                    {{   countryLoop.name   }}
+                </option>
+            {%   endfor   %}
+        </select>
+    </div>
+
+    {%   if not this.shippingMethods is empty   %}
+    <div class="mb-6">
+        {% if _errors.has('shippingMethod') %}
+            <div class="error">
+                {{ _errors.get('shippingMethod') }}
+            </div>
+        {% endif %}
+        <select data-model="shippingMethod">
+            {%   for method in this.shippingMethods  %}
+                <option
+                    value="{{ method.id }}"
+                    class="h-24 w-24 flex items-center justify-center"
+                >
+                    {{ method.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    {%   endif   %}
+
+    <div class="mb-6">
+        <div class="">
+            Products price: {{  this.productsTotal  }}
+        </div>
+        <div class="">
+            Shipping price: {{  this.freightPrice  }}
+        </div>
+        <div class="">
+            Total: {{  this.totalPrice  }}
+        </div>
+    </div>
+
+    {%   if isSuccessful   %}
+        <button class="my-4">
+            Proceed to payment
+        </button>
+    {%   endif   %}
+</div>
