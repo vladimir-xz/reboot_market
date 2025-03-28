@@ -17,10 +17,10 @@ class FreightRateRepository extends ServiceEntityRepository
         parent::__construct($registry, FreightRate::class);
     }
 
-    public function findPriceForAdress(FreightDataDto $freightData)
+    public function findPriceForAdress(FreightDataDto $freightData): ?int
     {
         //TODO: fetch adress with country beforehand
-        return $this->createQueryBuilder('f')
+        $data = $this->createQueryBuilder('f')
             ->select('f.price')
             ->andWhere('f.weight = :val1')
             ->setParameter('val1', $freightData->getWeight())
@@ -32,6 +32,8 @@ class FreightRateRepository extends ServiceEntityRepository
             ->setParameter('val4', $freightData->getShippingMethod())
             ->getQuery()
             ->getOneOrNullResult();
+
+        return $data['price'] ?? null;
     }
 
     //    /**

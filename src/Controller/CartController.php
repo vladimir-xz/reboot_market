@@ -41,7 +41,7 @@ final class CartController extends AbstractController
                 'allMethods' => null,
                 'currentMethod' => null,
                 'totalWeight' => null,
-                'freightPrice' => null,
+                'freightCost' => null,
                 'totalPrice' => null,
             ]);
         }
@@ -83,8 +83,8 @@ final class CartController extends AbstractController
                 $result['totalWeight'],
                 $allShippingMethods[0],
             );
-            $freightRate = $freightRateRepository->findPriceForAdress($freightData);
-            $priceWithDelivery = $freightRate['price'] + $result['totalPrice'];
+            $freightCost = $freightRateRepository->findPriceForAdress($freightData);
+            $priceWithDelivery = $freightCost !== null ? $freightCost + $result['totalPrice'] : null;
         }
 
         return $this->render('cart/index.html.twig', [
@@ -96,7 +96,7 @@ final class CartController extends AbstractController
             'allMethods' => $allShippingMethods ?? null,
             'currentMethod' => $allShippingMethods[0] ?? null,
             'address' => $address,
-            'freightPrice' => $freightPrice ?? null,
+            'freightCost' => $freightCost ?? null,
             'totalPrice' => $priceWithDelivery ?? null,
         ]);
     }

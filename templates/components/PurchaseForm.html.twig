@@ -77,17 +77,23 @@
 
     <div class="mb-6">
         <div class="">
-            Products price: {{  this.productsTotal  }}
+            Products price: {{  productsTotal  }}
         </div>
         <div class="">
-            Shipping price: {{  this.freightPrice  }}
+            Shipping price: {{  freightCost  }}
         </div>
         <div class="">
-            Total: {{  this.totalPrice  }}
+            Total: {%   if isFreightCostSet   %}
+                <p>{{  totalPrice  }}</p>
+                {%   else if this.isValid   %}
+                <p>Or address is wrong, or parcel is too heavy</p>
+                {%   else  %}
+                <p>Set your delivery address</p>
+                {%   endif   %}
         </div>
     </div>
 
-    {%   if isSuccessful   %}
+    {%   if isFreightCostSet   %}
         <button class="my-4">
             Proceed to payment
         </button>

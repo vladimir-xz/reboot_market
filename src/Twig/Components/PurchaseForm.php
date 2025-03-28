@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
-use Symfony\UX\LiveComponent\Attribute\PreReRender;
+use Symfony\UX\LiveComponent\Attribute\PostHydrate;
 use Symfony\UX\LiveComponent\ValidatableComponentTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
@@ -36,20 +36,20 @@ final class PurchaseForm extends AbstractController
     public ?int $totalPrice = null;
 
     #[LiveProp]
-    public ?int $freightPrice = null;
+    public ?int $freightCost = null;
 
-    #[LiveProp(writable: true)]
+    #[LiveProp]
     /** @var Country[] */
     public $countries = [];
 
-    #[LiveProp(writable: true)]
+    #[LiveProp]
     /** @var ShippingMethod[] */
     public $shippingMethods = [];
 
     #[LiveProp(writable: true, onUpdated: 'onCountryUpdate')]
     public Country $country;
 
-    #[LiveProp(writable: true)]
+    #[LiveProp(writable: true, onUpdate: 'onRelevantUpdate')]
     #[Assert\Valid]
     public ?ShippingMethod $shippingMethod = null;
 
@@ -66,7 +66,7 @@ final class PurchaseForm extends AbstractController
     public ?Address $address;
 
     #[LiveProp]
-    public ?bool $isSuccessful = false;
+    public ?bool $isFreightCostSet = false;
 
     public function __construct(
         private FreightPreparator $freightPreparator,
@@ -78,17 +78,9 @@ final class PurchaseForm extends AbstractController
         $this->country = new Country();
     }
 
-    // public function postMount(): void
-    // {
-    //     $this->log->info('Doing post mount');
-    //     if ($this->address?->getCountry()) {
-    //         $this->countryId = $this->address->getCountry()->getId();
-    //     }
-    // }
-
     public function onIrrelevantUpdate()
     {
-        if ($this->isSuccessful) {
+        if ($this->isFreightCostSet) {
             return;
         }
 
@@ -103,12 +95,10 @@ final class PurchaseForm extends AbstractController
 
     public function onRelevantUpdate()
     {
-        if ($this->componentValidator->validate($this->address)) {
-            $this->isSuccessful = false;
+        if (!$this->isValid()) {
             return;
         }
 
-        $this->isSuccessful = true;
         $this->shippingMethods = $this->address?->getCountry()?->getShippingMethods();
         $this->shippingMethod = $this->shippingMethods[0];
         $freightData = $this->freightPreparator::prepareData(
@@ -116,9 +106,9 @@ final class PurchaseForm extends AbstractController
             $this->totalWeight,
             $this->shippingMethod,
         );
-        $freightRate = $this->freightRateRepository->findPriceForAdress($freightData);
-        $this->freightPrice = $freightRate['price'] ?? 0;
-        $this->totalPrice = $this->freightPrice + $this->productsTotal;
+        $this->freightCost = $this->freightRateRepository->findPriceForAdress($freightData);
+        $this->isFreightCostSet = $this->freightCost !== null;
+        $this->totalPrice = $this->isFreightCostSet ? $this->freightCost + $this->productsTotal : null;
     }
 
     // public function getProductsTotal()
@@ -126,7 +116,7 @@ final class PurchaseForm extends AbstractController
     //     return $this->productsTotal;
     // }
 
-    // public function getFreightPrice()
+    // public function getfreightCost()
     // {
     //     if (!$this->isSuccessful) {
     //         return 'Set your address';
@@ -139,10 +129,10 @@ final class PurchaseForm extends AbstractController
     //         $this->shippingMethod,
     //     );
     //     $freightRate = $this->freightRateRepository->findPriceForAdress($freightData);
-    //     $this->freightPrice = $freightRate['price'];
-    //     $this->totalPrice = $this->freightPrice + $this->productsTotal;
+    //     $this->freightCost = $freightRate['price'];
+    //     $this->totalPrice = $this->freightCost + $this->productsTotal;
 
-    //     return $this->freightPrice;
+    //     return $this->freightCost;
     // }
 
     // public function getTotalPrice()
