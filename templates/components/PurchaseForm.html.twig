@@ -1,16 +1,4 @@
 <div{{ attributes }}>
-    {{  this.setPricesIfEnoughData}}
-
-    <!-- component html -->
-    {{ dump(_errors)}}
-    {% if not _errors is empty %}
-        <p>erros not empty</p>
-        {%  for error in _errors %}
-            <p>First error</p>
-            {{ dump(error)}}
-        {%  endfor  %}
-    {% endif %}
-
     <div class="mb-6">
         {% if _errors.has('address.firstLine') %}
             <div class="error">

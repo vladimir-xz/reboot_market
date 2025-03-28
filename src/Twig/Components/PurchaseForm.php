@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
-use Symfony\UX\LiveComponent\Attribute\PreRender;
+use Symfony\UX\LiveComponent\Attribute\PreReRender;
 use Symfony\UX\LiveComponent\ValidatableComponentTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
@@ -46,14 +46,22 @@ final class PurchaseForm extends AbstractController
     /** @var ShippingMethod[] */
     public $shippingMethods = [];
 
-    #[LiveProp(writable: true)]
+    #[LiveProp(writable: true, onUpdated: 'onCountryUpdate')]
     public Country $country;
 
     #[LiveProp(writable: true)]
     #[Assert\Valid]
     public ?ShippingMethod $shippingMethod = null;
 
-    #[LiveProp(writable: ['firstLine', 'secondLine', 'town', 'postcode'])]
+    #[LiveProp(
+        writable: ['firstLine', 'secondLine', 'town', 'postcode'],
+        onUpdated: [
+            'firstLine' => 'onIrrelevantUpdate',
+            'secondLine' => 'onIrrelevantUpdate',
+            'town' => 'onIrrelevantUpdate',
+            'postcode' => 'onRelevantUpdate'
+        ]
+    )]
     #[Assert\Valid]
     public ?Address $address;
 
@@ -78,27 +86,29 @@ final class PurchaseForm extends AbstractController
     //     }
     // }
 
-    #[LiveAction]
-    public function setPricesIfEnoughData()
+    public function onIrrelevantUpdate()
     {
-        // if (!$this->validateField('mode', false)) {
-        //     return null;
-        // }
-
-        // return $this->address->getCountry()->getShippingMethods();
-
-        // $errors = $this->componentValidator->validate($this->address);
-        // $this->log->info(print_r($errors, true));
-        if ($this->country) {
-            $this->address->setCountry($this->country);
+        if ($this->isSuccessful) {
+            return;
         }
 
+        $this->onRelevantUpdate();
+    }
+
+    public function onCountryUpdate()
+    {
+        $this->address->setCountry($this->country);
+        $this->onRelevantUpdate();
+    }
+
+    public function onRelevantUpdate()
+    {
         if ($this->componentValidator->validate($this->address)) {
-            return;
-        } elseif ($this->totalPrice) {
+            $this->isSuccessful = false;
             return;
         }
 
+        $this->isSuccessful = true;
         $this->shippingMethods = $this->address?->getCountry()?->getShippingMethods();
         $this->shippingMethod = $this->shippingMethods[0];
         $freightData = $this->freightPreparator::prepareData(
