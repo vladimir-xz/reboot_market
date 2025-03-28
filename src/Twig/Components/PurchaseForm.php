@@ -47,7 +47,6 @@ final class PurchaseForm extends AbstractController
     public Country $country;
 
     #[LiveProp(writable: true, onUpdate: 'onRelevantUpdate')]
-    #[Assert\Type(ShippingMethod::class)]
     public ?ShippingMethod $shippingMethod = null;
 
     #[LiveProp(
