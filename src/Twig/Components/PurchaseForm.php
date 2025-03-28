@@ -94,6 +94,7 @@ final class PurchaseForm extends AbstractController
             return;
         }
 
+        //IF OLD SHIPPING METHOD IN ARRAY, KEEP IT, IF ITS NOT OR NULL, CHANGE
         $this->shippingMethods = $this->address->getCountry()->getShippingMethods();
         $this->shippingMethod = $this->shippingMethod ?? $this->shippingMethods[0];
         $this->freightCost = $this->freightCostGetter->prepareDataAndGetCost(
