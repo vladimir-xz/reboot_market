@@ -9,7 +9,7 @@ use App\Entity\FreightRate;
 use App\Entity\ShippingMethod;
 use App\Repository\CountryRepository;
 use App\Repository\FreightRateRepository;
-use App\Service\FreightPreparator;
+use App\Service\FreightCostGetter;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -39,18 +39,15 @@ final class PurchaseForm extends AbstractController
     public ?int $freightCost = null;
 
     #[LiveProp]
-    /** @var Country[] */
-    public $countries = [];
-
-    #[LiveProp]
     /** @var ShippingMethod[] */
     public $shippingMethods = [];
 
     #[LiveProp(writable: true, onUpdated: 'onCountryUpdate')]
+    #[Assert\NotBlank]
     public Country $country;
 
     #[LiveProp(writable: true, onUpdate: 'onRelevantUpdate')]
-    #[Assert\Valid]
+    #[Assert\Type(ShippingMethod::class)]
     public ?ShippingMethod $shippingMethod = null;
 
     #[LiveProp(
@@ -69,8 +66,7 @@ final class PurchaseForm extends AbstractController
     public ?bool $isFreightCostSet = false;
 
     public function __construct(
-        private FreightPreparator $freightPreparator,
-        private FreightRateRepository $freightRateRepository,
+        private FreightCostGetter $freightCostGetter,
         private CountryRepository $countryRepository,
         private LoggerInterface $log,
     ) {
@@ -99,16 +95,20 @@ final class PurchaseForm extends AbstractController
             return;
         }
 
-        $this->shippingMethods = $this->address?->getCountry()?->getShippingMethods();
-        $this->shippingMethod = $this->shippingMethods[0];
-        $freightData = $this->freightPreparator::prepareData(
+        $this->shippingMethods = $this->address->getCountry()->getShippingMethods();
+        $this->shippingMethod = $this->shippingMethod ?? $this->shippingMethods[0];
+        $this->freightCost = $this->freightCostGetter->prepareDataAndGetCost(
             $this->address,
             $this->totalWeight,
             $this->shippingMethod,
         );
-        $this->freightCost = $this->freightRateRepository->findPriceForAdress($freightData);
         $this->isFreightCostSet = $this->freightCost !== null;
         $this->totalPrice = $this->isFreightCostSet ? $this->freightCost + $this->productsTotal : null;
+    }
+
+    public function getCountries()
+    {
+        return $this->countryRepository->getAll();
     }
 
     // public function getProductsTotal()

@@ -9,7 +9,7 @@ use App\Repository\FreightRateRepository;
 use App\Repository\FreightRepository;
 use App\Repository\ProductRepository;
 use App\Repository\ShippingMethodRepository;
-use App\Service\FreightPreparator;
+use App\Service\FreightCostGetter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,7 +25,7 @@ final class CartController extends AbstractController
         Request $request,
         ProductRepository $productRep,
         Security $security,
-        FreightPreparator $freightPreparator,
+        FreightCostGetter $freightCostGetter,
         FreightRateRepository $freightRateRepository,
         CountryRepository $countryRepository,
         LoggerInterface $log,
@@ -35,7 +35,6 @@ final class CartController extends AbstractController
             return $this->render('cart/index.html.twig', [
                 'products' => [],
                 'productsTotal' => null,
-                'allCountries' => [],
                 'treeMap' => [],
                 'address' => null,
                 'allMethods' => null,
@@ -75,15 +74,13 @@ final class CartController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $security->getUser();
         $address = $user?->getAddresses()[0] ?? new Address();
-        $countries = $countryRepository->findAll();
         if ($user) {
             $allShippingMethods = $address->getCountry()->getShippingMethods();
-            $freightData = $freightPreparator::prepareData(
+            $freightCost = $freightCostGetter->prepareDataAndGetCost(
                 $address,
                 $result['totalWeight'],
                 $allShippingMethods[0],
             );
-            $freightCost = $freightRateRepository->findPriceForAdress($freightData);
             $priceWithDelivery = $freightCost !== null ? $freightCost + $result['totalPrice'] : null;
         }
 
@@ -91,7 +88,6 @@ final class CartController extends AbstractController
             'products' => $result['products'],
             'totalWeight' => $result['totalWeight'],
             'productsTotal' => $result['totalPrice'],
-            'allCountries' => $countries,
             'treeMap' => [],
             'allMethods' => $allShippingMethods ?? null,
             'currentMethod' => $allShippingMethods[0] ?? null,

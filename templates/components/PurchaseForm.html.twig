@@ -47,9 +47,9 @@
         <label class="block text-gray-800 required" for="address_country">Country</label>
         <select data-model="on(change)|country" id="address_country" required="required" class="mt-1 w-full">
             <option value="" {{ country == null ? "selected='selected'" : ''}}>Choose a country</option>
-            {%   for countryLoop in countries   %}
-                <option value="{{ countryLoop.id  }}" {{ countryLoop == address.country ? "selected='selected'" : ''}}>
-                    {{   countryLoop.name   }}
+            {%   for country in this.countries   %}
+                <option value="{{ country.id  }}" {{ country == address.country ? "selected='selected'" : ''}}>
+                    {{   country.name   }}
                 </option>
             {%   endfor   %}
         </select>

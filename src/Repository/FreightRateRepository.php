@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Dto\FreightDataDto;
+use App\Entity\Address;
 use App\Entity\FreightRate;
+use App\Entity\ShippingMethod;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,19 +19,23 @@ class FreightRateRepository extends ServiceEntityRepository
         parent::__construct($registry, FreightRate::class);
     }
 
-    public function findPriceForAdress(FreightDataDto $freightData): ?int
-    {
+    public function findPriceForAdress(
+        string $preparedPostcode,
+        int $weight,
+        Address $address,
+        ShippingMethod $shippingMethod
+    ): ?int {
         //TODO: fetch adress with country beforehand
         $data = $this->createQueryBuilder('f')
             ->select('f.price')
             ->andWhere('f.weight = :val1')
-            ->setParameter('val1', $freightData->getWeight())
+            ->setParameter('val1', $weight)
             ->andWhere('f.postcode = :val2')
-            ->setParameter('val2', $freightData->getPostcode())
+            ->setParameter('val2', $preparedPostcode)
             ->andWhere('f.country = :val3')
-            ->setParameter('val3', $freightData->getCountry())
+            ->setParameter('val3', $address->getCountry())
             ->andWhere('f.shippingMethod = :val4')
-            ->setParameter('val4', $freightData->getShippingMethod())
+            ->setParameter('val4', $shippingMethod)
             ->getQuery()
             ->getOneOrNullResult();
 
