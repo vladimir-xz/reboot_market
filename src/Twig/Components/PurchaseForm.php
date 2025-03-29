@@ -16,9 +16,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
-use Symfony\UX\LiveComponent\Attribute\PostHydrate;
+use Symfony\UX\LiveComponent\Attribute\PreDehydrate;
 use Symfony\UX\LiveComponent\ValidatableComponentTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
+use Doctrine\Common\Collections\Collection;
 
 #[AsLiveComponent]
 final class PurchaseForm extends AbstractController
@@ -38,15 +39,11 @@ final class PurchaseForm extends AbstractController
     #[LiveProp]
     public ?int $freightCost = null;
 
-    #[LiveProp]
-    /** @var ShippingMethod[] */
-    public $shippingMethods = [];
-
     #[LiveProp(writable: true, onUpdated: 'onCountryUpdate')]
     #[Assert\NotBlank]
-    public Country $country;
+    public ?Country $country = null;
 
-    #[LiveProp(writable: true, onUpdate: 'onRelevantUpdate')]
+    #[LiveProp(writable: true, onUpdated: 'onRelevantUpdate')]
     public ?ShippingMethod $shippingMethod = null;
 
     #[LiveProp(
@@ -70,7 +67,6 @@ final class PurchaseForm extends AbstractController
         private LoggerInterface $log,
     ) {
         $this->address = new Address();
-        $this->country = new Country();
     }
 
     public function onIrrelevantUpdate()
@@ -84,16 +80,20 @@ final class PurchaseForm extends AbstractController
 
     public function onCountryUpdate()
     {
+        if ($this->country === null) {
+            return;
+        }
+
         $this->address->setCountry($this->country);
         //IF OLD SHIPPING METHOD IN ARRAY, KEEP IT, IF ITS NOT OR NULL, CHANGE
-        $this->shippingMethods = $this->country->getShippingMethods();
-        $this->shippingMethod = $this->shippingMethods[0];
+        $this->shippingMethod = $this->country->getShippingMethods()[0];
         $this->onRelevantUpdate();
     }
 
     public function onRelevantUpdate()
     {
-        if (!$this->isValid()) {
+        if ($this->componentValidator->validate($this->address)) {
+            $this->isFreightCostSet = false;
             return;
         }
 
@@ -108,7 +108,12 @@ final class PurchaseForm extends AbstractController
 
     public function getCountries()
     {
-        return $this->countryRepository->getAll();
+        return $this->countryRepository->findAll();
+    }
+
+    public function getShippingMethods()
+    {
+        return $this->country?->getShippingMethods();
     }
 
     // public function getProductsTotal()
