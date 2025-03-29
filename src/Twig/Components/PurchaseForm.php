@@ -10,6 +10,8 @@ use App\Entity\ShippingMethod;
 use App\Repository\CountryRepository;
 use App\Repository\FreightRateRepository;
 use App\Service\FreightCostGetter;
+use App\Dto\PaymentDataDto;
+use Symfony\UX\LiveComponent\Hydration\DoctrineEntityHydrationExtension;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -39,6 +41,9 @@ final class PurchaseForm extends AbstractController
     #[LiveProp]
     public ?int $freightCost = null;
 
+    #[LiveProp]
+    public array $idsAndAmounts = [];
+
     #[LiveProp(writable: true, onUpdated: 'onCountryUpdate')]
     #[Assert\NotBlank]
     public ?Country $country = null;
@@ -60,6 +65,9 @@ final class PurchaseForm extends AbstractController
 
     #[LiveProp]
     public ?bool $isFreightCostSet = false;
+
+    #[LiveProp]
+    public ?PaymentDataDto $paymentDataDto = null;
 
     public function __construct(
         private FreightCostGetter $freightCostGetter,
@@ -102,8 +110,10 @@ final class PurchaseForm extends AbstractController
             $this->totalWeight,
             $this->shippingMethod,
         );
-        $this->isFreightCostSet = $this->freightCost !== null;
-        $this->totalPrice = $this->isFreightCostSet ? $this->freightCost + $this->productsTotal : null;
+
+        if ($this->isFreightCostSet = $this->freightCost !== null) {
+            $this->totalPrice = $this->freightCost + $this->productsTotal;
+        }
     }
 
     public function getCountries()

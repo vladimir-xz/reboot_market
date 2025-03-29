@@ -46,4 +46,7 @@ return [
     'picocolors' => [
         'version' => '1.1.1',
     ],
+    '@stripe/stripe-js' => [
+        'version' => '6.1.0',
+    ],
 ];

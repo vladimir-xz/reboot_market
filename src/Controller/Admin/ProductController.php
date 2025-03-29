@@ -8,6 +8,7 @@ use App\Repository\ProductRepository;
 use App\Service\ImageUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Stripe\StripeClient;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,6 +53,16 @@ final class ProductController extends AbstractController
                 }
                 // $imageFile = $form->get('images')[0]->get('uploadImages')->getData();
             }
+            $stripe = new StripeClient($this->getParameter('app.stripeKey'));
+            $productStripe = $stripe->products->create([
+                'name' => $product->getName(),
+                'description' => '$12/Month subscription',
+            ]);
+            $price = $stripe->prices->create([
+                'unit_amount' => $product->getPrice(),
+                'currency' => 'usd',
+                'product' => $productStripe['id'],
+            ]);
             $entityManager->persist($product);
             $entityManager->flush();
 
