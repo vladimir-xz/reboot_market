@@ -178,6 +178,16 @@ final class CheckoutController extends AbstractController
             'phone_number_collection' => [
                 'enabled' => true
             ],
+            'custom_fields' => [
+                [
+                  'key' => 'recipient',
+                  'label' => [
+                    'type' => 'custom',
+                    'custom' => 'Name/Organization',
+                  ],
+                  'type' => 'text',
+                ],
+              ],
             'mode' => 'payment',
             'ui_mode' => 'embedded',
             'return_url' => $returnUrl . '{CHECKOUT_SESSION_ID}'
@@ -206,6 +216,7 @@ final class CheckoutController extends AbstractController
         } elseif ($session->status == 'complete') {
             $paymentStatus = $session->payment_status;
             $customer = $session->customer_details;
+            $name = $session->custom_fields[0]->text->value;
             $shippingRate = $session->shipping_options[0]->shipping_rate;
             $shippingData = $stripe->shippingRates->retrieve($shippingRate);
             $listItems = $stripe->checkout->sessions->allLineItems(
