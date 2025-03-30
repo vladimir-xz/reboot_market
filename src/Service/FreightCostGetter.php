@@ -40,7 +40,7 @@ final class FreightCostGetter
     public function getCostFromPaymentDto(PaymentDataDto $paymentDataDto)
     {
         return $this->prepareDataAndGetCost(
-            $paymentDataDto->getPostcode(),
+            $paymentDataDto->getAddress()['postcode'],
             $paymentDataDto->getCountry()['id'],
             $paymentDataDto->getWeight(),
             $paymentDataDto->getShippingMethod()['id'],

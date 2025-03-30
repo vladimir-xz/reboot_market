@@ -128,12 +128,10 @@ final class PurchaseForm extends AbstractController
     public function getPaymentData()
     {
         $data = new PaymentDataDto(
-            $this->address->getPostcode(),
-            $this->country->getId(),
-            $this->country->getName(),
+            $this->address,
+            $this->country,
             $this->totalWeight,
-            $this->shippingMethod->getId(),
-            $this->shippingMethod->getName(),
+            $this->shippingMethod,
             $this->idsAndAmounts,
         );
 

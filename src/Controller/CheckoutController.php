@@ -166,16 +166,21 @@ final class CheckoutController extends AbstractController
                             'currency' => 'usd',
                         ],
                         'metadata' => [
-                            'postcode' => $paymentDto->getPostcode(),
-                            'country' => $paymentDto->getCountry()['name']
+                            'postcode' => $paymentDto->getAddress()['postcode'],
+                            'country' => $paymentDto->getCountry()['name'],
+                            'firstLine' => $paymentDto->getAddress()['firstLine'],
+                            'secondLine' => $paymentDto->getAddress()['secondLine'],
+                            'town' => $paymentDto->getAddress()['town'],
                         ]
                     ]
                 ]
             ],
+            'phone_number_collection' => [
+                'enabled' => true
+            ],
             'mode' => 'payment',
             'ui_mode' => 'embedded',
             'return_url' => $returnUrl . '{CHECKOUT_SESSION_ID}'
-            // $this->generateUrl('checkout.return', ['session_id' => '{CHECKOUT_SESSION_ID}'], UrlGeneratorInterface::ABSOLUTE_URL),
         ]);
 
         return $this->json(['clientSecret' => $checkoutSession->client_secret]);
@@ -200,6 +205,9 @@ final class CheckoutController extends AbstractController
             $this->redirectToRoute('checkout.index');
         } elseif ($session->status == 'complete') {
             $paymentStatus = $session->payment_status;
+            $customer = $session->customer_details;
+            $shippingRate = $session->shipping_options[0]->shipping_rate;
+            $shippingData = $stripe->shippingRates->retrieve($shippingRate);
             $listItems = $stripe->checkout->sessions->allLineItems(
                 $session_id,
                 ['limit' => 100]
@@ -209,7 +217,10 @@ final class CheckoutController extends AbstractController
 
         return $this->render('cart/return.html.twig', [
             'session' => $session,
+            'customer' => $customer,
+            'shippingData' => $shippingData,
             'paymentStatus' => $paymentStatus,
+            'shippingData' => $shippingData,
             'listItems' => $listItems ?? [],
             'treeMap' => [],
         ]);

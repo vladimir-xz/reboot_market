@@ -8,42 +8,40 @@ use App\Entity\ShippingMethod;
 
 class PaymentDataDto
 {
-    private ?string $postcode;
-    private ?int $weight;
-    private ?array $country;
-    private ?array $shippingMethod;
+    private array $address;
+    private array $country;
+    private array $shippingMethod;
     private array $products;
+    private ?int $weight;
 
     public function __construct(
-        ?string $postcode = null,
-        ?int $countryId = null,
-        ?string $countryName = null,
+        ?Address $address = null,
+        ?Country $country = null,
         ?int $weight = null,
-        ?int $methodId = null,
-        ?string $methodName = null,
+        ?ShippingMethod $shippingMethod = null,
         array $idsAndAmounts = [],
     ) {
-        $this->postcode = $postcode;
+        $this->address = [
+            'postcode' => $address?->getPostcode(),
+            'firstLine' => $address?->getFirstLine(),
+            'secondLine' => $address?->getSecondLine(),
+            'town' => $address?->getTown(),
+        ];
         $this->country = [
-            'id' => $countryId,
-            'name' => $countryName,
+            'id' => $country?->getId(),
+            'name' => $country?->getName(),
         ];
         $this->weight = $weight;
         $this->shippingMethod = [
-            'id' => $methodId,
-            'name' => $methodName
+            'id' => $shippingMethod?->getId(),
+            'name' => $shippingMethod?->getName()
         ];
         $this->products = $idsAndAmounts;
     }
 
-    public function getPostcode()
+    public function getAddress()
     {
-        return $this->postcode;
-    }
-
-    public function getWeight()
-    {
-        return $this->weight;
+        return $this->address;
     }
 
     public function getCountry()
@@ -61,16 +59,14 @@ class PaymentDataDto
         return $this->products;
     }
 
-    public function setPostcode(string $postcode)
+    public function getWeight()
     {
-        $this->postcode = $postcode;
-
-        return $this;
+        return $this->weight;
     }
 
-    public function setWeight(int $weight)
+    public function setAddress(array $address)
     {
-        $this->weight = $weight;
+        $this->address = $address;
 
         return $this;
     }
@@ -92,6 +88,13 @@ class PaymentDataDto
     public function setProducts(array $idsAndAmounts)
     {
         $this->products = $idsAndAmounts;
+
+        return $this;
+    }
+
+    public function setWeight(int $weight)
+    {
+        $this->weight = $weight;
 
         return $this;
     }
