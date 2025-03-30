@@ -219,6 +219,7 @@ final class CheckoutController extends AbstractController
             $name = $session->custom_fields[0]->text->value;
             $shippingRate = $session->shipping_options[0]->shipping_rate;
             $shippingData = $stripe->shippingRates->retrieve($shippingRate);
+            // $stripe->shippingRates->update($shippingRate, ['metadata' => ['recipient' => $name]]);
             $listItems = $stripe->checkout->sessions->allLineItems(
                 $session_id,
                 ['limit' => 100]
