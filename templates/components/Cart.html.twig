@@ -1,7 +1,7 @@
 <div {{ attributes.defaults(stimulus_controller('cart')) }} data-action="buy:add@window->cart#add" class="cart relative w-48">
     <!-- component html -->
     <div>
-        <a href="{{ path('checkout') }}">
+        <a href="{{ path('checkout.index') }}">
             <div class="flex">
                 <p>Shopping cart:</p>
                 <p data-cart-target="figure">{{   this.total  }}</p>

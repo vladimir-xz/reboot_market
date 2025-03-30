@@ -97,7 +97,7 @@
 
     {%   if isFreightCostSet   %}
         <div class="">
-            <a href="{{   path('checkout.show', {postcode: address.postcode, weight: totalWeight, countryId: country.id, method: shippingMethod.id, products: idsAndAmounts}) }}">Proceed to payment</a>
+            <a href="{{   path('checkout.show', this.paymentData) }}">Proceed to payment</a>
         </div>
     {%   endif   %}
 </div>

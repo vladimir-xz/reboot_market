@@ -18,10 +18,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
-use Symfony\UX\LiveComponent\Attribute\PreDehydrate;
 use Symfony\UX\LiveComponent\ValidatableComponentTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[AsLiveComponent]
 final class PurchaseForm extends AbstractController
@@ -66,12 +66,10 @@ final class PurchaseForm extends AbstractController
     #[LiveProp]
     public ?bool $isFreightCostSet = false;
 
-    #[LiveProp]
-    public ?PaymentDataDto $paymentDataDto = null;
-
     public function __construct(
         private FreightCostGetter $freightCostGetter,
         private CountryRepository $countryRepository,
+        private NormalizerInterface $serializer,
         private LoggerInterface $log,
     ) {
         $this->address = new Address();
@@ -106,9 +104,10 @@ final class PurchaseForm extends AbstractController
         }
 
         $this->freightCost = $this->freightCostGetter->prepareDataAndGetCost(
-            $this->address,
+            $this->address->getPostcode(),
+            $this->country->getId(),
             $this->totalWeight,
-            $this->shippingMethod,
+            $this->shippingMethod->getId(),
         );
 
         if ($this->isFreightCostSet = $this->freightCost !== null) {
@@ -124,6 +123,21 @@ final class PurchaseForm extends AbstractController
     public function getShippingMethods()
     {
         return $this->country?->getShippingMethods();
+    }
+
+    public function getPaymentData()
+    {
+        $data = new PaymentDataDto(
+            $this->address->getPostcode(),
+            $this->country->getId(),
+            $this->country->getName(),
+            $this->totalWeight,
+            $this->shippingMethod->getId(),
+            $this->shippingMethod->getName(),
+            $this->idsAndAmounts,
+        );
+
+        return $this->serializer->normalize($data, 'array');
     }
 
     // public function getProductsTotal()

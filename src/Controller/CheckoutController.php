@@ -27,7 +27,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class CheckoutController extends AbstractController
 {
-    #[Route('/checkout', name: 'checkout')]
+    #[Route('/checkout', name: 'checkout.index')]
     public function index(
         Request $request,
         ProductRepository $productRep,
@@ -43,7 +43,7 @@ final class CheckoutController extends AbstractController
                 'products' => [],
                 'productsTotal' => null,
                 'treeMap' => [],
-                'productsIds' => [],
+                'idsAndAmounts' => [],
                 'address' => new Address(),
                 'allMethods' => null,
                 'currentMethod' => null,
@@ -64,17 +64,21 @@ final class CheckoutController extends AbstractController
                 $acc['errors'] = [];
             }
 
-            $amountInCart = $cart['ids'][$product->getId()]['amount'] ?? 1;
+            $id = $product->getId();
+            $amountInCart = $cart['ids'][$id]['amount'] ?? 1;
 
             if ($product->hasEnoughInStockAndNotNegative($amountInCart)) {
                 $product->setAmountInCart($amountInCart);
             } else {
                 $product->setAmountInCart($product->getAmount());
-                $acc['erorrs'][$product->getId()] = ['Not enough in stock'];
+                $acc['erorrs'][$id] = ['Not enough in stock'];
             }
 
             $acc['products'][] = $product;
-            $acc['idsAndAmounts'][$product->getId()] = $product->getAmountInCart();
+            $acc['idsAndAmounts'][$id] = [
+                'id' => $id,
+                'amount' => $product->getAmountInCart()
+            ];
             $acc['totalPrice'] += $product->getPrice() * $amountInCart;
             $acc['totalWeight'] += $product->getWeight() * $amountInCart;
 
@@ -87,9 +91,10 @@ final class CheckoutController extends AbstractController
         if ($user) {
             $allShippingMethods = $address->getCountry()->getShippingMethods();
             $freightCost = $freightCostGetter->prepareDataAndGetCost(
-                $address,
+                $address->getPostcode(),
+                $address->getCountry()->getId(),
                 $result['totalWeight'],
-                $allShippingMethods[0],
+                $allShippingMethods[0]->getId(),
             );
             $priceWithDelivery = $freightCost !== null ? $freightCost + $result['totalPrice'] : null;
         }
@@ -115,36 +120,7 @@ final class CheckoutController extends AbstractController
         ProductRepository $productRepository,
         #[MapQueryString] PaymentDataDto $paymentDto = new PaymentDataDto(),
     ) {
-        $ids = array_keys($paymentDto->getProducts() ?? []);
-        $products = new ArrayCollection($productRepository->findSomeByIds($ids));
-        $result = $products->map(function (Product $product) use ($paymentDto) {
-            $id = $product->getId();
-            $name = $product->getName();
-            $amountInCart = $paymentDto->getProducts()[$id];
-            $price = $product->getPrice();
-            if ($product->hasEnoughInStockAndNotNegative($amountInCart)) {
-                $amount = $amountInCart;
-            } else {
-                $amount = $product->getAmount();
-            }
-
-            return [
-                'id' => $id,
-                'name' => $name,
-                'amount' => $amount,
-                'price' => $price,
-            ];
-        })->toArray();
-
-        $controlledDataDto = new PaymentDataDto(
-            $paymentDto->getPostcode(),
-            $paymentDto->getCountryId(),
-            $paymentDto->getWeight(),
-            $paymentDto->getShippingMethodId(),
-            $result,
-        );
-
-        $json = $serializer->serialize($controlledDataDto, 'json');
+        $json = $serializer->serialize($paymentDto, 'json');
 
         return $this->render('cart/show.html.twig', [
             'paymentData' => $json,
@@ -155,28 +131,51 @@ final class CheckoutController extends AbstractController
     #[Route('/create-checkout-session', name: 'checkout.session')]
     public function checkout(
         Request $request,
-        LoggerInterface $logger,
+        FreightCostGetter $freightCostGetter,
+        ProductRepository $productRepository,
         #[MapRequestPayload] PaymentDataDto $paymentDto,
     ) {
-        $logger->info('Its working');
-        $collection = new ArrayCollection($paymentDto->getProducts());
-        $productsAndPrices = $collection->map(function ($product) {
+        $freightCost = $freightCostGetter->getCostFromPaymentDto($paymentDto);
+        $products = $paymentDto->getProducts() ?? [];
+        $collection = new ArrayCollection($productRepository->findSomeByIds(array_keys($products)));
+        $productsAndPrices = $collection->map(function (Product $product) use ($products) {
+            $amountInCart = $products[$product->getId()]['amount'];
+            $amount = $product->hasEnoughInStockAndNotNegative($amountInCart) ? $amountInCart : $product->getAmount();
+
             return [
                 'price_data' => [
                     'currency' => 'usd',
-                    'unit_amount' => $product['price'],
-                    'product_data' => ['name' => $product['name']],
+                    'unit_amount' => $product->getPrice(),
+                    'product_data' => ['name' => $product->getName()],
                 ],
-                'quantity' => $product['amount'],
+                'quantity' => $amount,
             ];
         })->toArray();
 
+        $returnUrl = $this->generateUrl('checkout.return', ['session_id' => ''], UrlGeneratorInterface::ABSOLUTE_URL);
         $stripe = new StripeClient(["api_key" => $this->getParameter('app.stripeKey')]);
         $checkoutSession = $stripe->checkout->sessions->create([
             'line_items' => $productsAndPrices,
+            'shipping_options' => [
+                [
+                    'shipping_rate_data' => [
+                        'type' => 'fixed_amount',
+                        'display_name' => $paymentDto->getShippingMethod()['name'],
+                        'fixed_amount' => [
+                            'amount' => $freightCost,
+                            'currency' => 'usd',
+                        ],
+                        'metadata' => [
+                            'postcode' => $paymentDto->getPostcode(),
+                            'country' => $paymentDto->getCountry()['name']
+                        ]
+                    ]
+                ]
+            ],
             'mode' => 'payment',
             'ui_mode' => 'embedded',
-            'return_url' => $this->generateUrl('checkout.return', ['session_id' => '{CHECKOUT_SESSION_ID}'], UrlGeneratorInterface::ABSOLUTE_URL),
+            'return_url' => $returnUrl . '{CHECKOUT_SESSION_ID}'
+            // $this->generateUrl('checkout.return', ['session_id' => '{CHECKOUT_SESSION_ID}'], UrlGeneratorInterface::ABSOLUTE_URL),
         ]);
 
         return $this->json(['clientSecret' => $checkoutSession->client_secret]);
@@ -185,10 +184,33 @@ final class CheckoutController extends AbstractController
     #[Route('/checkout/return', name: 'checkout.return')]
     public function return(
         Request $request,
-        #[MapQueryParameter] string $sessionId,
+        #[MapQueryParameter] string $session_id,
     ) {
-        return $this->render('cart/show.html.twig', [
-            'sessionId' => $sessionId,
+        $stripe = new \Stripe\StripeClient($this->getParameter('app.stripeKey'));
+        $session = $stripe->checkout->sessions->retrieve(
+            $session_id,
+            []
+        );
+
+        if ($session->status == 'open') {
+            $stripe->checkout->sessions->expire(
+                $session_id,
+                []
+            );
+            $this->redirectToRoute('checkout.index');
+        } elseif ($session->status == 'complete') {
+            $paymentStatus = $session->payment_status;
+            $listItems = $stripe->checkout->sessions->allLineItems(
+                $session_id,
+                ['limit' => 100]
+            );
+        }
+
+
+        return $this->render('cart/return.html.twig', [
+            'session' => $session,
+            'paymentStatus' => $paymentStatus,
+            'listItems' => $listItems ?? [],
             'treeMap' => [],
         ]);
     }

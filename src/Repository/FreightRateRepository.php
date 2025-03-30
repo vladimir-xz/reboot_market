@@ -22,8 +22,8 @@ class FreightRateRepository extends ServiceEntityRepository
     public function findPriceForAdress(
         string $preparedPostcode,
         int $weight,
-        Address $address,
-        ShippingMethod $shippingMethod
+        int $addressId,
+        int $shippingMethodId
     ): ?int {
         //TODO: fetch adress with country beforehand
         $data = $this->createQueryBuilder('f')
@@ -33,9 +33,9 @@ class FreightRateRepository extends ServiceEntityRepository
             ->andWhere('f.postcode = :val2')
             ->setParameter('val2', $preparedPostcode)
             ->andWhere('f.country = :val3')
-            ->setParameter('val3', $address->getCountry())
+            ->setParameter('val3', $addressId)
             ->andWhere('f.shippingMethod = :val4')
-            ->setParameter('val4', $shippingMethod)
+            ->setParameter('val4', $shippingMethodId)
             ->getQuery()
             ->getOneOrNullResult();
 

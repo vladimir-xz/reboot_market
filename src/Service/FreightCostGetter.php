@@ -6,6 +6,7 @@ use App\Entity\Address;
 use App\Entity\Country;
 use App\Entity\Product;
 use App\Dto\FreightDataDto;
+use App\Dto\PaymentDataDto;
 use App\Entity\ShippingMethod;
 use App\Repository\FreightRateRepository;
 use Exception;
@@ -16,7 +17,7 @@ final class FreightCostGetter
     {
     }
 
-    public function prepareDataAndGetCost(Address $address, int $weight, ShippingMethod $shippingMethod)
+    public function prepareDataAndGetCost(string $postcode, int $countryId, int $weight, int $shippingMethodId)
     {
         $roundedWeight = match (true) {
             $weight <= 30 => 30,
@@ -26,13 +27,23 @@ final class FreightCostGetter
             default => throw new Exception('Too heavy to transport'),
         };
 
-        $preparedPostcode = substr($address->getPostcode(), 0, 2);
+        $preparedPostcode = substr($postcode, 0, 2);
 
         return $this->freightRateRepository->findPriceForAdress(
             $preparedPostcode,
             $roundedWeight,
-            $address,
-            $shippingMethod
+            $countryId,
+            $shippingMethodId
+        );
+    }
+
+    public function getCostFromPaymentDto(PaymentDataDto $paymentDataDto)
+    {
+        return $this->prepareDataAndGetCost(
+            $paymentDataDto->getPostcode(),
+            $paymentDataDto->getCountry()['id'],
+            $paymentDataDto->getWeight(),
+            $paymentDataDto->getShippingMethod()['id'],
         );
     }
 }

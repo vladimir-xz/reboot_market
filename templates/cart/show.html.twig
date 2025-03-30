@@ -2,9 +2,9 @@
 
 {% block title %}Hello CartController!{% endblock %}
 
-{% block javascripts %}
+{% block meta %}
     {{ parent() }}
-    {# // <script src="https://js.stripe.com/v3/"></script> #}
+    <meta name="turbo-visit-control" content="reload">
 {% endblock %}
 
 {% block content %}

@@ -10,21 +10,29 @@ class PaymentDataDto
 {
     private ?string $postcode;
     private ?int $weight;
-    private ?int $countryId;
-    private ?int $shippingMethodId;
+    private ?array $country;
+    private ?array $shippingMethod;
     private array $products;
 
     public function __construct(
         ?string $postcode = null,
         ?int $countryId = null,
+        ?string $countryName = null,
         ?int $weight = null,
-        ?int $method = null,
+        ?int $methodId = null,
+        ?string $methodName = null,
         array $idsAndAmounts = [],
     ) {
         $this->postcode = $postcode;
-        $this->countryId = $countryId;
+        $this->country = [
+            'id' => $countryId,
+            'name' => $countryName,
+        ];
         $this->weight = $weight;
-        $this->shippingMethodId = $method;
+        $this->shippingMethod = [
+            'id' => $methodId,
+            'name' => $methodName
+        ];
         $this->products = $idsAndAmounts;
     }
 
@@ -38,14 +46,14 @@ class PaymentDataDto
         return $this->weight;
     }
 
-    public function getCountryId()
+    public function getCountry()
     {
-        return $this->countryId;
+        return $this->country;
     }
 
-    public function getShippingMethodId()
+    public function getShippingMethod()
     {
-        return $this->shippingMethodId;
+        return $this->shippingMethod;
     }
 
     public function getProducts()
@@ -67,16 +75,16 @@ class PaymentDataDto
         return $this;
     }
 
-    public function setCountryId(int $countryId)
+    public function setCountry(array $country)
     {
-        $this->countryId = $countryId;
+        $this->country = $country;
 
         return $this;
     }
 
-    public function setShippingMethodId(int $shippingMethodId)
+    public function setShippingMethod(array $shippingMethod)
     {
-        $this->shippingMethodId = $shippingMethodId;
+        $this->shippingMethod = $shippingMethod;
 
         return $this;
     }
