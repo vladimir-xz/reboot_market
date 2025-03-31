@@ -229,6 +229,10 @@
     .cart:hover .cart_menu {
       @apply flex flex-col;
     }
+
+    .locale:hover .locale_menu {
+      @apply flex gap-3;
+    }
     
     table td, table th {
       border: 1px solid #ddd;

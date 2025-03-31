@@ -47,6 +47,38 @@
                     <twig:Cart/>
                 </div>
             </div>
+            <div class="relative">
+                <div class="locale absolute right-0 z-40">
+                    <div class="flex flex-row-reverse">
+                        <div class="flex justify-center items-center w-24 h-16 bg-amber-400 p">
+                            Locale
+                        </div>
+                    </div>
+                    <div class="locale_menu hidden bg-stone-200 px-8 py-4">
+                        <div class="w-1/2">
+                            <p>Language</p>
+                            <div class="h-8 flex justify-center items-center">
+                                <a href="{{   path('lang', {lang: 'ENG'}   )}}">English</a>
+                            </div>
+                            <div class="h-8 flex justify-center items-center">
+                                <a href="{{   path('lang', {lang: 'CZ'}   )}}">Česky</a>
+                            </div>
+                        </div>
+                        <div class="w-1/2">
+                            <p>Currency</p>
+                            <div class="h-8 flex justify-center items-center">
+                                <a href="{{   path('currency', {currency: 'EUR'}   )}}">EUR</a>
+                            </div>
+                            <div class="h-8 flex justify-center items-center">
+                                <a href="{{   path('currency', {currency: 'USD'}   )}}">USD</a>
+                            </div>
+                            <div class="h-8 flex justify-center items-center">
+                                <a href="{{   path('currency', {currency: 'CZK'}   )}}">CZK</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
         </header>
 
