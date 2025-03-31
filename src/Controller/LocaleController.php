@@ -13,6 +13,7 @@ final class LocaleController extends AbstractController
 {
     private const LANG_CURRENCY = [
         'ENG' => 'EUR',
+        'ENG2' => 'USD',
         'CZ' => 'CZK',
         'RU' => 'RUB',
     ];
@@ -20,7 +21,7 @@ final class LocaleController extends AbstractController
     #[Route('/lang/{lang}', name: 'lang')]
     public function setLanguage(string $lang, Request $request): Response
     {
-        $route = $request->headers->get('referer');
+        $route = $request->headers->get('referer') ?? $this->generateUrl('homepage');
         if (!array_key_exists($lang, $this::LANG_CURRENCY)) {
             return $this->redirect($route);
         }
@@ -39,7 +40,7 @@ final class LocaleController extends AbstractController
     #[Route('/cur/{currency}', name: 'currency')]
     public function setCurrency(string $currency, Request $request, Response $response): Response
     {
-        $route = $request->headers->get('referer');
+        $route = $request->headers->get('referer') ?? $this->generateUrl('homepage');
         if (!in_array($currency, $this::LANG_CURRENCY)) {
             return $this->redirect($route);
         }
