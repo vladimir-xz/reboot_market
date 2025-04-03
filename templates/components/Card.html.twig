@@ -12,7 +12,9 @@
         </div>
         <div class="flex justify-between">
             <div class="">In stock: {{  product.amount  }}</div>
-            <div class="">{{  product.price.figure  }} Dollars</div>
+            <div class="">
+                {{  product.price.figure  }} 
+            </div>
         </div>
         <twig:BuyButton :prodId="product.id" :price="product.price" :max="product.amount" :name="product.name"/>
     </div>

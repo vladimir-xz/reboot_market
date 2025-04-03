@@ -22,7 +22,7 @@
                 <div>
                     <ul class="flex flex-row items-center justify-center h-16 text-neutral-200">
                         <li >
-                            <a href="/search" data-turbo-stream>Search</a>
+                            <a href="{{ path('search') }}" data-turbo-stream>Search</a>
                         </li>
                         <li class="ml-16">Shipping</li>
                         <li class="ml-16">Buy</li>
@@ -58,10 +58,10 @@
                         <div class="w-1/2">
                             <p>Language</p>
                             <div class="h-8 flex justify-center items-center">
-                                <a href="{{   path('lang', {lang: 'ENG'}   )}}">English</a>
+                                <a href="{{   path('lang', {lang: 'en'}   )}}">English</a>
                             </div>
                             <div class="h-8 flex justify-center items-center">
-                                <a href="{{   path('lang', {lang: 'CZ'}   )}}">Česky</a>
+                                <a href="{{   path('lang', {lang: 'cz'}   )}}">Česky</a>
                             </div>
                         </div>
                         <div class="w-1/2">

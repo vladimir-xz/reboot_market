@@ -24,7 +24,7 @@ final class SearchController extends AbstractController
     ) {
     }
 
-    #[Route('/search', name: 'search')]
+    #[Route('/{_locale}/search', name: 'search')]
     public function index(Request $request)
     {
         $allParams = $request->query->all();

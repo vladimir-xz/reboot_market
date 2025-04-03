@@ -17,10 +17,22 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Translation\LocaleSwitcher;
 
 class MainController extends AbstractController
 {
-    #[Route('/', name: 'homepage', methods: ['GET', 'HEAD'])]
+    public function __construct(
+        private LocaleSwitcher $localeSwitcher,
+    ) {
+    }
+
+    #[Route('/', methods: ['GET', 'HEAD'])]
+    public function indexNoLocale(Request $request): Response
+    {
+        return $this->redirectToRoute('homepage');
+    }
+
+    #[Route('/{_locale}/', name: 'homepage', methods: ['GET', 'HEAD'])]
     public function homepage(
         Request $request,
         CatalogHandler $builder,

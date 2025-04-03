@@ -17,7 +17,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge
 
 final class RegistrationController extends AbstractController
 {
-    #[Route('/registration', name: 'registraiton')]
+    #[Route('/{_locale}/registration', name: 'registraiton')]
     public function index(
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
