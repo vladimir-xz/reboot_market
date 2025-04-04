@@ -155,7 +155,7 @@ class AppFixtures extends Fixture
         $r620->setName('PowerEdge R620  ');
         $r620->setType('server');
         $r620->setCondition('used');
-        $r620->setPrice(mt_rand(10, 100));
+        $r620->setPrice(mt_rand(200000, 500000));
         $r620->setWeight(mt_rand(15, 25));
         $r620->setAmount(mt_rand(1, 10));
         $r620->setBrand('Dell');
@@ -185,7 +185,7 @@ class AppFixtures extends Fixture
         $r630->setName('PowerEdge R630  ');
         $r630->setType('server');
         $r630->setCondition('used');
-        $r630->setPrice(mt_rand(10, 100));
+        $r630->setPrice(mt_rand(200000, 500000));
         $r630->setWeight(mt_rand(15, 25));
         $r630->setAmount(mt_rand(1, 10));
         $r630->setBrand('Dell');
@@ -215,7 +215,7 @@ class AppFixtures extends Fixture
         $r720->setName('PowerEdge R720  ');
         $r720->setType('server');
         $r720->setCondition('used');
-        $r720->setPrice(mt_rand(10, 100));
+        $r720->setPrice(mt_rand(200000, 500000));
         $r720->setWeight(mt_rand(20, 30));
         $r720->setAmount(mt_rand(1, 10));
         $r720->setBrand('Dell');
@@ -244,7 +244,7 @@ class AppFixtures extends Fixture
         $r730->setName('PowerEdge R730  ');
         $r730->setType('server');
         $r730->setCondition('used');
-        $r730->setPrice(mt_rand(10, 100));
+        $r730->setPrice(mt_rand(200000, 500000));
         $r730->setWeight(mt_rand(20, 30));
         $r730->setAmount(mt_rand(1, 10));
         $r730->setBrand('Dell');
@@ -274,7 +274,7 @@ class AppFixtures extends Fixture
         $dl360_25->setName('ProLiant DL360 Gen7');
         $dl360_25->setType('server');
         $dl360_25->setCondition('used');
-        $dl360_25->setPrice(mt_rand(10, 100));
+        $dl360_25->setPrice(mt_rand(200000, 500000));
         $dl360_25->setWeight(mt_rand(15, 25));
         $dl360_25->setAmount(mt_rand(1, 10));
         $dl360_25->setBrand('HP');
@@ -305,7 +305,7 @@ class AppFixtures extends Fixture
         $dl360_35->setName('ProLiant DL360 Gen7 ');
         $dl360_35->setType('server');
         $dl360_35->setCondition('used');
-        $dl360_35->setPrice(mt_rand(10, 100));
+        $dl360_35->setPrice(mt_rand(200000, 500000));
         $dl360_35->setWeight(mt_rand(15, 25));
         $dl360_35->setAmount(mt_rand(1, 10));
         $dl360_35->setBrand('HP');
@@ -333,7 +333,7 @@ class AppFixtures extends Fixture
         $dl160->setName('ProLiant DL160 Gen7 ');
         $dl160->setType('server');
         $dl160->setCondition('used');
-        $dl160->setPrice(mt_rand(10, 100));
+        $dl160->setPrice(mt_rand(200000, 500000));
         $dl160->setWeight(mt_rand(15, 25));
         $dl160->setAmount(mt_rand(1, 10));
         $dl160->setBrand('HP');
@@ -363,7 +363,7 @@ class AppFixtures extends Fixture
         $asa5515->setName('Cisco ASA5515 ');
         $asa5515->setType('network equipment');
         $asa5515->setCondition('used');
-        $asa5515->setPrice(mt_rand(10, 100));
+        $asa5515->setPrice(mt_rand(100000, 500000));
         $asa5515->setWeight(mt_rand(5, 10));
         $asa5515->setAmount(mt_rand(1, 10));
         $asa5515->setBrand('Cisco');
@@ -387,7 +387,7 @@ class AppFixtures extends Fixture
         $lineEx82->setName('Juniper EX8200-8XS ');
         $lineEx82->setType('network equipment');
         $lineEx82->setCondition('used');
-        $lineEx82->setPrice(mt_rand(10, 100));
+        $lineEx82->setPrice(mt_rand(100000, 500000));
         $lineEx82->setWeight(mt_rand(2, 5));
         $lineEx82->setAmount(mt_rand(1, 10));
         $lineEx82->setBrand('Juniper');
@@ -405,7 +405,7 @@ class AppFixtures extends Fixture
         $rack->setName('Rack ');
         $rack->setType('other');
         $rack->setCondition('used');
-        $rack->setPrice(mt_rand(10, 100));
+        $rack->setPrice(mt_rand(400000, 800000));
         $rack->setWeight(mt_rand(100, 1000));
         $rack->setAmount(mt_rand(1, 10));
         $rack->setBrand('Rack');
@@ -429,7 +429,7 @@ class AppFixtures extends Fixture
         $ram8g->setName('RAM 8Gb ');
         $ram8g->setType('component');
         $ram8g->setCondition('used');
-        $ram8g->setPrice(mt_rand(10, 100));
+        $ram8g->setPrice(mt_rand(20000, 80000));
         $ram8g->setWeight(0);
         $ram8g->setAmount(mt_rand(1, 10));
         $ram8g->setBrand('SK Hynix');
@@ -453,7 +453,7 @@ class AppFixtures extends Fixture
         $ram16g->setName('RAM 16Gb ');
         $ram16g->setType('component');
         $ram16g->setCondition('used');
-        $ram16g->setPrice(mt_rand(10, 100));
+        $ram16g->setPrice(mt_rand(20000, 80000));
         $ram16g->setWeight(0);
         $ram16g->setAmount(mt_rand(1, 10));
         $ram16g->setBrand('HP');
@@ -477,7 +477,7 @@ class AppFixtures extends Fixture
         $ram4g->setName('RAM 4Gb ');
         $ram4g->setType('component');
         $ram4g->setCondition('used');
-        $ram4g->setPrice(mt_rand(10, 100));
+        $ram4g->setPrice(mt_rand(20000, 80000));
         $ram4g->setWeight(0);
         $ram4g->setAmount(mt_rand(1, 10));
         $ram4g->setBrand('HP');
@@ -502,7 +502,7 @@ class AppFixtures extends Fixture
         $dl380->setName('ProLiant HP DL380 G7 ');
         $dl380->setType('server');
         $dl380->setCondition('used');
-        $dl380->setPrice(mt_rand(10, 100));
+        $dl380->setPrice(mt_rand(100000, 200000));
         $dl380->setWeight(mt_rand(20, 30));
         $dl380->setAmount(mt_rand(1, 10));
         $dl380->setBrand('HP');
@@ -528,7 +528,7 @@ class AppFixtures extends Fixture
         $psu460->setName('PSU 460W ');
         $psu460->setType('component');
         $psu460->setCondition('used');
-        $psu460->setPrice(mt_rand(10, 100));
+        $psu460->setPrice(mt_rand(20000, 80000));
         $psu460->setWeight(0);
         $psu460->setAmount(mt_rand(1, 10));
         $psu460->setBrand('HP');
@@ -552,7 +552,7 @@ class AppFixtures extends Fixture
         $psu750->setName('PSU 750W ');
         $psu750->setType('component');
         $psu750->setCondition('used');
-        $psu750->setPrice(mt_rand(10, 100));
+        $psu750->setPrice(mt_rand(20000, 80000));
         $psu750->setWeight(1);
         $psu750->setAmount(mt_rand(1, 10));
         $psu750->setBrand('HP');
@@ -576,7 +576,7 @@ class AppFixtures extends Fixture
         $CPU->setName('CPU ');
         $CPU->setType('component');
         $CPU->setCondition('used');
-        $CPU->setPrice(mt_rand(10, 100));
+        $CPU->setPrice(mt_rand(20000, 80000));
         $CPU->setWeight(0);
         $CPU->setAmount(mt_rand(1, 10));
         $CPU->setBrand('Intel');
@@ -600,7 +600,7 @@ class AppFixtures extends Fixture
         $hdd1_2->setName('HDD ');
         $hdd1_2->setType('component');
         $hdd1_2->setCondition('used');
-        $hdd1_2->setPrice(mt_rand(10, 100));
+        $hdd1_2->setPrice(mt_rand(20000, 80000));
         $hdd1_2->setWeight(0);
         $hdd1_2->setAmount(mt_rand(1, 10));
         $hdd1_2->setBrand('Dell');
@@ -624,7 +624,7 @@ class AppFixtures extends Fixture
         $sfpNetwork->setName('Network card ');
         $sfpNetwork->setType('component');
         $sfpNetwork->setCondition('used');
-        $sfpNetwork->setPrice(mt_rand(10, 100));
+        $sfpNetwork->setPrice(mt_rand(20000, 80000));
         $sfpNetwork->setWeight(0);
         $sfpNetwork->setAmount(mt_rand(1, 10));
         $sfpNetwork->setBrand('Dell');
@@ -648,7 +648,7 @@ class AppFixtures extends Fixture
         $rail->setName('Rails kit');
         $rail->setType('component');
         $rail->setCondition('used');
-        $rail->setPrice(mt_rand(10, 100));
+        $rail->setPrice(mt_rand(20000, 80000));
         $rail->setWeight(2);
         $rail->setAmount(mt_rand(1, 10));
         $rail->setBrand('HP');

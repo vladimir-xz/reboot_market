@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Dto\CartDto;
 use App\Entity\Address;
 use App\Entity\Product;
 use App\Dto\PaymentDataDto;
+use App\Entity\Money;
 use App\Repository\CountryRepository;
 use App\Repository\FreightRateRepository;
 use App\Repository\FreightRepository;
@@ -37,7 +39,8 @@ final class CheckoutController extends AbstractController
         CountryRepository $countryRepository,
         LoggerInterface $log,
     ): Response {
-        $cart = json_decode($request->cookies->get('cart', '{}'), true);
+        /** @var \App\Dto\CartDto $cart */
+        $cart = $request->getSession()->get('cart', null);
         if (!$cart) {
             return $this->render('cart/index.html.twig', [
                 'products' => [],
@@ -53,57 +56,31 @@ final class CheckoutController extends AbstractController
             ]);
         }
 
-        $ids = array_keys($cart['ids'] ?? []);
-        $products = new ArrayCollection($productRep->findSomeByIds($ids));
-        $result = $products->reduce(function (array $acc, Product $product) use ($cart): array {
-            if (!isset($acc['products'])) {
-                $acc['products'] = [];
-                $acc['idsAndAmounts'] = [];
-                $acc['totalPrice'] = 0;
-                $acc['totalWeight'] = 0;
-                $acc['errors'] = [];
-            }
-
-            $id = $product->getId();
-            $amountInCart = $cart['ids'][$id]['amount'] ?? 1;
-
-            if ($product->hasEnoughInStockAndNotNegative($amountInCart)) {
-                $product->setAmountInCart($amountInCart);
-            } else {
-                $product->setAmountInCart($product->getAmount());
-                $acc['erorrs'][$id] = ['Not enough in stock'];
-            }
-
-            $acc['products'][] = $product;
-            $acc['idsAndAmounts'][$id] = [
-                'id' => $id,
-                'amount' => $product->getAmountInCart()
-            ];
-            $acc['totalPrice'] += $product->getPrice() * $amountInCart;
-            $acc['totalWeight'] += $product->getWeight() * $amountInCart;
-
-            return $acc;
-        }, []);
 
         /** @var \App\Entity\User $user */
         $user = $security->getUser();
         $address = $user?->getAddresses()[0] ?? new Address();
+        $currency = $request->getSession()->get('currency', 'czk');
         if ($user) {
             $allShippingMethods = $address->getCountry()->getShippingMethods();
             $freightCost = $freightCostGetter->prepareDataAndGetCost(
                 $address->getPostcode(),
                 $address->getCountry()->getId(),
-                $result['totalWeight'],
+                $cart->getTotalWeight(),
                 $allShippingMethods[0]->getId(),
             );
-            $priceWithDelivery = $freightCost !== null ? $freightCost + $result['totalPrice'] : null;
+            if ($freightCost === null) {
+                $priceWithDelivery = null;
+            } else {
+                $cost = new Money($freightCost + $cart->getTotalPrice());
+                $priceWithDelivery = $cost->setCurrency($currency)->getFigure();
+            }
         }
 
         return $this->render('cart/index.html.twig', [
-            'products' => $result['products'],
-            'totalWeight' => $result['totalWeight'],
-            'productsTotal' => $result['totalPrice'],
-            'idsAndAmounts' => $result['idsAndAmounts'],
+            'products' => $cart->getIdsAndProducts(),
+            'totalWeight' => $cart->getTotalWeight(),
+            'productsTotal' => $cart->getTotalPrice(),
             'treeMap' => [],
             'allMethods' => $allShippingMethods ?? null,
             'currentMethod' => $allShippingMethods[0] ?? null,
@@ -135,17 +112,22 @@ final class CheckoutController extends AbstractController
         ProductRepository $productRepository,
         #[MapRequestPayload] PaymentDataDto $paymentDto,
     ) {
-        $freightCost = $freightCostGetter->getCostFromPaymentDto($paymentDto);
-        $products = $paymentDto->getProducts() ?? [];
+        $currency = $request->getSession()->get('currency', 'czk');
+        $cart = $request->getSession()->get('cart', 'czk');
+        $products = $cart->getIdsAndProducts();
+        $freightCost = new Money($freightCostGetter->getCostFromPaymentDto($paymentDto));
+        $freightCostForCurrency = $freightCost->setCurrency($currency)->getFigure();
+
         $collection = new ArrayCollection($productRepository->findSomeByIds(array_keys($products)));
-        $productsAndPrices = $collection->map(function (Product $product) use ($products) {
+        $productsAndPrices = $collection->map(function (Product $product) use ($products, $currency) {
             $amountInCart = $products[$product->getId()]['amount'];
-            $amount = $product->hasEnoughInStockAndNotNegative($amountInCart) ? $amountInCart : $product->getAmount();
+            $amount = $product->hasNotEnoughInStockOrNegative($amountInCart) ? $product->getAmount() : $amountInCart;
+            $product->getMoney()->setCurrency($currency);
 
             return [
                 'price_data' => [
-                    'currency' => 'usd',
-                    'unit_amount' => $product->getPrice(),
+                    'currency' => $currency,
+                    'unit_amount' => $product->getMoney()->getFigure(),
                     'product_data' => ['name' => $product->getName()],
                 ],
                 'quantity' => $amount,
@@ -162,8 +144,8 @@ final class CheckoutController extends AbstractController
                         'type' => 'fixed_amount',
                         'display_name' => $paymentDto->getShippingMethod()['name'],
                         'fixed_amount' => [
-                            'amount' => $freightCost,
-                            'currency' => 'usd',
+                            'amount' => $freightCostForCurrency,
+                            'currency' => $currency,
                         ],
                         'metadata' => [
                             'postcode' => $paymentDto->getAddress()['postcode'],

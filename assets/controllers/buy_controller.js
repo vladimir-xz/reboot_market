@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { getComponent } from '@symfony/ux-live-component';
 
 export default class extends Controller {
   static targets = [ "input" ]
@@ -6,7 +7,8 @@ export default class extends Controller {
     min: { type: Number, default: 1}
   }
 
-  initialize() {
+  async initialize() {
+    this.component = await getComponent(this.element);
     this.inputTarget.addEventListener('focusout', () => {
       this.checkInput()
     })
@@ -45,13 +47,7 @@ export default class extends Controller {
   }
 
   send(event) {
-    this.dispatch("add", { detail: { 
-      id: Number(event.target.dataset.prodId),
-      name: event.target.dataset.name,
-      price: Number(event.target.dataset.price),
-      amount: Number(this.inputTarget.value),
-      max: Number(this.inputTarget.getAttribute('max'))
-    } })
+    this.component.action('save', { amount: Number(this.inputTarget.value) });
   }
   
 }

@@ -26,12 +26,10 @@ export default class extends Controller {
     // }
 
     revert({ detail }) {
-        console.log('This one????')
         this.component.action('revertCategories', { newId: detail.id });
     }
 
     update({detail: params}) {
-        console.log('This one????')
         if (params.exclude) {
             this.component.action('excludeCategories', { newId: params.id});
         } else {

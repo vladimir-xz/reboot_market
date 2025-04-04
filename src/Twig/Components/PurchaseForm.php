@@ -41,9 +41,6 @@ final class PurchaseForm extends AbstractController
     #[LiveProp]
     public ?int $freightCost = null;
 
-    #[LiveProp]
-    public array $idsAndAmounts = [];
-
     #[LiveProp(writable: true, onUpdated: 'onCountryUpdate')]
     #[Assert\NotBlank]
     public ?Country $country = null;
@@ -103,6 +100,11 @@ final class PurchaseForm extends AbstractController
             return;
         }
 
+        // if (!$this->validateField('address', false)) {
+        //     $this->isFreightCostSet = false;
+        //     return;
+        // }
+
         $this->freightCost = $this->freightCostGetter->prepareDataAndGetCost(
             $this->address->getPostcode(),
             $this->country->getId(),
@@ -132,46 +134,8 @@ final class PurchaseForm extends AbstractController
             $this->country,
             $this->totalWeight,
             $this->shippingMethod,
-            $this->idsAndAmounts,
         );
 
         return $this->serializer->normalize($data, 'array');
     }
-
-    // public function getProductsTotal()
-    // {
-    //     return $this->productsTotal;
-    // }
-
-    // public function getfreightCost()
-    // {
-    //     if (!$this->isSuccessful) {
-    //         return 'Set your address';
-    //     }
-    //     $this->log->info('Successful');
-
-    //     $freightData = $this->freightPreparator::prepareData(
-    //         $this->address,
-    //         $this->totalWeight,
-    //         $this->shippingMethod,
-    //     );
-    //     $freightRate = $this->freightRateRepository->findPriceForAdress($freightData);
-    //     $this->freightCost = $freightRate['price'];
-    //     $this->totalPrice = $this->freightCost + $this->productsTotal;
-
-    //     return $this->freightCost;
-    // }
-
-    // public function getTotalPrice()
-    // {
-    //     if (!$this->totalPrice) {
-    //         return 'Set your address and shipping method';
-    //     }
-    //     return $this->totalPrice;
-    // }
-
-    // public function isSuccessful()
-    // {
-    //     return !is_null($this->totalPrice);
-    // }
 }

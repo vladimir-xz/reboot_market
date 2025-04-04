@@ -22,6 +22,7 @@
                 <li>{{  specification.property  }}: {{  specification.value }}</li>
                 {%  endfor  %}
                 <li>Available: {{   product.amount   }} pieces. </li>
+                <li>{{  product.money.priceToDisplay|format_currency(product.money.currency) }}</li>
             </ul>
             <h3>Related products:</h3>
             <div class="flex gap-4">
@@ -33,11 +34,13 @@
                         <a href="{{ path('product.index', {id: recomended.id}) }}">
                             <p>{{   recomended.name   }}</p>
                         </a>
-                        <p>{{   recomended.price    }} $</p>
+                        <p>
+                            {{  recomended.money.priceToDisplay|format_currency(recomended.money.currency) }}
+                        </p>
                     </div>
                 {%  endfor  %}
             </div>
-            <twig:BuyButton :prodId="product.id" :price="product.price" :max="product.amount" :name="product.name"/>
+            <twig:BuyButton :prodId="product.id" :price="product.money.priceToDisplay" :max="product.amount" :name="product.name"/>
         </div>
     </div>
 

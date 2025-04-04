@@ -5,26 +5,31 @@ namespace App\Entity;
 class Money
 {
     private const RATES = [
-        'CZK' => 1,
-        'USD' => 0.043,
-        'EUR' => 0.040,
+        'czk' => 1,
+        'usd' => 0.043,
+        'eur' => 0.040,
     ];
 
-    private int $figure;
+    private float $figure;
     private string $currency;
 
-    public function __construct(int $figure, ?string $currency = 'CZK')
+    public function __construct(int $figure, ?string $currency = 'czk')
     {
         $this->figure = $figure;
         $this->currency = $currency;
     }
 
-    public function getFigure(): ?int
+    public function getFigure(): ?float
     {
         return $this->figure;
     }
 
-    public function getCurrency(): ?int
+    public function getPriceToDisplay(): ?float
+    {
+        return $this->figure / 100;
+    }
+
+    public function getCurrency(): ?string
     {
         return $this->currency;
     }

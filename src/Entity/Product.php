@@ -33,6 +33,9 @@ class Product
     #[ORM\Column]
     private ?int $price = null;
 
+    // Price with currency and convertation ability
+    private ?Money $money = null;
+
     #[ORM\Column]
     private ?int $amount = null;
 
@@ -167,9 +170,9 @@ class Product
         return $this;
     }
 
-    public function getPrice(): ?Money
+    public function getPrice(): ?int
     {
-        return new Money($this->price);
+        return $this->price;
     }
 
     public function setPrice(int $price): static
@@ -177,6 +180,15 @@ class Product
         $this->price = $price;
 
         return $this;
+    }
+
+    public function getMoney(): ?Money
+    {
+        if ($this->money === null) {
+            $this->money = new Money($this->price);
+        }
+
+        return $this->money;
     }
 
     public function getAmount(): ?int
@@ -348,8 +360,8 @@ class Product
         return $this;
     }
 
-    public function hasEnoughInStockAndNotNegative(int $amount)
+    public function hasNotEnoughInStockOrNegative(int $amount)
     {
-        return $amount <= $this->amount && $amount > 0;
+        return $amount > $this->amount || $amount < 0;
     }
 }

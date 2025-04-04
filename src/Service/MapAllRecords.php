@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\Product;
 use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
 
@@ -11,16 +12,22 @@ class MapAllRecords
     {
     }
 
-    public function mapRecords(array $records, bool $ifWithCategories = false)
+    public function mapRecords(array $records, string $currency, bool $ifWithCategories = false)
     {
         if (empty($records)) {
             return ['categories' => []];
         }
 
         $collection = new ArrayCollection($records);
-        $result = $collection->reduce(function (array $accumulator, $record) use ($ifWithCategories) {
+        $result = $collection->reduce(function (
+            array $accumulator,
+            Product $record
+        ) use (
+            $ifWithCategories,
+            $currency,
+        ) {
             $company = $record->getBrand();
-            $price = $record->getPrice();
+            $price = $record->getMoney()->setCurrency($currency)->getFigure();
             $type = $record->getType();
             $specs = $record->getSpecifications();
             $currentMax = $accumulator['price']['max'] ?? 0;

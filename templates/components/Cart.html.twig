@@ -4,8 +4,9 @@
         <a href="{{ path('checkout.index') }}">
             <div class="flex">
                 <p>Shopping cart:</p>
-                <p data-cart-target="figure">{{   this.total  }}</p>
-                <p>$</p>
+                <p data-cart-target="figure">
+                    {{  this.total.priceToDisplay|format_currency(this.total.currency) }}
+                </p>
             </div>
         </a>
     </div>

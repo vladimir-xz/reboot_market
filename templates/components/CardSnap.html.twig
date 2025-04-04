@@ -11,6 +11,8 @@
 
         </div>
         <div class="">In stock: {{  product.amount  }}</div>
-        <div class="">{{  product.price.figure  }} Dollars</div>
+        <div class="">
+            {{  product.money.priceToDisplay|format_currency(product.money.currency) }}
+        </div>
     </div>
 </div>

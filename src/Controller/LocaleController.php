@@ -14,10 +14,10 @@ use Symfony\Component\Translation\LocaleSwitcher;
 final class LocaleController extends AbstractController
 {
     private const LANG_CURRENCY = [
-        'en' => 'EUR',
-        'en2' => 'USD',
-        'cz' => 'CZK',
-        'ru' => 'RUB',
+        'en' => 'eur',
+        'en2' => 'usd',
+        'cz' => 'czk',
+        'ru' => 'rub',
     ];
 
     public function __construct(private LocaleSwitcher $localeSwitcher, private LoggerInterface $log)
@@ -40,13 +40,11 @@ final class LocaleController extends AbstractController
             $session->set('currency', $this::LANG_CURRENCY[$lang]);
         }
 
-        $this->log->info('Redirecting to homepage');
-
         return $response;
     }
 
     #[Route('/cur/{currency}', name: 'currency')]
-    public function setCurrency(string $currency, Request $request, Response $response): Response
+    public function setCurrency(string $currency, Request $request): Response
     {
         $route = $request->headers->get('referer') ?? $this->generateUrl('homepage');
         if (!in_array($currency, $this::LANG_CURRENCY)) {

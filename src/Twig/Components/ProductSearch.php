@@ -37,6 +37,8 @@ class ProductSearch extends AbstractController
     public array $excludedCategories = [];
     #[LiveProp]
     public int $maxNbPages = 1;
+    #[LiveProp]
+    public string $currency = 'czk';
 
     // #[LiveProp(writable: true, url: new UrlMapping(as: 't'))]
     // public array $types = [];
@@ -93,7 +95,6 @@ class ProductSearch extends AbstractController
             ]);
         }
         $this->includedCategories = $newCategories['i'];
-        $this->logger->warning(print_r($newCategories['i'], true));
         if (empty($newCategories['e']) && $this->excludedCategories) {
             $this->emit('changeIfExcluded', [
                 'newValue' => false,
@@ -126,10 +127,10 @@ class ProductSearch extends AbstractController
             $this->filters[$filterKey][$newValue] = $newValue;
         }
 
-        $ifNowEpty = empty($this->filters);
-        if ($wasEmpty !== $ifNowEpty) {
+        $ifNowEmpty = empty($this->filters);
+        if ($wasEmpty !== $ifNowEmpty) {
             $this->emit('makeFiltered', [
-                'newValue' => !$ifNowEpty,
+                'newValue' => !$ifNowEmpty,
             ]);
         }
 
@@ -185,16 +186,12 @@ class ProductSearch extends AbstractController
 
     public function getProducts()
     {
-        return $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
-    }
+        $result = $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
 
-    public function hydrateCatalog(array $url)
-    {
-        return http_build_query(['i' => $url], '', '&', PHP_QUERY_RFC3986);
-    }
+        foreach ($result as $product) {
+            $product->getMoney()->setCurrency($this->currency);
+        }
 
-    public function dehydrateCatalog($url)
-    {
-        return http_build_query(['i' => $url], '', '&', PHP_QUERY_RFC3986);
+        return $result;
     }
 }

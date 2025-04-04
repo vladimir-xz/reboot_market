@@ -26,18 +26,18 @@ final class ProductFilterController extends AbstractController
     {
         $allParams = $request->query->all();
         $brands = $allParams['b'] ?? [];
+        $currency = $request->getSession()->get('currency', 'czk');
 
         if (is_string($brands)) {
             $brands = [];
         }
         $brands = json_encode($brands);
 
-        $this->logger->info('Computing filter template');
         $allProducts = $this->productRepository->getAllWithSpecs();
 
         // $filter = array_reduce(function (array $accumulator, Product $value): array {
         // }, []);
-        $filter = $this->mapAllRecords->mapRecords($allProducts);
+        $filter = $this->mapAllRecords->mapRecords($allProducts, $currency);
 
         // $this->logger->info(print_r($filter, true));
 

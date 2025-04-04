@@ -2,6 +2,9 @@
 
 namespace App\Twig\Components;
 
+use App\Entity\Money;
+use App\Dto\CartDto;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
@@ -13,17 +16,32 @@ final class Cart
 {
     use DefaultActionTrait;
 
-    public ?\stdClass $cart;
-    public int $total = 0;
+    public CartDto $cart;
+    public string $currency;
 
-    public function __construct(RequestStack $requestStack)
+    public function __construct(private RequestStack $requestStack, private LoggerInterface $log)
     {
-        $this->cart = json_decode($requestStack->getCurrentRequest()->cookies->get('cart', ''));
-        $this->total = $this->cart->total ?? 0;
+        $this->cart = $this->requestStack->getCurrentRequest()->getSession()->get('cart', new CartDto());
+        $this->currency = $this->requestStack->getCurrentRequest()->getSession()->get('currency', 'czk');
+    }
+
+    #[LiveListener('productAdded')]
+    public function setNewCartDto()
+    {
     }
 
     public function getProducts()
     {
-        return (array) $this->cart?->ids ?? 'Cart is emty';
+        return $this->cart?->getIdsAndProducts() ?? 'Cart is emty';
+    }
+
+    public function getTotal()
+    {
+        if ($this->cart === null) {
+            return null;
+        }
+        $money = new Money($this->cart?->getTotalPrice());
+
+        return $money->setCurrency($this->currency);
     }
 }

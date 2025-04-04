@@ -6,6 +6,7 @@ use App\Dto\FreightDataDto;
 use App\Entity\Address;
 use App\Entity\FreightRate;
 use App\Entity\ShippingMethod;
+use App\Entity\Money;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -24,7 +25,7 @@ class FreightRateRepository extends ServiceEntityRepository
         int $weight,
         int $addressId,
         int $shippingMethodId
-    ): ?int {
+    ): ?Money {
         //TODO: fetch adress with country beforehand
         $data = $this->createQueryBuilder('f')
             ->select('f.price')

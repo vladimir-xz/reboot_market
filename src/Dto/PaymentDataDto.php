@@ -11,7 +11,6 @@ class PaymentDataDto
     private array $address;
     private array $country;
     private array $shippingMethod;
-    private array $products;
     private ?int $weight;
 
     public function __construct(
@@ -36,7 +35,6 @@ class PaymentDataDto
             'id' => $shippingMethod?->getId(),
             'name' => $shippingMethod?->getName()
         ];
-        $this->products = $idsAndAmounts;
     }
 
     public function getAddress()
@@ -52,11 +50,6 @@ class PaymentDataDto
     public function getShippingMethod()
     {
         return $this->shippingMethod;
-    }
-
-    public function getProducts()
-    {
-        return $this->products;
     }
 
     public function getWeight()
@@ -81,13 +74,6 @@ class PaymentDataDto
     public function setShippingMethod(array $shippingMethod)
     {
         $this->shippingMethod = $shippingMethod;
-
-        return $this;
-    }
-
-    public function setProducts(array $idsAndAmounts)
-    {
-        $this->products = $idsAndAmounts;
 
         return $this;
     }
