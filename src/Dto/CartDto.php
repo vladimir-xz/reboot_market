@@ -37,24 +37,14 @@ class CartDto
         if (!array_key_exists($id, $this->idsAndProducts)) {
             return 0;
         }
-        return $this->idsAndProducts[$id]['amount'];
+        return $this->idsAndProducts[$id]->getAmountInCart();
     }
 
-    public function getProduct(int $id)
-    {
-        return $this->idsAndProducts[$id] ?? null;
-    }
-
-    public function addProduct(Product $product)
+    public function addProduct(Product $product, int $amount)
     {
         $id = $product->getId();
-        $amount = $product->getAmountInCart();
-        if (array_key_exists($id, $this->idsAndProducts)) {
-            $this->idsAndProducts[$id]['amount'] += $amount;
-        } else {
-            $this->idsAndProducts[$id] = ['id' => $id, 'name' => $product->getName(), 'amount' => $amount];
-        }
-        $this->totalPrice += $product->getPrice();
+        $this->idsAndProducts[$id] = $product;
+        $this->totalPrice += $product->getPrice() * $amount;
         $this->totalWeight += $product->getWeight() * $amount;
     }
 }

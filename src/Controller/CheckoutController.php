@@ -61,6 +61,12 @@ final class CheckoutController extends AbstractController
         $user = $security->getUser();
         $address = $user?->getAddresses()[0] ?? new Address();
         $currency = $request->getSession()->get('currency', 'czk');
+        foreach ($cart->getIdsAndProducts() as $product) {
+            $product->getMoney()->setCurrency($currency);
+        }
+        $totalMoney = new Money($cart->getTotalPrice());
+        $totalMoney->setCurrency($currency);
+
         if ($user) {
             $allShippingMethods = $address->getCountry()->getShippingMethods();
             $freightCost = $freightCostGetter->prepareDataAndGetCost(
@@ -70,10 +76,12 @@ final class CheckoutController extends AbstractController
                 $allShippingMethods[0]->getId(),
             );
             if ($freightCost === null) {
+                $freightMoney = null;
                 $priceWithDelivery = null;
             } else {
-                $cost = new Money($freightCost + $cart->getTotalPrice());
-                $priceWithDelivery = $cost->setCurrency($currency)->getFigure();
+                $freightMoney = new Money($freightCost, $currency);
+                $priceWithDelivery = $freightCost + $cart->getTotalPrice();
+                // $priceWithDelivery = new Money($freightCost + $cart->getTotalPrice(), $currency);
             }
         }
 
@@ -85,8 +93,8 @@ final class CheckoutController extends AbstractController
             'allMethods' => $allShippingMethods ?? null,
             'currentMethod' => $allShippingMethods[0] ?? null,
             'address' => $address,
-            'freightCost' => $freightCost ?? null,
-            'totalPrice' => $priceWithDelivery ?? null,
+            'freightCost' => $freightCost,
+            'totalPrice' => $priceWithDelivery,
         ]);
     }
 

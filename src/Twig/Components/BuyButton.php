@@ -19,7 +19,7 @@ final class BuyButton
     use DefaultActionTrait;
     use ComponentToolsTrait;
 
-    #[LiveProp(writable: ['amountInCart'])]
+    #[LiveProp]
     public Product $product;
 
     public function __construct(private RequestStack $requestStack, private LoggerInterface $log)
@@ -29,22 +29,16 @@ final class BuyButton
     #[LiveAction]
     public function save(#[LiveArg] int $amount)
     {
-        $newAmount = $this->product->getAmountInCart() + $amount;
-        if ($this->product->hasNotEnoughInStockOrNegative($newAmount)) {
+        $this->log->info(print_r($this->product->getMainImagePath(), true));
+        $session = $this->requestStack->getCurrentRequest()->getSession();
+        $cart = $session->get('cart', new CartDto());
+        $amountInCart = $cart->getAmountOfProduct($this->product->getId());
+        if ($this->product->hasNotEnoughInStockOrNegative($amountInCart + $amount)) {
             return;
         }
 
-        $this->product->setAmountInCart($newAmount);
-        $session = $this->requestStack->getCurrentRequest()->getSession();
-        $cart = $session->get('cart', new CartDto());
-        if (
-            $this->product->hasNotEnoughInStockOrNegative(
-                $cart->getAmountOfProduct($this->product->getId()) + $amount
-            )
-        ) {
-            return;
-        }
-        $cart->addProduct($this->product);
+        $this->product->setAmountInCart($amountInCart + $amount);
+        $cart->addProduct($this->product, $amount);
         $session->set('cart', $cart);
 
         $this->emit('productAdded');

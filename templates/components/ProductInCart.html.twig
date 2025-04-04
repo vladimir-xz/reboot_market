@@ -10,6 +10,8 @@
         <div>Amount: {{   product.amountInCart  }}</div>
     </div>
     <div class="">
-        <p>{{   product.amountInCart * product.price.figure  }}</p>
+        <p>
+            {{  (product.amountInCart * product.money.priceToDisplay)|format_currency(product.money.currency) }}
+        </p>
     </div>
 </div>

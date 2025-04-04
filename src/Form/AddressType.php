@@ -26,9 +26,6 @@ class AddressType extends AbstractType
                 'label' => 'Street',
                 'attr' => ['autocomplete' => 'address-line1'],
                 'help' => 'Street address, company name',
-                'constraints' => [
-                    new Length(['min' => 10]),
-                ],
             ])
             ->add('secondLine', TextType::class, [
                 'label' => 'House No.',

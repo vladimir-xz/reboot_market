@@ -68,6 +68,8 @@ class Product
     )]
     private Collection $images;
 
+    private ?string $mainImage = null;
+
     /**
      * @var Collection<int, self>
      */
@@ -286,15 +288,21 @@ class Product
         return $this->images;
     }
 
-    public function getMainImagePath(): string
+    #[ORM\PostLoad]
+    public function setMainImagePath()
     {
         foreach ($this->images as $image) {
             if ($image->isMain()) {
-                return $image->getPath();
+                $this->mainImage = $image->getPath();
             }
         }
 
-        return $this->images[0]->getPath();
+        return $this->mainImage = $this->images[0]->getPath();
+    }
+
+    public function getMainImagePath(): string
+    {
+        return $this->mainImage;
     }
 
     public function addImage(Image $image): static

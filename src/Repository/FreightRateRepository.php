@@ -25,7 +25,7 @@ class FreightRateRepository extends ServiceEntityRepository
         int $weight,
         int $addressId,
         int $shippingMethodId
-    ): ?Money {
+    ): ?int {
         //TODO: fetch adress with country beforehand
         $data = $this->createQueryBuilder('f')
             ->select('f.price')
