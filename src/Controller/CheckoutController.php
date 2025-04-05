@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Dto\CartDto;
 use App\Entity\Address;
 use App\Entity\Product;
-use App\Dto\PaymentDataDto;
+use App\Dto\ShippingDataDto;
 use App\Entity\Money;
 use App\Repository\CountryRepository;
 use App\Repository\FreightRateRepository;
@@ -14,6 +14,7 @@ use App\Repository\ProductRepository;
 use App\Repository\ShippingMethodRepository;
 use App\Service\FreightCostGetter;
 use Doctrine\Common\Collections\ArrayCollection;
+use PhpParser\Node\Expr\AssignOp\Mod;
 use Symfony\Component\Serializer\SerializerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -61,11 +62,10 @@ final class CheckoutController extends AbstractController
         $user = $security->getUser();
         $address = $user?->getAddresses()[0] ?? new Address();
         $currency = $request->getSession()->get('currency', 'czk');
+        $productsTotal = $cart->getTotalPrice()->setCurrency($currency);
         foreach ($cart->getIdsAndProducts() as $product) {
             $product->getMoney()->setCurrency($currency);
         }
-        $totalMoney = new Money($cart->getTotalPrice());
-        $totalMoney->setCurrency($currency);
 
         if ($user) {
             $allShippingMethods = $address->getCountry()->getShippingMethods();
@@ -76,21 +76,24 @@ final class CheckoutController extends AbstractController
                 $allShippingMethods[0]->getId(),
             );
             if ($freightCost !== null) {
-                $freightMoney = new Money($freightCost, $currency);
+                $freightCost->setCurrency($currency);
+                $priceWithDelivery = new Money($freightCost, $currency);
+                $priceWithDelivery->addFigure($cart->getTotalPrice());
                 // $priceWithDelivery = $freightCost + $cart->getTotalPrice();
-                $priceWithDelivery = new Money($freightCost + $cart->getTotalPrice(), $currency);
+                // $priceWithDelivery = new Money($freightCost + $cart->getTotalPrice(), $currency);
             }
         }
+        var_dump($productsTotal);
 
         return $this->render('cart/index.html.twig', [
             'products' => $cart->getIdsAndProducts(),
             'totalWeight' => $cart->getTotalWeight(),
-            'productsTotal' => $totalMoney,
+            'productsTotal' => $productsTotal,
             'treeMap' => [],
             'allMethods' => $allShippingMethods ?? null,
             'currentMethod' => $allShippingMethods[0] ?? null,
             'address' => $address,
-            'freightCost' => $freightMoney ?? null,
+            'freightCost' => $freightCost ?? null,
             'totalPrice' => $priceWithDelivery ?? null,
         ]);
     }
@@ -100,7 +103,7 @@ final class CheckoutController extends AbstractController
         Request $request,
         SerializerInterface $serializer,
         ProductRepository $productRepository,
-        #[MapQueryString] PaymentDataDto $paymentDto = new PaymentDataDto(),
+        #[MapQueryString] ShippingDataDto $paymentDto = new ShippingDataDto(),
     ) {
         $json = $serializer->serialize($paymentDto, 'json');
 
@@ -115,24 +118,24 @@ final class CheckoutController extends AbstractController
         Request $request,
         FreightCostGetter $freightCostGetter,
         ProductRepository $productRepository,
-        #[MapRequestPayload] PaymentDataDto $paymentDto,
+        #[MapRequestPayload] ShippingDataDto $shippingDataDto,
     ) {
         $currency = $request->getSession()->get('currency', 'czk');
         $cart = $request->getSession()->get('cart', 'czk');
         $products = $cart->getIdsAndProducts();
-        $freightCost = new Money($freightCostGetter->getCostFromPaymentDto($paymentDto));
+        $freightCost = new Money($freightCostGetter->getCostFromPaymentDto($shippingDataDto));
         $freightCostForCurrency = $freightCost->setCurrency($currency)->getFigure();
 
         $collection = new ArrayCollection($productRepository->findSomeByIds(array_keys($products)));
-        $productsAndPrices = $collection->map(function (Product $product) use ($products, $currency) {
-            $amountInCart = $products[$product->getId()]['amount'];
+        $productsAndPrices = $collection->map(function (Product $product) use ($cart, $currency) {
+            $amountInCart = $cart->getAmountOfProduct($product->getId());
             $amount = $product->hasNotEnoughInStockOrNegative($amountInCart) ? $product->getAmount() : $amountInCart;
             $product->getMoney()->setCurrency($currency);
 
             return [
                 'price_data' => [
                     'currency' => $currency,
-                    'unit_amount' => $product->getMoney()->getFigure(),
+                    'unit_amount' => round($product->getMoney()->getFigure()),
                     'product_data' => ['name' => $product->getName()],
                 ],
                 'quantity' => $amount,
@@ -147,17 +150,17 @@ final class CheckoutController extends AbstractController
                 [
                     'shipping_rate_data' => [
                         'type' => 'fixed_amount',
-                        'display_name' => $paymentDto->getShippingMethod()['name'],
+                        'display_name' => $shippingDataDto->getShippingMethod()['name'],
                         'fixed_amount' => [
-                            'amount' => $freightCostForCurrency,
+                            'amount' => round($freightCostForCurrency),
                             'currency' => $currency,
                         ],
                         'metadata' => [
-                            'postcode' => $paymentDto->getAddress()['postcode'],
-                            'country' => $paymentDto->getCountry()['name'],
-                            'firstLine' => $paymentDto->getAddress()['firstLine'],
-                            'secondLine' => $paymentDto->getAddress()['secondLine'],
-                            'town' => $paymentDto->getAddress()['town'],
+                            'postcode' => $shippingDataDto->getAddress()['postcode'],
+                            'country' => $shippingDataDto->getCountry()['name'],
+                            'firstLine' => $shippingDataDto->getAddress()['firstLine'],
+                            'secondLine' => $shippingDataDto->getAddress()['secondLine'],
+                            'town' => $shippingDataDto->getAddress()['town'],
                         ]
                     ]
                 ]

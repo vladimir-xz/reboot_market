@@ -10,7 +10,7 @@ use App\Entity\ShippingMethod;
 use App\Repository\CountryRepository;
 use App\Repository\FreightRateRepository;
 use App\Service\FreightCostGetter;
-use App\Dto\PaymentDataDto;
+use App\Dto\ShippingDataDto;
 use App\Entity\Money;
 use Symfony\UX\LiveComponent\Hydration\DoctrineEntityHydrationExtension;
 use Psr\Log\LoggerInterface;
@@ -33,13 +33,13 @@ final class PurchaseForm extends AbstractController
     #[LiveProp]
     public ?int $totalWeight = null;
 
-    #[LiveProp]
+    #[LiveProp(hydrateWith: 'hydrateMoney')]
     public ?Money $productsTotal = null;
 
-    #[LiveProp]
+    #[LiveProp(hydrateWith: 'hydrateMoney')]
     public ?Money $totalPrice = null;
 
-    #[LiveProp]
+    #[LiveProp(hydrateWith: 'hydrateMoney')]
     public ?Money $freightCost = null;
 
     #[LiveProp(writable: true, onUpdated: 'onCountryUpdate')]
@@ -98,7 +98,6 @@ final class PurchaseForm extends AbstractController
         }
 
         // if (!$this->validateField('address', false)) {
-        //     $this->isFreightCostSet = false;
         //     return;
         // }
 
@@ -107,10 +106,12 @@ final class PurchaseForm extends AbstractController
             $this->country->getId(),
             $this->totalWeight,
             $this->shippingMethod->getId(),
-        );
+        )?->setCurrency($this->productsTotal->getCurrency());
 
         if ($this->isFreightCostSet()) {
-            $this->totalPrice = $this->freightCost + $this->productsTotal;
+            $totalPriceCount = new Money($this->freightCost, $this->productsTotal->getCurrency());
+            $totalPriceCount->addFigure($this->productsTotal);
+            $this->totalPrice = $totalPriceCount;
         }
     }
 
@@ -126,7 +127,7 @@ final class PurchaseForm extends AbstractController
 
     public function getPaymentData()
     {
-        $data = new PaymentDataDto(
+        $data = new ShippingDataDto(
             $this->address,
             $this->country,
             $this->totalWeight,
@@ -139,5 +140,13 @@ final class PurchaseForm extends AbstractController
     public function isFreightCostSet()
     {
         return $this->freightCost !== null;
+    }
+
+    public function hydrateMoney($data): ?Money
+    {
+        if ($data === null) {
+            return null;
+        }
+        return new Money($data['figure'], $data['currency']);
     }
 }

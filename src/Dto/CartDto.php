@@ -2,15 +2,16 @@
 
 namespace App\Dto;
 
+use App\Entity\Money;
 use App\Entity\Product;
 
 class CartDto
 {
     private ?int $totalWeight;
-    private ?int $totalPrice;
+    private ?Money $totalPrice;
     private array $idsAndProducts;
 
-    public function __construct(int $totalWeight = 0, int $totalPrice = 0, array $idsAndProducts = [])
+    public function __construct(int $totalWeight = 0, Money $totalPrice = new Money(), array $idsAndProducts = [])
     {
         $this->idsAndProducts = $idsAndProducts;
         $this->totalPrice = $totalPrice;
@@ -40,11 +41,18 @@ class CartDto
         return $this->idsAndProducts[$id]->getAmountInCart();
     }
 
-    public function addProduct(Product $product, int $amount)
+    public function addProduct(Product $product)
     {
-        $id = $product->getId();
-        $this->idsAndProducts[$id] = $product;
-        $this->totalPrice += $product->getPrice() * $amount;
-        $this->totalWeight += $product->getWeight() * $amount;
+        $this->idsAndProducts[$product->getId()] = $product;
+    }
+
+    public function setTotalWeight(int $weight)
+    {
+        $this->totalWeight = $weight;
+    }
+
+    public function setTotalPrice(Money $price)
+    {
+        $this->totalPrice = $price;
     }
 }

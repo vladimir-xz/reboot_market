@@ -6,7 +6,7 @@ use App\Entity\Address;
 use App\Entity\Country;
 use App\Entity\ShippingMethod;
 
-class PaymentDataDto
+class ShippingDataDto
 {
     private array $address;
     private array $country;
@@ -18,7 +18,6 @@ class PaymentDataDto
         ?Country $country = null,
         ?int $weight = null,
         ?ShippingMethod $shippingMethod = null,
-        array $idsAndAmounts = [],
     ) {
         $this->address = [
             'postcode' => $address?->getPostcode(),

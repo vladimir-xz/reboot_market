@@ -12,30 +12,22 @@ class Money
 
     private float $figure;
     private string $currency;
-    private float $priceToDisplay;
 
-    public function __construct(int $figure, ?string $currency = 'czk')
+    public function __construct(int|Money $figure = 0, ?string $currency = 'czk')
     {
-        $this->figure = $figure;
-        $this->currency = $currency;
-        $this->priceToDisplay = $figure / 100;
+        if ($figure instanceof Money) {
+            $czk = $figure->getFigure() / $this::RATES[$figure->getCurrency()];
+            $this->figure = $czk * $this::RATES[$currency];
+            $this->currency = $currency;
+        } else {
+            $this->figure = $figure;
+            $this->currency = $currency;
+        }
     }
 
     public function getFigure(): ?float
     {
         return $this->figure;
-    }
-
-    public function getPriceToDisplay(): ?float
-    {
-        return $this->priceToDisplay;
-    }
-
-    public function setPriceToDisplay(float $price): self
-    {
-        $this->priceToDisplay = $price;
-
-        return $this;
     }
 
     public function getCurrency(): ?string
@@ -46,9 +38,26 @@ class Money
     public function setCurrency(string $currency): self
     {
         if (array_key_exists($currency, $this::RATES)) {
+            $czk = $this->figure / $this::RATES[$this->currency];
+            $this->figure = $czk * $this::RATES[$currency];
             $this->currency = $currency;
-            $this->figure *= $this::RATES[$currency];
-            $this->priceToDisplay = $this->figure / 100;
+        }
+
+        return $this;
+    }
+
+    public function displayPrice(): ?float
+    {
+        return $this->figure / 100;
+    }
+
+    public function addFigure(Money $money)
+    {
+        if ($money->getCurrency() !== $this->getCurrency()) {
+            $sameCurrency = new Money($money, $this->currency);
+            $this->figure += $sameCurrency->getFigure();
+        } else {
+            $this->figure += $money->getFigure();
         }
 
         return $this;

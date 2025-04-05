@@ -4,6 +4,7 @@ namespace App\Twig\Components;
 
 use App\Entity\Product;
 use App\Dto\CartDto;
+use App\Service\CartProductHandler;
 use Psr\Log\LoggerInterface;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
@@ -22,24 +23,25 @@ final class BuyButton
     #[LiveProp]
     public Product $product;
 
-    public function __construct(private RequestStack $requestStack, private LoggerInterface $log)
-    {
+    public function __construct(
+        private RequestStack $requestStack,
+        private CartProductHandler $cartProductHandler,
+        private LoggerInterface $log
+    ) {
     }
 
     #[LiveAction]
     public function save(#[LiveArg] int $amount)
     {
-        $this->log->info(print_r($this->product->getMainImagePath(), true));
+        $this->product->setAmountInCart($amount);
         $session = $this->requestStack->getCurrentRequest()->getSession();
         $cart = $session->get('cart', new CartDto());
-        $amountInCart = $cart->getAmountOfProduct($this->product->getId());
-        if ($this->product->hasNotEnoughInStockOrNegative($amountInCart + $amount)) {
+        $newCart = $this->cartProductHandler::add($cart, $this->product);
+        if ($newCart === null) {
             return;
         }
 
-        $this->product->setAmountInCart($amountInCart + $amount);
-        $cart->addProduct($this->product, $amount);
-        $session->set('cart', $cart);
+        $session->set('cart', $newCart);
 
         $this->emit('productAdded');
     }

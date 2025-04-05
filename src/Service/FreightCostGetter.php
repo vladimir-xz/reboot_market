@@ -7,7 +7,7 @@ use App\Entity\Country;
 use App\Entity\Product;
 use App\Dto\FreightDataDto;
 use App\Entity\Money;
-use App\Dto\PaymentDataDto;
+use App\Dto\ShippingDataDto;
 use App\Entity\ShippingMethod;
 use App\Repository\FreightRateRepository;
 use Exception;
@@ -23,7 +23,7 @@ final class FreightCostGetter
         int $countryId,
         int $weight,
         int $shippingMethodId
-    ): ?int {
+    ): ?Money {
         $roundedWeight = match (true) {
             $weight <= 30 => 30,
             $weight <= 50 => 50,
@@ -42,7 +42,7 @@ final class FreightCostGetter
         );
     }
 
-    public function getCostFromPaymentDto(PaymentDataDto $paymentDataDto): ?int
+    public function getCostFromPaymentDto(ShippingDataDto $paymentDataDto): ?Money
     {
         return $this->prepareDataAndGetCost(
             $paymentDataDto->getAddress()['postcode'],

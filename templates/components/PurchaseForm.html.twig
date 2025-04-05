@@ -77,12 +77,12 @@
 
     <div class="mb-6">
         <div class="">
-            Products price: {{   productsTotal.priceToDisplay|format_currency(productsTotal.currency) }}
+            Products price: {{   productsTotal.displayPrice|format_currency(productsTotal.currency) }}
         </div>
         <div class="">
             Shipping price: {%   if this.freightCostSet   %}
                 <p>
-                    {{   freightCost.priceToDisplay|format_currency(freightCost.currency) }}
+                    {{   freightCost.displayPrice|format_currency(freightCost.currency) }}
                 </p>
                 {%   else   %}
                 <p>Set your delivery address</p>
@@ -91,7 +91,7 @@
         <div class="">
             Total: {%   if this.freightCostSet   %}
                 <p>
-                    {{   totalPrice.priceToDisplay|format_currency(freightCost.currency) }}
+                    {{   totalPrice.displayPrice|format_currency(totalPrice.currency) }}
                 </p>
                 {%   else  %}
                 <p>Set your delivery address</p>
