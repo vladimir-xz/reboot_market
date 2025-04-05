@@ -21,29 +21,26 @@ final class ProductFilterController extends AbstractController
     ) {
     }
 
+    // Will cache this value later
     // #[Cache(smaxage: 6000)]
-    public function getAllFilters(Request $request): Response
-    {
-        $allParams = $request->query->all();
-        $brands = $allParams['b'] ?? [];
-        $currency = $request->getSession()->get('currency', 'czk');
+    // public function getAllFilters(Request $request): Response
+    // {
+    //     $allParams = $request->query->all();
+    //     $brands = $allParams['b'] ?? [];
 
-        if (is_string($brands)) {
-            $brands = [];
-        }
-        $brands = json_encode($brands);
+    //     if (is_string($brands)) {
+    //         $brands = [];
+    //     }
+    //     $brands = json_encode($brands);
 
-        $allProducts = $this->productRepository->getAllWithSpecs();
+    //     $allProducts = $this->productRepository->getAllWithSpecs();
+    //     $filter = $this->mapAllRecords->mapRecords($allProducts);
 
-        // $filter = array_reduce(function (array $accumulator, Product $value): array {
-        // }, []);
-        $filter = $this->mapAllRecords->mapRecords($allProducts);
+    //     // $this->logger->info(print_r($filter, true));
 
-        // $this->logger->info(print_r($filter, true));
-
-        return $this->render('static/_filter.html.twig', [
-            'filter' => $filter,
-            'brands' => $brands
-        ]);
-    }
+    //     return $this->render('static/_filter.html.twig', [
+    //         'filter' => $filter,
+    //         'brands' => $brands
+    //     ]);
+    // }
 }

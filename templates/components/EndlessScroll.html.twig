@@ -1,0 +1,30 @@
+<div{{ attributes }} class="relative">
+    {%  set paginator = this.products  %}
+
+    <div data-loading="addClass(blur)">
+        <div class="flex flex-wrap gap-4" >
+            {% for product in paginator.currentPageResults %}
+                <twig:Card :product="product"/>
+            {% endfor %}
+        </div>
+
+        {%   if paginator.hasNextPage  %}
+            {%   set nextPage = page + 1 %}
+            <twig:EndlessScroll
+                :page="nextPage"
+                :query="query"
+                :includedCategories="includedCategories"
+                :excludedCategories="excludedCategories"
+                :filters="filters"
+                loading="lazy"
+            />
+        {%   endif   %}
+    </div>
+</div>
+
+{% macro placeholder(props) %}
+    {# This content will (only) be rendered as loading content #}
+    <div class="h-24 relative">
+        <span class="loader"></span>
+    </div>
+{% endmacro %}

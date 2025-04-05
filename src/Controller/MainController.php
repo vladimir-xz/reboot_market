@@ -39,28 +39,12 @@ class MainController extends AbstractController
         ProductRepository $productRepository,
         LoggerInterface $logger
     ): Response {
-        $allParams = $request->query->all();
-        $page = $allParams['page'] ?? 1;
-        $query = $allParams['q'] ?? '';
-        $activeCategories = $allParams['c'] ?? [];
-        $brands = $allParams['b'] ?? [];
-        if (is_string($activeCategories)) {
-            $activeCategories = [];
-        }
-        if (is_string($brands)) {
-            $brands = [];
-        }
-        $brands = json_encode($brands);
 
         $recentlyAdded = $productRepository->getRecentlyAdded();
 
         return $this->render('homepage.html.twig', [
             'treeMap' => [],
-            'query' => $query,
-            'page' => $page,
-            'brands' => $brands,
             'recents' => $recentlyAdded,
-            // 'array' => $array,
         ]);
     }
 }

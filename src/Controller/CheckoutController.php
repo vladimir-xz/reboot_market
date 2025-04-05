@@ -33,11 +33,8 @@ final class CheckoutController extends AbstractController
     #[Route('/checkout', name: 'checkout.index')]
     public function index(
         Request $request,
-        ProductRepository $productRep,
         Security $security,
         FreightCostGetter $freightCostGetter,
-        FreightRateRepository $freightRateRepository,
-        CountryRepository $countryRepository,
         LoggerInterface $log,
     ): Response {
         /** @var \App\Dto\CartDto $cart */
@@ -73,8 +70,6 @@ final class CheckoutController extends AbstractController
             );
             if ($freightCost !== null) {
                 $priceWithDelivery = new Money($freightCost->getFigure() + $productsTotal->getFigure());
-                // $priceWithDelivery = $freightCost + $cart->getTotalPrice();
-                // $priceWithDelivery = new Money($freightCost + $cart->getTotalPrice(), $currency);
             }
         }
 
@@ -95,7 +90,6 @@ final class CheckoutController extends AbstractController
     public function show(
         Request $request,
         SerializerInterface $serializer,
-        ProductRepository $productRepository,
         #[MapQueryString] ShippingDataDto $paymentDto = new ShippingDataDto(),
     ) {
         $json = $serializer->serialize($paymentDto, 'json');

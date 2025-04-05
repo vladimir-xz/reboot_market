@@ -1,13 +1,12 @@
 <div {{ attributes.defaults(stimulus_controller('product')) }}  
     data-action="
         catalog:setMax@window->product#setNewMax 
-        product:update->product#setNewMaxAndClearScroll 
         filter:new@window->product#filter
         catalog-tree:revert@window->product#revert 
         catalog-tree:exclude@window->product#exclude
         catalog-tree:include@window->product#include
     "
-    class="relative"    
+    class="relative"
 >
 {%  set paginator = this.products  %}
 
@@ -25,32 +24,20 @@
                 <p>No products found.</p> 
             {% endfor %}
         </div>
-        <div id="product_scroll" data-product-target="scroll" class="flex flex-wrap gap-4">
+        {# <div id="product_scroll" data-product-target="scroll" class="flex flex-wrap gap-4">
             
-        </div>
+        </div> #}
+        {%   if paginator.hasNextPage  %}
+            <twig:EndlessScroll
+                :page="nextPage"
+                :query="query"
+                :includedCategories="includedCategories"
+                :excludedCategories="excludedCategories"
+                :filters="filters"
+                loading="lazy"
+            />
+        {%   endif   %}
     </div>
-
-    {# {% if paginator.haveToPaginate %}
-
-    {{ 'Current page :' ~ paginator.currentPage  }}
-    {{ 'Number of pages :' ~ paginator.nbPages  }}
-
-    <div class="flex">
-        {% if paginator.hasPreviousPage %}
-        <button class="" type="button" data-action="live#update" data-model="page" data-value="{{  paginator.previousPage   }}">
-            {{  paginator.previousPage   }}
-        </button>
-        {% endif %}
-
-        {%  for i in range(paginator.currentPage, paginator.nbPages)  %}
-        <button class="" data-action="live#update" data-model="page" data-value="{{  i   }}" type="button">
-            {{  i   }}
-        </button>
-        
-        {%  endfor   %}
-    </div>
-    {% endif %} #}
-
 </div>
 
 {% macro placeholder(props) %}

@@ -8,7 +8,7 @@ import { loadStripe } from '@stripe/stripe-js';
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static values = {
-        purchase: Object,
+        purchase: String,
         stripeKey: { type: String, default: 'pk_test_51R7yBfB7BZrVxkqm7TMo0lTQoAojNiol6CvLKuJCLeGqKhrcaD44DafMNtBwVbO9cAWVx7E2Hz67v2gRIAqqOsHx00A9O1Bh8N'}
       }
 
@@ -22,7 +22,7 @@ export default class extends Controller {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
               },
-            body: JSON.stringify(this.purchaseValue),
+            body: this.purchaseValue,
           });
           const { clientSecret } = await response.json();
           return clientSecret;

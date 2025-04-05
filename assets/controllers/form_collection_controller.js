@@ -19,7 +19,5 @@ export default class extends Controller {
     {
         event.preventDefault();
         event.target.parentElement.parentElement.remove()
-        // remove the li for the tag form
-        // item.remove();
     }
 }

@@ -106,7 +106,7 @@ class ProductRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function getPaginatedValues(string $query, array $catInclude, array $catExclude, array $filters, int $page, int $maxPerPage = 12): Pagerfanta
+    public function getPaginatedValues(string $query, array $catInclude, array $catExclude, array $filters, int $page = 1, int $maxPerPage = 12): Pagerfanta
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.images', 'i')

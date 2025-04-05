@@ -25,25 +25,15 @@ class ProductSearch extends AbstractController
     use DefaultActionTrait;
     use ComponentToolsTrait;
 
-    #[LiveProp]
-    public int $page = 1;
+    public int $nextPage = 2;
     #[LiveProp]
     public string $query = '';
-    #[LiveProp(writable: true, url: new UrlMapping(as: 'i'))]
+    #[LiveProp(writable: true, url: new UrlMapping(as: 'i'), onUpdated: 'doingThis')]
     public array $includedCategories = [];
     #[LiveProp(writable: true, url: new UrlMapping(as: 'f'))]
     public array $filters = [];
     #[LiveProp(writable: true, url: new UrlMapping(as: 'e'))]
     public array $excludedCategories = [];
-    #[LiveProp]
-    public int $maxNbPages = 1;
-    #[LiveProp]
-    public string $currency = 'czk';
-
-    // #[LiveProp(writable: true, url: new UrlMapping(as: 't'))]
-    // public array $types = [];
-    // #[LiveProp(writable: true, url: new UrlMapping(as: 's'))]
-    // public array $specs = [];
 
     public function __construct(
         private ProductRepository $productRepository,
@@ -141,10 +131,7 @@ class ProductSearch extends AbstractController
     {
         // TODO: refactor this when mapRecords return []
         $allRecords = $this->productRepository->getAllProductsWithCategoryAndFilters($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
-        $count = count($allRecords) === 0 ? 1 : count($allRecords);
-        $maxNbPages = ceil($count / 12);
 
-        $this->maxNbPages = $maxNbPages;
         $result = $this->catalogHandler->prepareNewCatalogsForDrawing($allRecords, $this->includedCategories, $this->excludedCategories);
 
         $this->dispatchBrowserEvent('catalog:renew', [
@@ -154,9 +141,6 @@ class ProductSearch extends AbstractController
         $this->dispatchBrowserEvent('product:updateFilters', [
             'filters' => $result['mappedRecords']
         ]);
-
-        // TODO: assign explicitly the perPage amount
-        $this->dispatchBrowserEvent('product:update', ['max' => $maxNbPages]);
     }
 
     #[LiveAction]
@@ -186,6 +170,6 @@ class ProductSearch extends AbstractController
 
     public function getProducts()
     {
-        return $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
+        return $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
     }
 }

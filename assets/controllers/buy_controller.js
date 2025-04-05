@@ -47,6 +47,7 @@ export default class extends Controller {
   }
 
   send(event) {
+    document.getElementById('cart-popup').classList.remove('hidden')
     this.component.action('save', { amount: Number(this.inputTarget.value) });
   }
   
