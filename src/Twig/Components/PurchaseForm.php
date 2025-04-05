@@ -34,13 +34,13 @@ final class PurchaseForm extends AbstractController
     public ?int $totalWeight = null;
 
     #[LiveProp]
-    public ?int $productsTotal = null;
+    public ?Money $productsTotal = null;
 
     #[LiveProp]
-    public ?int $totalPrice = null;
+    public ?Money $totalPrice = null;
 
     #[LiveProp]
-    public ?int $freightCost = null;
+    public ?Money $freightCost = null;
 
     #[LiveProp(writable: true, onUpdated: 'onCountryUpdate')]
     #[Assert\NotBlank]
@@ -61,9 +61,6 @@ final class PurchaseForm extends AbstractController
     #[Assert\Valid]
     public ?Address $address;
 
-    #[LiveProp]
-    public ?bool $isFreightCostSet = false;
-
     public function __construct(
         private FreightCostGetter $freightCostGetter,
         private CountryRepository $countryRepository,
@@ -75,7 +72,7 @@ final class PurchaseForm extends AbstractController
 
     public function onIrrelevantUpdate()
     {
-        if ($this->isFreightCostSet) {
+        if ($this->isFreightCostSet()) {
             return;
         }
 
@@ -97,7 +94,6 @@ final class PurchaseForm extends AbstractController
     public function onRelevantUpdate()
     {
         if ($this->componentValidator->validate($this->address)) {
-            $this->isFreightCostSet = false;
             return;
         }
 
@@ -113,7 +109,7 @@ final class PurchaseForm extends AbstractController
             $this->shippingMethod->getId(),
         );
 
-        if ($this->isFreightCostSet = $this->freightCost !== null) {
+        if ($this->isFreightCostSet()) {
             $this->totalPrice = $this->freightCost + $this->productsTotal;
         }
     }
@@ -138,5 +134,10 @@ final class PurchaseForm extends AbstractController
         );
 
         return $this->serializer->normalize($data, 'array');
+    }
+
+    public function isFreightCostSet()
+    {
+        return $this->freightCost !== null;
     }
 }

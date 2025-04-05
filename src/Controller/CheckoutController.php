@@ -75,26 +75,23 @@ final class CheckoutController extends AbstractController
                 $cart->getTotalWeight(),
                 $allShippingMethods[0]->getId(),
             );
-            if ($freightCost === null) {
-                $freightMoney = null;
-                $priceWithDelivery = null;
-            } else {
+            if ($freightCost !== null) {
                 $freightMoney = new Money($freightCost, $currency);
-                $priceWithDelivery = $freightCost + $cart->getTotalPrice();
-                // $priceWithDelivery = new Money($freightCost + $cart->getTotalPrice(), $currency);
+                // $priceWithDelivery = $freightCost + $cart->getTotalPrice();
+                $priceWithDelivery = new Money($freightCost + $cart->getTotalPrice(), $currency);
             }
         }
 
         return $this->render('cart/index.html.twig', [
             'products' => $cart->getIdsAndProducts(),
             'totalWeight' => $cart->getTotalWeight(),
-            'productsTotal' => $cart->getTotalPrice(),
+            'productsTotal' => $totalMoney,
             'treeMap' => [],
             'allMethods' => $allShippingMethods ?? null,
             'currentMethod' => $allShippingMethods[0] ?? null,
             'address' => $address,
-            'freightCost' => $freightCost,
-            'totalPrice' => $priceWithDelivery,
+            'freightCost' => $freightMoney ?? null,
+            'totalPrice' => $priceWithDelivery ?? null,
         ]);
     }
 

@@ -12,11 +12,13 @@ class Money
 
     private float $figure;
     private string $currency;
+    private float $priceToDisplay;
 
     public function __construct(int $figure, ?string $currency = 'czk')
     {
         $this->figure = $figure;
         $this->currency = $currency;
+        $this->priceToDisplay = $figure / 100;
     }
 
     public function getFigure(): ?float
@@ -26,7 +28,14 @@ class Money
 
     public function getPriceToDisplay(): ?float
     {
-        return $this->figure / 100;
+        return $this->priceToDisplay;
+    }
+
+    public function setPriceToDisplay(float $price): self
+    {
+        $this->priceToDisplay = $price;
+
+        return $this;
     }
 
     public function getCurrency(): ?string
@@ -39,6 +48,7 @@ class Money
         if (array_key_exists($currency, $this::RATES)) {
             $this->currency = $currency;
             $this->figure *= $this::RATES[$currency];
+            $this->priceToDisplay = $this->figure / 100;
         }
 
         return $this;

@@ -77,25 +77,29 @@
 
     <div class="mb-6">
         <div class="">
-            {# Products price: {{  productsTotal.figure  }} #}
+            Products price: {{   productsTotal.priceToDisplay|format_currency(productsTotal.currency) }}
         </div>
         <div class="">
-            Shipping price: {%   if isFreightCostSet   %}
-                <p>{{   freightCost   }}</p>
+            Shipping price: {%   if this.freightCostSet   %}
+                <p>
+                    {{   freightCost.priceToDisplay|format_currency(freightCost.currency) }}
+                </p>
                 {%   else   %}
                 <p>Set your delivery address</p>
                 {%   endif   %}
         </div>
         <div class="">
-            Total: {%   if isFreightCostSet   %}
-                <p>{{  totalPrice  }}</p>
+            Total: {%   if this.freightCostSet   %}
+                <p>
+                    {{   totalPrice.priceToDisplay|format_currency(freightCost.currency) }}
+                </p>
                 {%   else  %}
                 <p>Set your delivery address</p>
                 {%   endif   %}
         </div>
     </div>
 
-    {%   if isFreightCostSet   %}
+    {%   if this.freightCostSet   %}
         <div class="">
             <a href="{{   path('checkout.show', this.paymentData) }}">Proceed to payment</a>
         </div>
