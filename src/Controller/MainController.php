@@ -52,15 +52,10 @@ class MainController extends AbstractController
         }
         $brands = json_encode($brands);
 
-        $currency = $request->getSession()->get('currency', 'czk');
         $recentlyAdded = $productRepository->getRecentlyAdded();
-        foreach ($recentlyAdded as $product) {
-            $product->getMoney()->setCurrency($currency);
-        }
 
         return $this->render('homepage.html.twig', [
             'treeMap' => [],
-            'currency' => $currency,
             'query' => $query,
             'page' => $page,
             'brands' => $brands,

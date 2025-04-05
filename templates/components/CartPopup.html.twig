@@ -12,7 +12,9 @@
         <div class="flex">
             <p>{{   product.name   }}</p>
             <p>{{   product.amount   }}</p>
-            <p>{{   product.money.priceToDisplay   }}</p>
+            <p>
+                {{  appCurrency.adjustPrice(product.money)|format_currency(appCurrency.getActual)  }}
+            </p>
         </div>
     {%  endfor  %}
     <div class="">

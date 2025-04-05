@@ -12,22 +12,16 @@ class MapAllRecords
     {
     }
 
-    public function mapRecords(array $records, string $currency, bool $ifWithCategories = false)
+    public function mapRecords(array $records, bool $ifWithCategories = false)
     {
         if (empty($records)) {
             return ['categories' => []];
         }
 
         $collection = new ArrayCollection($records);
-        $result = $collection->reduce(function (
-            array $accumulator,
-            Product $record
-        ) use (
-            $ifWithCategories,
-            $currency,
-        ) {
+        $result = $collection->reduce(function (array $accumulator, Product $record) use ($ifWithCategories) {
             $company = $record->getBrand();
-            $price = $record->getMoney()->setCurrency($currency)->getFigure();
+            $price = $record->getPrice();
             $type = $record->getType();
             $specs = $record->getSpecifications();
             $currentMax = $accumulator['price']['max'] ?? 0;

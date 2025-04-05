@@ -67,7 +67,6 @@ final class PurchaseForm extends AbstractController
         private NormalizerInterface $serializer,
         private LoggerInterface $log,
     ) {
-        $this->address = new Address();
     }
 
     public function onIrrelevantUpdate()

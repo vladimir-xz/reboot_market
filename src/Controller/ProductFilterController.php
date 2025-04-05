@@ -37,7 +37,7 @@ final class ProductFilterController extends AbstractController
 
         // $filter = array_reduce(function (array $accumulator, Product $value): array {
         // }, []);
-        $filter = $this->mapAllRecords->mapRecords($allProducts, $currency);
+        $filter = $this->mapAllRecords->mapRecords($allProducts);
 
         // $this->logger->info(print_r($filter, true));
 

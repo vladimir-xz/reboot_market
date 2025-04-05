@@ -42,10 +42,8 @@ final class SearchController extends AbstractController
         if (is_string($filters)) {
             $filters = [];
         }
-        $currency = $request->getSession()->get('currency', 'czk');
-
         $allProducts = $this->productRep->getAllWithSpecs();
-        $filter = $this->mapAllRecords->mapRecords($allProducts, $currency);
+        $filter = $this->mapAllRecords->mapRecords($allProducts);
 
         if ($query || $excludedCategories || $includedCategories) {
             $allRecords = $this->productRep->getAllProductsWithCategoryAndFilters($query, $includedCategories, $excludedCategories, $filters);
@@ -66,7 +64,6 @@ final class SearchController extends AbstractController
             'recordsMap' => $result['mappedRecords'] ?? [],
             'activeFilters' => $filters,
             'maxNbPages' => $maxNbPages,
-            'currency' => $currency,
         ]);
     }
 

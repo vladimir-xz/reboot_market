@@ -13,7 +13,7 @@
         <div class="flex justify-between">
             <div class="">In stock: {{  product.amount  }}</div>
             <div class="">
-                {{  product.money.displayPrice|format_currency(product.money.currency) }}
+                {{  appCurrency.adjustPrice(product.money)|format_currency(appCurrency.getActual)  }}
             </div>
         </div>
         <twig:BuyButton :product="product"/>

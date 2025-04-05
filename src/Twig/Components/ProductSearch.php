@@ -186,12 +186,6 @@ class ProductSearch extends AbstractController
 
     public function getProducts()
     {
-        $result = $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
-
-        foreach ($result as $product) {
-            $product->getMoney()->setCurrency($this->currency);
-        }
-
-        return $result;
+        return $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters, $this->page);
     }
 }

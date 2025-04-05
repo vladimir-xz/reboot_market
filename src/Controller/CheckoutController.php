@@ -61,11 +61,7 @@ final class CheckoutController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $security->getUser();
         $address = $user?->getAddresses()[0] ?? new Address();
-        $currency = $request->getSession()->get('currency', 'czk');
-        $productsTotal = $cart->getTotalPrice()->setCurrency($currency);
-        foreach ($cart->getIdsAndProducts() as $product) {
-            $product->getMoney()->setCurrency($currency);
-        }
+        $productsTotal = $cart->getTotalPrice();
 
         if ($user) {
             $allShippingMethods = $address->getCountry()->getShippingMethods();
@@ -76,14 +72,11 @@ final class CheckoutController extends AbstractController
                 $allShippingMethods[0]->getId(),
             );
             if ($freightCost !== null) {
-                $freightCost->setCurrency($currency);
-                $priceWithDelivery = new Money($freightCost, $currency);
-                $priceWithDelivery->addFigure($cart->getTotalPrice());
+                $priceWithDelivery = new Money($freightCost->getFigure() + $productsTotal->getFigure());
                 // $priceWithDelivery = $freightCost + $cart->getTotalPrice();
                 // $priceWithDelivery = new Money($freightCost + $cart->getTotalPrice(), $currency);
             }
         }
-        var_dump($productsTotal);
 
         return $this->render('cart/index.html.twig', [
             'products' => $cart->getIdsAndProducts(),

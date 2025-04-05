@@ -5,7 +5,7 @@
             <div class="flex">
                 <p>Shopping cart:</p>
                 <p data-cart-target="figure">
-                    {{  this.total.displayPrice|format_currency(this.total.currency) }}
+                    {{  appCurrency.adjustPrice(this.total)|format_currency(appCurrency.getActual)  }}
                 </p>
             </div>
         </a>

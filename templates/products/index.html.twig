@@ -22,7 +22,9 @@
                 <li>{{  specification.property  }}: {{  specification.value }}</li>
                 {%  endfor  %}
                 <li>Available: {{   product.amount   }} pieces. </li>
-                <li>{{  product.money.priceToDisplay|format_currency(product.money.currency) }}</li>
+                <li>
+                    {{  appCurrency.adjustPrice(product.money)|format_currency(appCurrency.getActual)  }}
+                </li>
             </ul>
             <h3>Related products:</h3>
             <div class="flex gap-4">
@@ -35,12 +37,12 @@
                             <p>{{   recomended.name   }}</p>
                         </a>
                         <p>
-                            {{  recomended.money.priceToDisplay|format_currency(recomended.money.currency) }}
+                            {{  appCurrency.adjustPrice(recomended.money)|format_currency(appCurrency.getActual)  }}
                         </p>
                     </div>
                 {%  endfor  %}
             </div>
-            <twig:BuyButton :prodId="product.id" :price="product.money.priceToDisplay" :max="product.amount" :name="product.name"/>
+            <twig:BuyButton :product="product"/>
         </div>
     </div>
 
