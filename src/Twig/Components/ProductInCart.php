@@ -13,6 +13,6 @@ final class ProductInCart
 
     public function getTotalSum()
     {
-        return new Money($this->product->getPrice() * $this->product->getAmountInCart());
+        return $this->product->getPrice() * $this->product->getAmountInCart();
     }
 }

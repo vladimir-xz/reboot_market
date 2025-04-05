@@ -17,13 +17,12 @@ class CartProductHandler
         }
 
         $product->setAmountInCart($amountAlreadyInCart + $currentAmountInCart);
-        $productsPrice = new Money($product->getPrice() * $currentAmountInCart);
+        $productsPrice = $product->getPrice() * $currentAmountInCart;
         $productsWeight = $product->getWeight() * $currentAmountInCart;
 
-        $priceInCart = $cart->getTotalPrice();
-        $priceInCart->addFigure($productsPrice);
+        $newCost = $cart->getTotalPrice() + $productsPrice;
         $cart->setTotalWeight($cart->getTotalWeight() + $productsWeight);
-        $cart->setTotalPrice($priceInCart);
+        $cart->setTotalPrice($newCost);
         $cart->addProduct($product);
 
         return $cart;

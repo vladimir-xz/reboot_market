@@ -23,7 +23,7 @@ final class FreightCostGetter
         int $countryId,
         int $weight,
         int $shippingMethodId
-    ): ?Money {
+    ): ?int {
         $roundedWeight = match (true) {
             $weight <= 30 => 30,
             $weight <= 50 => 50,
@@ -42,7 +42,7 @@ final class FreightCostGetter
         );
     }
 
-    public function getCostFromPaymentDto(ShippingDataDto $paymentDataDto): ?Money
+    public function getCostFromPaymentDto(ShippingDataDto $paymentDataDto): ?int
     {
         return $this->prepareDataAndGetCost(
             $paymentDataDto->getAddress()['postcode'],

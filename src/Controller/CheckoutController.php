@@ -6,15 +6,14 @@ use App\Dto\CartDto;
 use App\Entity\Address;
 use App\Entity\Product;
 use App\Dto\ShippingDataDto;
-use App\Entity\Money;
 use App\Repository\CountryRepository;
 use App\Repository\FreightRateRepository;
 use App\Repository\FreightRepository;
 use App\Repository\ProductRepository;
 use App\Repository\ShippingMethodRepository;
 use App\Service\FreightCostGetter;
+use App\Service\PriceHandler;
 use Doctrine\Common\Collections\ArrayCollection;
-use PhpParser\Node\Expr\AssignOp\Mod;
 use Symfony\Component\Serializer\SerializerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -69,7 +68,7 @@ final class CheckoutController extends AbstractController
                 $allShippingMethods[0]->getId(),
             );
             if ($freightCost !== null) {
-                $priceWithDelivery = new Money($freightCost->getFigure() + $productsTotal->getFigure());
+                $priceWithDelivery = $freightCost + $productsTotal;
             }
         }
 
@@ -105,24 +104,24 @@ final class CheckoutController extends AbstractController
         Request $request,
         FreightCostGetter $freightCostGetter,
         ProductRepository $productRepository,
+        PriceHandler $priceHandler,
         #[MapRequestPayload] ShippingDataDto $shippingDataDto,
     ) {
         $currency = $request->getSession()->get('currency', 'czk');
         $cart = $request->getSession()->get('cart', 'czk');
         $products = $cart->getIdsAndProducts();
-        $freightCost = new Money($freightCostGetter->getCostFromPaymentDto($shippingDataDto));
-        $freightCostForCurrency = $freightCost->setCurrency($currency)->getFigure();
+        $freightCost = $freightCostGetter->getCostFromPaymentDto($shippingDataDto);
+        $freightCostForCurrency = $priceHandler->convertToCurrency($freightCost, $currency);
 
         $collection = new ArrayCollection($productRepository->findSomeByIds(array_keys($products)));
-        $productsAndPrices = $collection->map(function (Product $product) use ($cart, $currency) {
+        $productsAndPrices = $collection->map(function (Product $product) use ($cart, $currency, $priceHandler) {
             $amountInCart = $cart->getAmountOfProduct($product->getId());
             $amount = $product->hasNotEnoughInStockOrNegative($amountInCart) ? $product->getAmount() : $amountInCart;
-            $product->getMoney()->setCurrency($currency);
 
             return [
                 'price_data' => [
                     'currency' => $currency,
-                    'unit_amount' => round($product->getMoney()->getFigure()),
+                    'unit_amount' => round($priceHandler->convertToCurrency($product->getPrice(), $currency)),
                     'product_data' => ['name' => $product->getName()],
                 ],
                 'quantity' => $amount,

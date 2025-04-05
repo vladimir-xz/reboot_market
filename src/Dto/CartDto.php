@@ -8,10 +8,10 @@ use App\Entity\Product;
 class CartDto
 {
     private ?int $totalWeight;
-    private ?Money $totalPrice;
+    private ?int $totalPrice;
     private array $idsAndProducts;
 
-    public function __construct(int $totalWeight = 0, Money $totalPrice = new Money(), array $idsAndProducts = [])
+    public function __construct(int $totalWeight = 0, int $totalPrice = 0, array $idsAndProducts = [])
     {
         $this->idsAndProducts = $idsAndProducts;
         $this->totalPrice = $totalPrice;
@@ -51,7 +51,7 @@ class CartDto
         $this->totalWeight = $weight;
     }
 
-    public function setTotalPrice(Money $price)
+    public function setTotalPrice(int $price)
     {
         $this->totalPrice = $price;
     }

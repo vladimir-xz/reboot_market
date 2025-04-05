@@ -12,7 +12,7 @@
         </div>
         <div class="">In stock: {{  product.amount  }}</div>
         <div class="">
-            {{  appCurrency.adjustPrice(product.money)|format_currency(appCurrency.getActual)  }}
+            {{  appCurrency.display(product.price)|format_currency(appCurrency.getActual)  }}
         </div>
     </div>
 </div>

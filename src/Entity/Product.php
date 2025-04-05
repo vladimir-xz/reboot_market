@@ -7,7 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Money;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -32,9 +31,6 @@ class Product
 
     #[ORM\Column]
     private ?int $price = null;
-
-    // Price with currency and convertation ability
-    private ?Money $money = null;
 
     #[ORM\Column]
     private ?int $amount = null;
@@ -182,15 +178,6 @@ class Product
         $this->price = $price;
 
         return $this;
-    }
-
-    public function getMoney(): ?Money
-    {
-        if ($this->money === null) {
-            $this->money = new Money($this->price);
-        }
-
-        return $this->money;
     }
 
     public function getAmount(): ?int

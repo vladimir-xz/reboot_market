@@ -33,14 +33,14 @@ final class PurchaseForm extends AbstractController
     #[LiveProp]
     public ?int $totalWeight = null;
 
-    #[LiveProp(hydrateWith: 'hydrateMoney')]
-    public ?Money $productsTotal = null;
+    #[LiveProp]
+    public ?int $productsTotal = null;
 
-    #[LiveProp(hydrateWith: 'hydrateMoney')]
-    public ?Money $totalPrice = null;
+    #[LiveProp]
+    public ?int $totalPrice = null;
 
-    #[LiveProp(hydrateWith: 'hydrateMoney')]
-    public ?Money $freightCost = null;
+    #[LiveProp]
+    public ?int $freightCost = null;
 
     #[LiveProp(writable: true, onUpdated: 'onCountryUpdate')]
     #[Assert\NotBlank]
@@ -105,12 +105,10 @@ final class PurchaseForm extends AbstractController
             $this->country->getId(),
             $this->totalWeight,
             $this->shippingMethod->getId(),
-        )?->setCurrency($this->productsTotal->getCurrency());
+        );
 
         if ($this->isFreightCostSet()) {
-            $totalPriceCount = new Money($this->freightCost, $this->productsTotal->getCurrency());
-            $totalPriceCount->addFigure($this->productsTotal);
-            $this->totalPrice = $totalPriceCount;
+            $this->totalPrice = $this->freightCost + $this->productsTotal;
         }
     }
 
@@ -139,13 +137,5 @@ final class PurchaseForm extends AbstractController
     public function isFreightCostSet()
     {
         return $this->freightCost !== null;
-    }
-
-    public function hydrateMoney($data): ?Money
-    {
-        if ($data === null) {
-            return null;
-        }
-        return new Money($data['figure'], $data['currency']);
     }
 }

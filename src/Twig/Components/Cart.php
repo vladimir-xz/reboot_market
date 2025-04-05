@@ -40,8 +40,6 @@ final class Cart
         if ($this->cart === null) {
             return null;
         }
-        $money = new Money($this->cart?->getTotalPrice());
-
-        return $money->setCurrency($this->currency);
+        return $this->cart?->getTotalPrice();
     }
 }

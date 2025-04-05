@@ -23,7 +23,7 @@
                 {%  endfor  %}
                 <li>Available: {{   product.amount   }} pieces. </li>
                 <li>
-                    {{  appCurrency.adjustPrice(product.money)|format_currency(appCurrency.getActual)  }}
+                    {{  appCurrency.display(product.price)|format_currency(appCurrency.getActual)  }}
                 </li>
             </ul>
             <h3>Related products:</h3>
@@ -37,7 +37,7 @@
                             <p>{{   recomended.name   }}</p>
                         </a>
                         <p>
-                            {{  appCurrency.adjustPrice(recomended.money)|format_currency(appCurrency.getActual)  }}
+                            {{  appCurrency.display(recomended.price)|format_currency(appCurrency.getActual)  }}
                         </p>
                     </div>
                 {%  endfor  %}

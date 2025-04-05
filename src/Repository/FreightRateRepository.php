@@ -25,7 +25,7 @@ class FreightRateRepository extends ServiceEntityRepository
         int $weight,
         int $addressId,
         int $shippingMethodId
-    ): ?Money {
+    ): ?int {
         //TODO: fetch adress with country beforehand
         $data = $this->createQueryBuilder('f')
             ->select('f.price')
@@ -40,31 +40,6 @@ class FreightRateRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
 
-        return $data !== null ? new Money($data['price']) : null;
+        return $data['price'] ?? null;
     }
-
-    //    /**
-    //     * @return FreightRate[] Returns an array of FreightRate objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('f.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?FreightRate
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }
