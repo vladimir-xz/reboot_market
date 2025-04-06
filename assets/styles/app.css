@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Roboto';
+  src: url('/fonts/Roboto-VariableFont_wdth,wght.ttf') format('truetype');
+  /* If you have additional formats, you can add them like:
+  src: url('/fonts/Roboto-VariableFont_wdth,wght.woff2') format('woff2'),
+       url('/fonts/Roboto-VariableFont_wdth,wght.woff') format('woff');
+  */
+  font-weight: 100 900; /* This covers the variable weight range */
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   *::-webkit-scrollbar {
     width: 0;
@@ -250,7 +262,6 @@
       @apply bg-amber-600;
       color: white;
     }
-
 
 
 /* 

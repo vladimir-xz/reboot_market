@@ -8,7 +8,14 @@ module.exports = {
     'pl-6', 'pl-9', 'pl-12', 'pl-15', 'pl-18'
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        roboto: ['Roboto', 'sans-serif'],
+      },
+    },
+    fontWeight: {
+      upnormal: '450'
+    }
   },
   plugins: [
     require('@tailwindcss/forms'),

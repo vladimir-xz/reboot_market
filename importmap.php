@@ -49,4 +49,13 @@ return [
     '@stripe/stripe-js' => [
         'version' => '6.1.0',
     ],
+    'unplugin-fonts' => [
+        'version' => '1.3.1',
+    ],
+    'unplugin' => [
+        'version' => '2.0.0-beta.1',
+    ],
+    'fast-glob' => [
+        'version' => '3.3.2',
+    ],
 ];

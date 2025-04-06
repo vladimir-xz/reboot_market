@@ -1,8 +1,8 @@
-<div class="hidden bg-stone-100" {{ attributes }}>
+<div class="hidden" {{ attributes }}>
     {% for category in categories %}
         <div>
             <button 
-                class="w-full flex items-center justify-between pl-{{ offset }} transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300 {{ category.children is defined ? 'menu_parent' : '' }}"
+                class="w-full flex items-center justify-between pl-{{ offset }} py-2 pr-3 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300 {{ category.children is defined ? 'menu_parent' : '' }}"
                 data-catalog-tree-target="node" 
                 id="{{category.id}}"
             >

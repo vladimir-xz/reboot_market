@@ -1,14 +1,14 @@
 <div {{ attributes.defaults(stimulus_controller('catalog-tree')) }} data-action="catalog:renew@window->catalog-tree#renew catalog:loadProducts->catalog#loadProducts">
-    <nav class="inline-block w-full bg-stone-200 border border-neutral-300 rounded-md shadow-xl text-nowrap">
-        <ul data-action="click->catalog-tree#onClick" class="text-base leading-10">
+    <nav class="inline-block w-full bg-neutral-50 drop-shadow-2xl rounded-md text-nowrap">
+        <ul data-action="click->catalog-tree#onClick" class="text-base">
             {% for category in this.catalog %}
                 <li >
                     <button 
-                        class="w-full menu-button flex items-center justify-between pl-3 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300 {{ category.children is defined ? 'menu_parent' : '' }}"
+                        class="w-full menu-button flex items-center justify-between p-3 transition border-b hover:border-slate-300 hover:bg-neutral-100 {{ category.children is defined ? 'menu_parent' : '' }}"
                         id="{{category.id}}" data-catalog-tree-target="node" 
                     >
                     <div class="flex items-center">
-                        <p class="hover:underline">{{ category.name }}</p>
+                        <p class="hover:underline font-upnormal">{{ category.name }}</p>
                         <div class="flex pl-4">
                             <label class="check_box included_box active_box">
                                 <input type="checkbox" data-action="catalog-tree#check" data-catalog-tree-exclude-param="false" data-catalog-tree-id-param="{{ category.id }}">

@@ -1,21 +1,32 @@
-<div {{ attributes.defaults(stimulus_controller('buy')) }} class="flex">
+<div {{ attributes.defaults(stimulus_controller('buy')) }} class="flex justify-between">
     <!-- component html --> 
-    <button data-action="buy#decr">-</button>
+    <div class="flex border-2 border-teal-900 rounded-md bg-amber-100 leading-none">
+        <button 
+            class="px-2 border-r-2 border-teal-900"
+            data-action="buy#decr"
+        >-</button>
 
-    <input
-        type="number"
-        value="1"
-        min="1" 
-        max="{{ product.amount }}"
-        data-buy-target="input"
-        data-stock-max="{{  product.amount  }}"
-    />
-    <button
-    data-action="buy#incr"
-    >+</button>
-    <button
-        data-action="buy#send"
-    >
+        <input
+            class="bg-amber-100 border-0 p-1 w-10"
+            type="number"
+            value="1"
+            min="1" 
+            max="{{ product.amount }}"
+            data-buy-target="input"
+            data-stock-max="{{  product.amount  }}"
+        />
+        <button
+            class="px-2 border-l-2 border-teal-900"
+            data-action="buy#incr"
+        >+</button>
+    </div>
+
+    <div class="flex items-center ">
+        <button
+            class="rounded-full text-amber-100 bg-teal-900 px-1"
+            data-action="buy#send"
+        >
         Add to cart
     </button> 
+    </div>
 </div>
