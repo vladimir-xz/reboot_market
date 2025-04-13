@@ -1,20 +1,20 @@
-<div{{ attributes }} class="flex-auto w-56 max-w-56 h-80 bg-amber-400 text-teal-900 shadow-xl">
+<div{{ attributes }} class="flex-auto w-56 max-w-56 h-80 bg-white-granular text-teal-900 shadow-xl">
     <div class="flex justify-center bg-white">
         <a href="{{ path('product.index', {id: product.id}) }}">
             <img class="h-40 object-cover" src="{{ asset(product.mainImagePath) }}" alt="Server">
         </a>
     </div>
 
-    <div class="p-2 m-2 bg-amber-300 rounded-md">
+    <div class="p-2 m-2 rounded-md">
         <div>
             <a href="{{ path('product.index', {id: product.id}) }}">
-                <span class="font-upnormal">{{    product.name    }}</span>
+                <span class="font-[500]">{{    product.name    }}</span>
             </a>
 
         </div>
         <div class="font-light">In stock: {{  product.amount  }}</div>
 
-        <div class="font-light">
+        <div class="font-[500]">
             {{  appCurrency.display(product.price)|format_currency(appCurrency.getActual)  }}
         </div>
         <twig:BuyButton :product="product"/>

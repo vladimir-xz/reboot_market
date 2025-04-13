@@ -2,10 +2,10 @@
 
 {% block content %}
 
-    <div class="flex gap-4">
+    <div class="flex gap-4 text-white-soft">
         <div class="w-1/2 ">
             <div class="">
-                <img class="" src="{{ asset(product.mainImagePath) }}" alt="Main image">
+                <img class="w-full" src="{{ asset(product.mainImagePath) }}" alt="Main image">
             </div>
             <div class="flex justify-center mt-4">
                 {%  for image in product.images   %}
@@ -15,7 +15,7 @@
         </div>
         <div class="w-1/2">
             <ul class="leading-10">
-                <li><h1 class="font-bold">{{  product.name    }}</h1></li>
+                <li><h1 class="font-[600] text-2xl">{{  product.name    }}</h1></li>
                 <li>{{  product.condition   }}</li>
                 <li>{{  product.length  }}</li>
                 {% for specification in product.specifications %}
@@ -26,29 +26,36 @@
                     {{  appCurrency.display(product.price)|format_currency(appCurrency.getActual)  }}
                 </li>
             </ul>
-            <h3>Related products:</h3>
-            <div class="flex gap-4">
-                {%  for recomended in product.related   %}
-                    <div class="w-40">
-                        <a href="{{ path('product.index', {id: recomended.id}) }}">
-                            <img src="{{ asset(recomended.mainImagePath) }}" alt="">
-                        </a>
-                        <a href="{{ path('product.index', {id: recomended.id}) }}">
-                            <p>{{   recomended.name   }}</p>
-                        </a>
-                        <p>
-                            {{  appCurrency.display(recomended.price)|format_currency(appCurrency.getActual)  }}
-                        </p>
-                    </div>
-                {%  endfor  %}
-            </div>
             <twig:BuyButton :product="product"/>
+            
+            {% if not product.related is empty %}
+                <h3>Related products:</h3>
+                <div class="flex gap-4">
+                    {%  for recomended in product.related   %}
+                        <div class="w-40 bg-white-granular dark:text-black">
+                            <div class="flex justify-center">
+                                <a href="{{ path('product.index', {id: recomended.id}) }}">
+                                    <img class="h-40 object-cover" src="{{ asset(recomended.mainImagePath) }}" alt="">
+                                </a>
+                            </div>
+                            <a href="{{ path('product.index', {id: recomended.id}) }}">
+                                <p>{{   recomended.name   }}</p>
+                            </a>
+                            <p>
+                                {{  appCurrency.display(recomended.price)|format_currency(appCurrency.getActual)  }}
+                            </p>
+                        </div>
+                    {%  endfor  %}
+                </div>
+            {%  endif   %}
         </div>
     </div>
 
+    {% if not product.description is null %}
     <div class="">
         {{  product.description.text }}
     </div>
+    {% endif  %}
 
 
 
