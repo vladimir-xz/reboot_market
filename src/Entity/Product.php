@@ -276,7 +276,7 @@ class Product
     }
 
     #[ORM\PostLoad]
-    public function setMainImagePath()
+    public function setMainImagePath(): void
     {
         foreach ($this->images as $image) {
             if ($image->isMain()) {
@@ -284,7 +284,9 @@ class Product
             }
         }
 
-        return $this->mainImage = $this->images[0]->getPath();
+        if ($this->mainImage === null) {
+            $this->mainImage = $this->images[0]->getPath();
+        }
     }
 
     public function getMainImagePath(): string

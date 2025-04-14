@@ -11,9 +11,70 @@
         </a>
     </div>
 
-    <div class="cart_menu absolute hidden py-4 bg-neutral-100 text-black z-10">
-        {%   for product in this.products   %}
-            <a href="">{{   product.name   }}</a>
-        {%   endfor   %}
+    <div class="cart_menu absolute right-0 p-4 bg-neutral-100 text-black z-10 min-w-64 rounded-md drop-shadow-2xl">
+        <p class="border-b text-lg font-[500]">Shopping cart preview:</p>
+        <div class="border-b">
+            {%   for product in this.products   %}
+                {% set prodId = product.id %}
+                <div class="item-cart flex gap-4 items-center font-[400]">
+                    <div class="flex w-24">
+                        <a href="{{ path('product.index', {id: product.id}) }}">
+                            <img class="object-cover" src="{{ asset(product.mainImagePath) }}" alt="Server">
+                        </a>
+                    </div>
+                    <div class="flex items-center gap-2 py-4">
+                        <a href="{{ path('product.index', {id: product.id}) }}">{{   product.name   }}</a>
+                        <div class="flex border-2 border-teal-900 rounded-md bg-none leading-none">
+                            <button 
+                                class="px-2 border-r-2 border-teal-900"
+                                data-action="live#action"
+                                data-live-action-param="decrement"
+                        
+                                data-live-id-param="{{ product.id }}"
+                            >-</button>
+                    
+                            <input
+                                class="bg-none border-0 p-1 w-8"
+                                type="number"
+                                value="{{   product.amountInCart   }}"
+                                min="1" 
+                                max="{{ product.amount }}"
+                                data-model="products.prodId.amountInCart"
+                                data-live-id-param="{{ product.id }}"
+                            />
+                            <button
+                                class="px-2 border-l-2 border-teal-900"
+                                data-action="live#action"
+                                data-live-action-param="decrement"
+                                data-live-id-param="{{ product.id }}"
+                            >+</button>
+                        </div>
+        
+                        <p>
+                            {{  appCurrency.display(product.price * product.amountInCart)|format_currency(appCurrency.getActual)  }}
+                        </p>
+
+                        <label class="check_box excluded_box">
+                            <input type="checkbox" data-action="catalog-tree#check" data-catalog-tree-exclude-param="true" data-catalog-tree-id-param="39">
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                </div>
+            {%   endfor   %}
+        </div>
+
+        <div class="flex justify-between font-[500]">
+            <p>Total:</p>
+
+            <p>
+                {{  appCurrency.display(this.total)|format_currency(appCurrency.getActual)  }}
+            </p>
+        </div>
+
+        <div class="flex flex-row-reverse">
+            <a href="{{ path('checkout.index') }}"  class="rounded-full text-teal-900 bg-amber-dim px-1 w-32 text-center">
+                View Cart
+            </a>
+        </div>
     </div>
 </div>
