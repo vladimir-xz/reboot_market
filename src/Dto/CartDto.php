@@ -4,16 +4,20 @@ namespace App\Dto;
 
 use App\Entity\Money;
 use App\Entity\Product;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class CartDto
 {
     private ?int $totalWeight;
     private ?int $totalPrice;
-    private array $idsAndProducts;
+    private ArrayCollection $products;
 
-    public function __construct(int $totalWeight = 0, int $totalPrice = 0, array $idsAndProducts = [])
-    {
-        $this->idsAndProducts = $idsAndProducts;
+    public function __construct(
+        int $totalWeight = 0,
+        int $totalPrice = 0,
+        array $products = []
+    ) {
+        $this->products = new ArrayCollection($products);
         $this->totalPrice = $totalPrice;
         $this->totalWeight = $totalWeight;
     }
@@ -28,22 +32,14 @@ class CartDto
         return $this->totalPrice;
     }
 
-    public function getIdsAndProducts()
+    public function getProducts()
     {
-        return $this->idsAndProducts;
+        return $this->products;
     }
 
-    public function getAmountOfProduct(int $id): int
+    public function setProducts(ArrayCollection $products)
     {
-        if (!array_key_exists($id, $this->idsAndProducts)) {
-            return 0;
-        }
-        return $this->idsAndProducts[$id]->getAmountInCart();
-    }
-
-    public function addProduct(Product $product)
-    {
-        $this->idsAndProducts[$product->getId()] = $product;
+        $this->products = $products;
     }
 
     public function setTotalWeight(int $weight)

@@ -36,7 +36,7 @@ final class BuyButton
         $this->product->setAmountInCart($amount);
         $session = $this->requestStack->getCurrentRequest()->getSession();
         $cart = $session->get('cart', new CartDto());
-        $newCart = $this->cartProductHandler::add($cart, $this->product);
+        $newCart = $this->cartProductHandler::add($cart, $this->product, $this->log);
         if ($newCart === null) {
             return;
         }

@@ -2,8 +2,10 @@
 
 namespace App\Twig\Components;
 
-use App\Entity\Money;
+use App\Entity\Product;
 use App\Dto\CartDto;
+use App\Service\CartProductHandler;
+use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
@@ -19,89 +21,86 @@ final class Cart
     use DefaultActionTrait;
 
     #[LiveProp]
-    public ?CartDto $cart = null;
+    public ?int $totalWeight = null;
+    #[LiveProp]
+    public ?int $totalPrice = null;
     #[LiveProp(writable: ['amountInCart'])]
     /** @var Product[] */
-    public $products = [];
+    public $products;
 
-    public function __construct(private RequestStack $requestStack, private LoggerInterface $log)
-    {
+    public function __construct(
+        private RequestStack $requestStack,
+        private CartProductHandler $cartHandler,
+        private LoggerInterface $log
+    ) {
+        $cart = $requestStack->getCurrentRequest()->getSession()->get('cart', new CartDto());
+        $this->totalPrice = $cart->getTotalPrice();
+        $this->totalWeight = $cart->getTotalWeight();
+        $filteredCollection = $cart->getProducts()->filter(function ($element) {
+            return $element !== null;
+        });
+        $this->products = $filteredCollection->getValues();
     }
 
     #[LiveAction]
     public function increment(#[LiveArg] int $id)
     {
-        $products = $this->cart->getIdsAndProducts();
-        $product = $products[$id];
-        if ($product->getAmountInCart() >= $product->amount) {
-            return;
-        }
+        $newCart = new CartDto($this->totalWeight, $this->totalPrice, $this->products);
+        $cart = $this->cartHandler->increment($newCart, $id);
 
-        $product->setAmountInCart($product->getAmountInCart() + 1);
-        $products[$id] = $product;
-
-        $this->requestStack->getCurrentRequest()->getSession()->set('cart', $this->cart);
+        $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
     }
 
     #[LiveAction]
     public function decrement(#[LiveArg] int $id)
     {
-        $products = $this->cart->getIdsAndProducts();
-        $product = $products[$id];
-        if ($product->getAmountInCart() <= 1) {
-            return;
-        }
+        $newCart = new CartDto($this->totalWeight, $this->totalPrice, $this->products);
+        $cart = $this->cartHandler->decrement($newCart, $id);
 
-        $product->setAmountInCart($product->getAmountInCart() - 1);
-        $products[$id] = $product;
-
-        $this->requestStack->getCurrentRequest()->getSession()->set('cart', $this->cart);
+        $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
     }
 
     #[LiveAction]
     public function setAmount(#[LiveArg] int $id)
     {
-        $products = $this->cart->getIdsAndProducts();
-        $product = $products[$id];
-        // if ($this->amount > $product->getAmount() || $this->amount < 1) {
-        //     return;
-        // }
+        $product = $this->products->findFirst(fn(int $key, Product $value) => $value->getId() === $id);
+        $newCart = new CartDto($this->totalWeight, $this->totalPrice, $this->products);
+        $cart = $this->cartHandler->add($newCart, $product, $this->log);
 
-        // $product->setAmountInCart($this->amount);
-        $products[$id] = $product;
-
-        $this->requestStack->getCurrentRequest()->getSession()->set('cart', $this->cart);
+        $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
     }
 
     #[LiveAction]
     public function deleteProduct(#[LiveArg] int $id, #[LiveArg] int $amount)
     {
-        $products = $this->cart->getIdsAndProducts();
-        unset($products[$id]);
+        // $products = $this->cart->getIdsAndProducts();
+        // unset($products[$id]);
 
-        $this->requestStack->getCurrentRequest()->getSession()->set('cart', $this->cart);
+        // $this->requestStack->getCurrentRequest()->getSession()->set('cart', $this->cart);
     }
 
     #[LiveListener('productAdded')]
     public function setNewCartDto()
     {
+        $cart = $this->requestStack->getCurrentRequest()->getSession()->get('cart', new CartDto());
+
+        $this->totalPrice = $cart->getTotalPrice();
+        $this->totalWeight = $cart->getTotalWeight();
+        $this->products = $cart->getProducts();
     }
 
+    #[LiveAction]
     public function getProducts()
     {
-        if ($this->cart === null) {
-            $this->cart = $this->requestStack->getCurrentRequest()->getSession()->get('cart', new CartDto());
-            $this->products = $this->cart->getIdsAndProducts();
-        }
-        return $this->cart?->getIdsAndProducts() ?? 'Cart is emty';
+        return $this->products ?? 'Cart is emty';
     }
 
     public function getTotal()
     {
-        if ($this->cart === null) {
+        if ($this->totalPrice === null) {
             return 0;
         }
 
-        return $this->cart->getTotalPrice();
+        return $this->totalPrice;
     }
 }
