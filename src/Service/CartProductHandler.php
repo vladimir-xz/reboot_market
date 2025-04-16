@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Dto\CartDto;
+use App\Dto\ProductCartDto;
 use App\Entity\Product;
 use App\Entity\Money;
 use Closure;
@@ -14,21 +15,25 @@ class CartProductHandler
     {
         $currentAmountInCart = $product->getAmountInCart();
         $products = $cart->getProducts();
-        $productInCart = $products->findFirst(fn(int $key, Product $value) => $value === $product);
-        if ($productInCart === null) {
-            $products->add($product);
-        } elseif (
-            $product->hasNotEnoughInStockOrNegative($productInCart->getAmountInCart() + $currentAmountInCart)
+        $productCart = $products->findFirst(fn(int $key, ProductCartDto $value) => $value === $product);
+        if ($productCart === null) {
+            $productCart = new ProductCartDto($product);
+            $products->add($productCart);
+        }
+
+        $newAmount = $productCart->getQuantity() + $currentAmountInCart;
+        if (
+            $product->hasNotEnoughInStockOrNegative($newAmount)
         ) {
             return $cart;
         } else {
-            $productInCart->setAmountInCart($productInCart->getAmountInCart() + $currentAmountInCart);
+            $productCart->setQuantity($newAmount);
         }
 
         $productsPrice = $product->getPrice() * $currentAmountInCart;
         $productsWeight = $product->getWeight() * $currentAmountInCart;
 
-        $log->info(print_r($productInCart, true));
+        $log->info(print_r($productCart, true));
         $log->info(print_r($products, true));
         $newCost = $cart->getTotalPrice() + $productsPrice;
         $cart->setTotalWeight($cart->getTotalWeight() + $productsWeight);
@@ -41,7 +46,7 @@ class CartProductHandler
     public static function increment(CartDto $cart, int $id)
     {
         $products = $cart->getProducts();
-        $productInCart = $products->findFirst(fn(int $key, Product $value) => $value->getId() === $id);
+        $productInCart = $products->findFirst(fn(int $key, ProductCartDto $value) => $value->getId() === $id);
         if ($productInCart === null) {
             return $cart;
         } elseif (

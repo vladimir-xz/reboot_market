@@ -21,12 +21,10 @@ final class Cart
     use DefaultActionTrait;
 
     #[LiveProp]
-    public ?int $totalWeight = null;
-    #[LiveProp]
-    public ?int $totalPrice = null;
-    #[LiveProp(writable: ['amountInCart'])]
-    /** @var Product[] */
-    public $products;
+    public ?CartDto $cart;
+    // #[LiveProp(writable: ['amountInCart'])]
+    // /** @var Product[] */
+    // public $products;
 
     public function __construct(
         private RequestStack $requestStack,
@@ -34,19 +32,20 @@ final class Cart
         private LoggerInterface $log
     ) {
         $cart = $requestStack->getCurrentRequest()->getSession()->get('cart', new CartDto());
-        $this->totalPrice = $cart->getTotalPrice();
-        $this->totalWeight = $cart->getTotalWeight();
-        $filteredCollection = $cart->getProducts()->filter(function ($element) {
-            return $element !== null;
-        });
-        $this->products = $filteredCollection->getValues();
+        $this->cart = $cart;
+        // $this->totalPrice = $cart->getTotalPrice();
+        // $this->totalWeight = $cart->getTotalWeight();
+        // $filteredCollection = $cart->getProducts()->filter(function ($element) {
+        //     return $element !== null;
+        // });
+        // $this->products = $filteredCollection->getValues();
     }
 
     #[LiveAction]
     public function increment(#[LiveArg] int $id)
     {
-        $newCart = new CartDto($this->totalWeight, $this->totalPrice, $this->products);
-        $cart = $this->cartHandler->increment($newCart, $id);
+        // $newCart = new CartDto($this->totalWeight, $this->totalPrice, $this->products);
+        $cart = $this->cartHandler->increment($this->cart, $id);
 
         $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
     }
@@ -54,8 +53,8 @@ final class Cart
     #[LiveAction]
     public function decrement(#[LiveArg] int $id)
     {
-        $newCart = new CartDto($this->totalWeight, $this->totalPrice, $this->products);
-        $cart = $this->cartHandler->decrement($newCart, $id);
+        // $newCart = new CartDto($this->totalWeight, $this->totalPrice, $this->products);
+        $cart = $this->cartHandler->decrement($this->cart, $id);
 
         $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
     }
@@ -63,11 +62,11 @@ final class Cart
     #[LiveAction]
     public function setAmount(#[LiveArg] int $id)
     {
-        $product = $this->products->findFirst(fn(int $key, Product $value) => $value->getId() === $id);
-        $newCart = new CartDto($this->totalWeight, $this->totalPrice, $this->products);
-        $cart = $this->cartHandler->add($newCart, $product, $this->log);
+        // $product = $this->products->findFirst(fn(int $key, Product $value) => $value->getId() === $id);
+        // $newCart = new CartDto($this->totalWeight, $this->totalPrice, $this->products);
+        // $cart = $this->cartHandler->add($this->cart, $product, $this->log);
 
-        $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
+        // $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
     }
 
     #[LiveAction]
@@ -84,9 +83,10 @@ final class Cart
     {
         $cart = $this->requestStack->getCurrentRequest()->getSession()->get('cart', new CartDto());
 
-        $this->totalPrice = $cart->getTotalPrice();
-        $this->totalWeight = $cart->getTotalWeight();
-        $this->products = $cart->getProducts();
+        $this->cart = $cart;
+        // $this->totalPrice = $cart->getTotalPrice();
+        // $this->totalWeight = $cart->getTotalWeight();
+        // $this->products = $cart->getProducts();
     }
 
     #[LiveAction]
@@ -97,10 +97,10 @@ final class Cart
 
     public function getTotal()
     {
-        if ($this->totalPrice === null) {
+        if ($this->cart === null) {
             return 0;
         }
 
-        return $this->totalPrice;
+        return $this->cart->getTotalPrice();
     }
 }
