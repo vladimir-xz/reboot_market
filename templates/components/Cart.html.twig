@@ -14,12 +14,13 @@
     <div class="cart_menu absolute right-0 p-4 bg-neutral-100 text-black z-10 min-w-64 rounded-md drop-shadow-2xl">
         <p class="border-b text-lg font-[500]">Shopping cart preview:</p>
         <div class="border-b">
+            {% set prodId = -1  %}
             {%   for product in this.products   %}
-                {% set prodId = product.id %}
+                {% set prodId = prodId + 1 %}
                 <div class="item-cart flex gap-4 items-center font-[400]">
                     <div class="flex w-24">
                         <a href="{{ path('product.index', {id: product.id}) }}">
-                            <img class="object-cover" src="{{ asset(product.mainImagePath) }}" alt="Server">
+                            <img class="object-cover" src="{{ asset(product.image) }}" alt="Server">
                         </a>
                     </div>
                     <div class="flex items-center gap-2 py-4">
@@ -36,26 +37,28 @@
                             <input
                                 class="bg-none border-0 p-1 w-8"
                                 type="number"
-                                value="{{   product.amountInCart   }}"
+                                value="{{   product.quantity   }}"
                                 min="1" 
-                                max="{{ product.amount }}"
-                                data-model="cartDto.products.prodId.amountInCart"
+                                max="{{ product.avalible }}"
+                                data-action="change->live#action"
+                                data-live-action-param="setAmount"
+                                data-model="product.1.quantity"
                                 data-live-id-param="{{ product.id }}"
                             />
                             <button
                                 class="px-2 border-l-2 border-teal-900"
                                 data-action="live#action"
-                                data-live-action-param="decrement"
+                                data-live-action-param="increment"
                                 data-live-id-param="{{ product.id }}"
                             >+</button>
                         </div>
         
                         <p>
-                            {{  appCurrency.display(product.price * product.amountInCart)|format_currency(appCurrency.getActual)  }}
+                            {{  appCurrency.display(product.price * product.quantity)|format_currency(appCurrency.getActual)  }}
                         </p>
 
                         <label class="check_box excluded_box">
-                            <input type="checkbox" data-action="catalog-tree#check" data-catalog-tree-exclude-param="true" data-catalog-tree-id-param="39">
+                            <input type="checkbox" data-action="live#action" data-live-action-param="delete" data-live-id-param="{{ product.id }}">
                             <span class="checkmark"></span>
                         </label>
                     </div>

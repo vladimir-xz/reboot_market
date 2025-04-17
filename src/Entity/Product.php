@@ -35,8 +35,6 @@ class Product
     #[ORM\Column]
     private ?int $amount = null;
 
-    private ?int $amountInCart = null;
-
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
@@ -192,18 +190,6 @@ class Product
         return $this;
     }
 
-    public function getAmountInCart(): ?int
-    {
-        return $this->amountInCart;
-    }
-
-    public function setAmountInCart(int $amount): static
-    {
-        $this->amountInCart = $amount;
-
-        return $this;
-    }
-
     public function getCategory(): ?Category
     {
         return $this->category;
@@ -289,7 +275,7 @@ class Product
         }
     }
 
-    public function getMainImagePath(): string
+    public function getMainImagePath(): ?string
     {
         return $this->mainImage;
     }
@@ -355,10 +341,5 @@ class Product
         $this->description = $description;
 
         return $this;
-    }
-
-    public function hasNotEnoughInStockOrNegative(int $amount)
-    {
-        return $amount > $this->amount || $amount < 0;
     }
 }

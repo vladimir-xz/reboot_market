@@ -33,10 +33,9 @@ final class BuyButton
     #[LiveAction]
     public function save(#[LiveArg] int $amount)
     {
-        $this->product->setAmountInCart($amount);
         $session = $this->requestStack->getCurrentRequest()->getSession();
         $cart = $session->get('cart', new CartDto());
-        $newCart = $this->cartProductHandler::add($cart, $this->product, $this->log);
+        $newCart = $this->cartProductHandler->add($cart, $this->product, $amount, $this->log);
         $session->set('cart', $newCart);
 
         $this->emit('productAdded');

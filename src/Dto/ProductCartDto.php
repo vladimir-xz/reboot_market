@@ -9,19 +9,20 @@ class ProductCartDto
     private ?int $id;
     private ?string $name;
     private ?int $avalible;
-    private ?int $amountInCart;
     private ?int $quantity;
     private ?string $image;
     private ?int $price;
+    private ?int $weight;
 
-    public function __construct(Product $product = new Product())
+    public function __construct(Product $product = new Product(), int $quantity = 1)
     {
         $this->id = $product->getId();
         $this->name = $product->getName();
         $this->avalible = $product->getAmount();
-        $this->amountInCart = $product->getAmountInCart();
+        $this->quantity = $quantity;
         $this->image = $product->getMainImagePath();
         $this->price = $product->getPrice();
+        $this->weight = $product->getWeight();
     }
 
     // Getter and setter for $id
@@ -57,17 +58,6 @@ class ProductCartDto
         $this->avalible = $avalible;
     }
 
-    // Getter and setter for $amountInCart
-    public function getAmountInCart(): ?int
-    {
-        return $this->amountInCart;
-    }
-
-    public function setAmountInCart(?int $amountInCart): void
-    {
-        $this->amountInCart = $amountInCart;
-    }
-
     public function getQuantity(): ?int
     {
         return $this->quantity;
@@ -98,5 +88,15 @@ class ProductCartDto
     public function setPrice(?int $price): void
     {
         $this->price = $price;
+    }
+
+    public function getWeight(): int
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(?int $weight): void
+    {
+        $this->weight = $weight;
     }
 }
