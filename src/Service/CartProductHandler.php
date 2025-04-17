@@ -23,7 +23,7 @@ class CartProductHandler
             ->getProducts()
             ->findFirst(fn(int $key, ProductCartDto $value) => $value->getId() === $product->getId());
         if ($productInCart === null) {
-            $productInCart = new ProductCartDto($product);
+            $productInCart = new ProductCartDto($product, $quantity);
             $cart->getProducts()->add($productInCart);
         } else {
             $productInCart->setQuantity($productInCart->getQuantity() + $quantity);
