@@ -100,10 +100,8 @@ class CartProductHandler
         $productInCart->setQuantity($newAmount);
 
         if ($difference < 0) {
-            $log->info('doing plus with number ' . abs($difference) . ', so the total amount is ' . $productInCart->getPrice() * $difference);
             return $this->calculate($cart, $productInCart, fn($total, $new) => $total + $new, abs($difference));
         } else {
-            $log->info('doing minus with number ' . $difference . ', so the total amount should be ' . $productInCart->getPrice() * $difference);
             return $this->calculate($cart, $productInCart, fn($total, $new) => $total - $new, $difference);
         }
     }

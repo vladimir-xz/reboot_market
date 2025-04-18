@@ -2,6 +2,7 @@
 
 namespace App\Twig\Components;
 
+use App\Dto\CartDto;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -13,26 +14,28 @@ final class CartPopup extends AbstractController
 {
     use DefaultActionTrait;
 
-    public ?\stdClass $cart;
-    public ?int $total;
+    public ?CartDto $cart;
 
     public function __construct(private RequestStack $requestStack, private LoggerInterface $logger)
     {
     }
 
-    public function setProductsAndTotal()
+    public function mount()
     {
-        $this->cart = json_decode($this->requestStack->getCurrentRequest()->cookies->get('cart', ''));
-        $this->total = $this->cart?->total ?? 0;
+        $this->cart = $this->requestStack->getCurrentRequest()->getSession()->get('cart', new CartDto());
     }
 
     public function getProducts()
     {
-        return (array) $this->cart?->ids ?? 'Cart is emty';
+        return $this->cart->getProducts()?->getValues() ?? 'Cart is emty';
     }
 
     public function getTotal()
     {
-        return $this->total;
+        if ($this->cart === null) {
+            return 0;
+        }
+
+        return $this->cart->getTotalPrice();
     }
 }

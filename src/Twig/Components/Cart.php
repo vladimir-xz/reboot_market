@@ -23,7 +23,7 @@ final class Cart
 {
     use DefaultActionTrait;
 
-    #[LiveProp(hydrateWith: 'hydrateCart', dehydrateWith: 'dehydrateCart')]
+    #[LiveProp]
     public ?CartDto $cart;
 
     public function __construct(
@@ -95,7 +95,6 @@ final class Cart
         $this->cart = $cart;
     }
 
-    #[LiveAction]
     public function getProducts()
     {
         return $this->cart->getProducts()?->getValues() ?? 'Cart is emty';
@@ -108,21 +107,5 @@ final class Cart
         }
 
         return $this->cart->getTotalPrice();
-    }
-
-    public function dehydrateCart(?CartDto $cart)
-    {
-        $products = $cart->getProducts()->toArray();
-        return [
-            'totalWeight' => $cart->getTotalWeight(),
-            'totalPrice' => $cart->getTotalPrice(),
-            'products' => $this->serializer->normalize($products),
-        ];
-    }
-
-    public function hydrateCart($data)
-    {
-        $products = $this->serializer->denormalize($data['products'], ProductCartDto::class . '[]');
-        return new CartDto($data['totalWeight'], $data['totalPrice'], $products);
     }
 }
