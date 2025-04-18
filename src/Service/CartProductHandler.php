@@ -16,7 +16,7 @@ class CartProductHandler
     public function add(CartDto $cart, Product $product, int $quantity, LoggerInterface $log): ?CartDto
     {
         if ($product->getAmount() < $quantity) {
-            return $cart;
+            throw new \Exception('Not enough amount in stock');
         }
 
         $productInCart = $cart
@@ -29,72 +29,83 @@ class CartProductHandler
             $productInCart->setQuantity($productInCart->getQuantity() + $quantity);
         }
 
-        return $this->calculate($cart, $productInCart, fn($x, $y) => $x + $y, $quantity);
+        return $this->calculate($cart, $productInCart, fn($total, $new) => $total + $new, $quantity);
     }
 
-    public function increment(CartDto $cart, int $id)
-    {
-        $products = $cart->getProducts();
-        $productInCart = $products->findFirst(fn(int $key, ProductCartDto $value) => $value->getId() === $id);
-        if ($productInCart === null) {
-            return $cart;
-        }
-        $newAmount = $productInCart->getQuantity() + 1;
-        if ($productInCart->getAvalible() < $newAmount) {
-            return $cart;
-        }
-
-        $productInCart->setQuantity($newAmount);
-
-        return $this->calculate($cart, $productInCart, fn($x, $y) => $x + $y);
-    }
-
-    public function decrement(CartDto $cart, int $id, LoggerInterface $log)
-    {
-        $products = $cart->getProducts();
-        $productInCart = $products->findFirst(fn(int $key, ProductCartDto $value) => $value->getId() === $id);
-        if ($productInCart === null) {
-            return $cart;
-        }
-        $newAmount = $productInCart->getQuantity() - 1;
-        if ($newAmount < 1) {
-            return $cart;
-        }
-
-        $productInCart->setQuantity($newAmount);
-
-        return $this->calculate($cart, $productInCart, fn($x, $y) => $x - $y);
-    }
-
-    public function delete(CartDto $cart, int $id, LoggerInterface $log)
-    {
-        $products = $cart->getProducts();
-        $productInCart = $products->findFirst(fn(int $key, ProductCartDto $value) => $value->getId() === $id);
-        if ($productInCart === null) {
-            return $cart;
-        }
-
-        $products->removeElement($productInCart);
-        $this->calculate($cart, $productInCart, fn($x, $y) => $x - $y, $productInCart->getQuantity());
-    }
-
-    public function changeAmount(CartDto $cart, int $id, $quantity)
+    public function increment(CartDto $cart, int $productId)
     {
         $productInCart = $cart
             ->getProducts()
-            ->findFirst(fn(int $key, ProductCartDto $value) => $value->getId() === $id);
+            ->findFirst(fn(int $key, ProductCartDto $value) => $value->getId() === $productId);
+        if ($productInCart === null) {
+            throw new \Exception('Product is not in a cart');
+        }
+        $newAmount = $productInCart->getQuantity() + 1;
+        if ($productInCart->getAvalible() < $newAmount) {
+            throw new \Exception('Not enough amount in stock');
+        }
+
+        $productInCart->setQuantity($newAmount);
+
+        return $this->calculate($cart, $productInCart, fn($total, $new) => $total + $new);
+    }
+
+    public function decrement(CartDto $cart, int $productId)
+    {
+        $productInCart = $cart
+            ->getProducts()
+            ->findFirst(fn(int $key, ProductCartDto $value) => $value->getId() === $productId);
+        if ($productInCart === null) {
+            throw new \Exception('Product is not in a cart');
+        }
+
+        $newAmount = $productInCart->getQuantity() - 1;
+        if ($newAmount < 1) {
+            throw new \Exception('Value is less then one');
+        }
+
+        $productInCart->setQuantity($newAmount);
+
+        return $this->calculate($cart, $productInCart, fn($total, $new) => $total - $new);
+    }
+
+    public function delete(CartDto $cart, int $productId)
+    {
+        $products = $cart->getProducts();
+        $productInCart = $products
+            ->findFirst(fn(int $key, ProductCartDto $value) => $value->getId() === $productId);
+        if ($productInCart === null) {
+            throw new \Exception('Product is not in a cart');
+        }
+
+        $products->removeElement($productInCart);
+        $this->calculate($cart, $productInCart, fn($total, $new) => $total - $new, $productInCart->getQuantity());
+    }
+
+    public function changeAmount(CartDto $cart, int $productId, int $newAmount, $log)
+    {
+        $productInCart = $cart
+            ->getProducts()
+            ->findFirst(fn(int $key, ProductCartDto $value) => $value->getId() === $productId);
 
         if ($productInCart === null) {
-            return $cart;
+            throw new \Exception('Product is not in a cart');
         }
 
-        if ($productInCart->getAvalible() < $quantity || $quantity < 1) {
-            return $cart;
+        if ($productInCart->getAvalible() < $newAmount || $newAmount < 1) {
+            throw new \Exception('Not enough in stock or less then one');
         }
 
-        $productInCart->setQuantity($quantity);
+        $difference = $productInCart->getQuantity() - $newAmount;
+        $productInCart->setQuantity($newAmount);
 
-        return $this->calculate($cart, $productInCart, fn($x, $y) => $x + $y, $quantity);
+        if ($difference < 0) {
+            $log->info('doing plus with number ' . abs($difference) . ', so the total amount is ' . $productInCart->getPrice() * $difference);
+            return $this->calculate($cart, $productInCart, fn($total, $new) => $total + $new, abs($difference));
+        } else {
+            $log->info('doing minus with number ' . $difference . ', so the total amount should be ' . $productInCart->getPrice() * $difference);
+            return $this->calculate($cart, $productInCart, fn($total, $new) => $total - $new, $difference);
+        }
     }
 
     private function calculate(CartDto $cart, ProductCartDto $product, \Closure $action, int $amount = 1)
@@ -102,8 +113,9 @@ class CartProductHandler
         $productsPrice = $product->getPrice() * $amount;
         $productsWeight = $product->getWeight() * $amount;
         $newCost = $action($cart->getTotalPrice(), $productsPrice);
-        $cart->setTotalWeight($action($cart->getTotalWeight(), $productsWeight));
+        $newWeight = $action($cart->getTotalWeight(), $productsWeight);
         $cart->setTotalPrice($newCost);
+        $cart->setTotalWeight($newWeight);
 
         return $cart;
     }

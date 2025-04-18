@@ -25,9 +25,6 @@ final class Cart
 
     #[LiveProp(hydrateWith: 'hydrateCart', dehydrateWith: 'dehydrateCart')]
     public ?CartDto $cart;
-    #[LiveProp]
-    /** @var ProductCartDto[] */
-    public $products;
 
     public function __construct(
         private RequestStack $requestStack,
@@ -39,47 +36,55 @@ final class Cart
 
     public function mount(): void
     {
-        $cart = $this->requestStack->getCurrentRequest()->getSession()->get('cart', new CartDto());
-        $this->cart = $cart;
-        $this->products = $this->cart->getProducts()->toArray();
+        $this->cart = $this->requestStack->getCurrentRequest()->getSession()->get('cart', new CartDto());
     }
 
-    #[LiveAction]
-    public function increment(#[LiveArg] int $id)
+    #[LiveListener('increment')]
+    public function increment(#[LiveArg] int $product)
     {
-        // $newCart = new CartDto($this->totalWeight, $this->totalPrice, $this->products);
-        $this->log->info('this is increment');
-        $this->log->info(print_r($this->cart->getProducts(), true));
-        $cart = $this->cartHandler->increment($this->cart, $id);
-
-        $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
+        try {
+            $cart = $this->cartHandler->increment($this->cart, $product);
+            $this->cart = $cart;
+            $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
     }
 
-    #[LiveAction]
-    public function decrement(#[LiveArg] int $id)
+    #[LiveListener('decrement')]
+    public function decrement(#[LiveArg] int $product)
     {
-        // $newCart = new CartDto($this->totalWeight, $this->totalPrice, $this->products);
-        $cart = $this->cartHandler->decrement($this->cart, $id, $this->log);
-
-        $this->cart = $cart;
-        $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
+        try {
+            $cart = $this->cartHandler->decrement($this->cart, $product);
+            $this->cart = $cart;
+            $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
     }
 
-    #[LiveAction]
-    public function setAmount(#[LiveArg] int $id)
+    #[LiveListener('changeAmount')]
+    public function changeAmount(#[LiveArg] int $productId, #[LiveArg] int $amount)
     {
-        $this->log->info('setting amount happening');
-        $this->log->info(print_r($this->products, true));
+        try {
+            $cart = $this->cartHandler->changeAmount($this->cart, $productId, $amount, $this->log);
+            $this->cart = $cart;
+            $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
     }
 
-    #[LiveAction]
-    public function delete(#[LiveArg] int $id)
+    #[LiveListener('delete')]
+    public function delete(#[LiveArg] int $product)
     {
-        $cart = $this->cartHandler->delete($this->cart, $id, $this->log);
-        $cart = $this->cartHandler->delete($this->cart, $id, $this->log);
-
-        $this->cart = $cart;
-        $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
+        try {
+            $cart = $this->cartHandler->delete($this->cart, $product);
+            $this->cart = $cart;
+            $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
     }
 
     #[LiveListener('productAdded')]
@@ -88,15 +93,12 @@ final class Cart
         $cart = $this->requestStack->getCurrentRequest()->getSession()->get('cart', new CartDto());
 
         $this->cart = $cart;
-        // $this->totalPrice = $cart->getTotalPrice();
-        // $this->totalWeight = $cart->getTotalWeight();
-        // $this->products = $cart->getProducts();
     }
 
     #[LiveAction]
     public function getProducts()
     {
-        return $this->products ?? 'Cart is emty';
+        return $this->cart->getProducts()?->getValues() ?? 'Cart is emty';
     }
 
     public function getTotal()
@@ -120,7 +122,7 @@ final class Cart
 
     public function hydrateCart($data)
     {
-        $products = $this->serializer->denormalize($data['products'], ProductCartDto::class . '[]',);
+        $products = $this->serializer->denormalize($data['products'], ProductCartDto::class . '[]');
         return new CartDto($data['totalWeight'], $data['totalPrice'], $products);
     }
 }
