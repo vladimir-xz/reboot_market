@@ -21,10 +21,16 @@ final class CartProduct
     use DefaultActionTrait;
     use ComponentToolsTrait;
 
-    #[LiveProp(writable: ['quantity'], updateFromParent: true)]
+    #[LiveProp(writable: ['quantity'])]
     public ProductCartDto $product;
 
     public function __construct(private LoggerInterface $log, private SerializerInterface $serializer, ProductCartDto $product)
+    {
+        $this->product = $product;
+    }
+
+    #[LiveAction]
+    public function mount(ProductCartDto $product): void
     {
         $this->product = $product;
     }

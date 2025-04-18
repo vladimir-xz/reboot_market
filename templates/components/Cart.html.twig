@@ -14,9 +14,12 @@
     <div class="cart_menu absolute right-0 p-4 bg-neutral-100 text-black z-10 min-w-64 rounded-md drop-shadow-2xl">
         <p class="border-b text-lg font-[500]">Shopping cart preview:</p>
         <div class="border-b">
-            {%   for product in this.products   %}
-                <twig:CartProduct :product="product"/>
-            {%   endfor   %}
+            {% for product in this.products %}
+                <twig:CartProduct
+                    :product="product"
+                    id="product-{{ product.id }}-{{ product.quantity }}"
+                />
+            {% endfor %}
         </div>
 
         <div class="flex justify-between font-[500]">

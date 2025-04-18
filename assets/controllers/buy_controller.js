@@ -9,6 +9,7 @@ export default class extends Controller {
 
   async initialize() {
     this.component = await getComponent(this.element);
+    this.wasShown = false;
     this.inputTarget.addEventListener('focusout', () => {
       this.checkInput()
     })
@@ -47,7 +48,10 @@ export default class extends Controller {
   }
 
   send(event) {
-    document.getElementById('cart-popup').classList.remove('hidden')
+    if (this.wasShown == false) {
+      document.getElementById('cart-popup').classList.remove('hidden')
+      this.wasShown = true;
+    }
     this.component.action('save', { amount: Number(this.inputTarget.value) });
   }
   
