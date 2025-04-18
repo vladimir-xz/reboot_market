@@ -33,29 +33,48 @@ final class CartProduct
     public function increment()
     {
         $quantity = $this->product->getQuantity();
-        $this->product->setQuantity($quantity + 1);
-        $this->emitUp('increment', [
-            'product' => $this->product->getId()
-        ]);
+        if ($quantity + 1 < $this->product->getAvalible()) {
+            $this->product->setQuantity($quantity + 1);
+            $this->emitUp('increment', [
+                'product' => $this->product->getId()
+            ]);
+        }
     }
 
     #[LiveAction]
     public function decrement()
     {
         $quantity = $this->product->getQuantity();
-        $this->product->setQuantity($quantity - 1);
-        $this->emitUp('decrement', [
-            'product' => $this->product->getId()
-        ]);
+        if ($quantity > 0) {
+            $this->product->setQuantity($quantity - 1);
+            $this->emitUp('decrement', [
+                'product' => $this->product->getId()
+            ]);
+        }
     }
 
     #[LiveAction]
     public function setAmount()
     {
-        $this->emitUp('changeAmount', [
-            'productId' => $this->product->getId(),
-            'amount' => $this->product->getQuantity()
-        ]);
+        $quantity = $this->product->getQuantity();
+        if ($quantity < 1) {
+            $this->product->setQuantity(1);
+            $this->emitUp('changeAmount', [
+                'productId' => $this->product->getId(),
+                'amount' => $this->product->getQuantity()
+            ]);
+        } elseif ($quantity > $this->product->getAvalible()) {
+            $this->product->setQuantity($this->product->getAvalible());
+            $this->emitUp('changeAmount', [
+                'productId' => $this->product->getId(),
+                'amount' => $this->product->getQuantity()
+            ]);
+        } else {
+            $this->emitUp('changeAmount', [
+                'productId' => $this->product->getId(),
+                'amount' => $this->product->getQuantity()
+            ]);
+        }
     }
 
     #[LiveAction]
