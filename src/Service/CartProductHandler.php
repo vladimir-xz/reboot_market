@@ -25,11 +25,20 @@ class CartProductHandler
         if ($productInCart === null) {
             $productInCart = new ProductCartDto($product, $quantity);
             $cart->getProducts()->add($productInCart);
-        } else {
-            $productInCart->setQuantity($productInCart->getQuantity() + $quantity);
+
+            return $this->calculate($cart, $productInCart, fn($total, $new) => $total + $new, $quantity);
         }
 
-        return $this->calculate($cart, $productInCart, fn($total, $new) => $total + $new, $quantity);
+        $sum = $productInCart->getQuantity() + $quantity;
+        if ($product->getAmount() < $sum) {
+            $newAmount = $product->getAmount() - $productInCart->getQuantity();
+            $productInCart->setQuantity($product->getAmount());
+        } else {
+            $newAmount = $sum;
+            $productInCart->setQuantity($newAmount);
+        }
+
+        return $this->calculate($cart, $productInCart, fn($total, $new) => $total + $new, $newAmount);
     }
 
     public function increment(CartDto $cart, int $productId): CartDto
