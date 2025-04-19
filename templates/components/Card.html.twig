@@ -15,7 +15,7 @@
         <div class="font-light">In stock: {{  product.amount  }}</div>
 
         <div class="font-[500]">
-            {{  appCurrency.display(product.price)|format_currency(appCurrency.getActual)  }}
+            {{  appCurrency.display(product.price)|format_currency((appCurrency.getActual))  }}
         </div>
         <twig:BuyButton :product="product"/>
     </div>

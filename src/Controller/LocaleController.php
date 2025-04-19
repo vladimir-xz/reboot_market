@@ -14,10 +14,10 @@ use Symfony\Component\Translation\LocaleSwitcher;
 final class LocaleController extends AbstractController
 {
     private const LANG_CURRENCY = [
-        'en' => 'eur',
-        'en2' => 'usd',
-        'cz' => 'czk',
-        'ru' => 'rub',
+        'en' => 'EUR',
+        'en2' => 'USD',
+        'cs' => 'CZK',
+        'ru' => 'RUB',
     ];
 
     public function __construct(private LocaleSwitcher $localeSwitcher, private LoggerInterface $log)

@@ -14,13 +14,13 @@
         {% endblock %}
     </head>
     <body class="bg-grey-granular dark:dark:bg-black-granular bg-repeat bg-50 min-h-screen flex flex-col font-roboto" >
-        <header class="w-full bg-teal-700 dark:bg-gray-900">
+        <header class="w-full bg-teal-700 dark:bg-gray-900 text-neutral-200">
             <div class="flex items-center justify-between px-8">
                 <a href="{{ path('homepage')  }}">
                     <img src="{{ asset('images/logo.png') }}" alt="Менеджер задач"/>
                 </a>
                 <div>
-                    <ul class="flex flex-row items-center justify-center h-16 text-neutral-200">
+                    <ul class="flex flex-row items-center justify-center h-16">
                         <li >
                             <a href="{{ path('search') }}" data-turbo-stream>Search</a>
                         </li>
@@ -30,8 +30,45 @@
                     </ul>
                     
                     <div class="w-full flex justify-center pb-4 min-w-[200px]">
-                        <div class="w-full px-8">
+                        <div class="w-full px-2">
                             <twig:Search/>
+                        </div>
+                        <div class="relative locale">
+                            <div class="flex items-center gap-1 border border-slate-200 rounded-md p-2">
+                                <twig:ux:icon name="bi:translate" class="w-4 h-4"/>
+                                <p> / </p>
+                                <p>
+                                    {# {{ 'CZK'|currency_symbol('cs') }} #}
+                                    {{ appCurrency.getActual|currency_symbol() }}
+                                </p>
+                            </div>
+                            <div class="locale_menu hidden absolute right-0 z-10 bg-teal-700 rounded-md dark:bg-gray-900">
+                                <div class="flex gap-4 border-b p-4">
+                                    <p class="w-1/2">Language</p>
+                                    <p class="w-1/2">Currency</p>
+                                </div>
+                                <div class="flex p-4">
+                                    <div class="w-1/2 flex flex-col gap-2">
+                                        <div class="flex justify-center items-center">
+                                            <a href="{{   path('lang', {lang: 'en'}   )}}">English</a>
+                                        </div>
+                                        <div class="flex justify-center items-center">
+                                            <a href="{{   path('lang', {lang: 'cs'}   )}}">Česky</a>
+                                        </div>
+                                    </div>
+                                    <div class="w-1/2 flex flex-col gap-2">
+                                        <div class="flex justify-center items-center">
+                                            <a href="{{   path('currency', {currency: 'EUR'}   )}}">EUR</a>
+                                        </div>
+                                        <div class="flex justify-center items-center">
+                                            <a href="{{   path('currency', {currency: 'USD'}   )}}">USD</a>
+                                        </div>
+                                        <div class="flex justify-center items-center">
+                                            <a href="{{   path('currency', {currency: 'CZK'}   )}}">CZK</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -58,22 +95,22 @@
                         <div class="w-1/2">
                             <p>Language</p>
                             <div class="h-8 flex justify-center items-center">
-                                <a href="{{   path('lang', {lang: 'en'}   )}}">English</a>
+                                <a href="{{   path('lang', {lang: 'EN'}   )}}">English</a>
                             </div>
                             <div class="h-8 flex justify-center items-center">
-                                <a href="{{   path('lang', {lang: 'cz'}   )}}">Česky</a>
+                                <a href="{{   path('lang', {lang: 'CZ'}   )}}">Česky</a>
                             </div>
                         </div>
                         <div class="w-1/2">
                             <p>Currency</p>
                             <div class="h-8 flex justify-center items-center">
-                                <a href="{{   path('currency', {currency: 'eur'}   )}}">EUR</a>
+                                <a href="{{   path('currency', {currency: 'EUR'}   )}}">EUR</a>
                             </div>
                             <div class="h-8 flex justify-center items-center">
-                                <a href="{{   path('currency', {currency: 'usd'}   )}}">USD</a>
+                                <a href="{{   path('currency', {currency: 'USD'}   )}}">USD</a>
                             </div>
                             <div class="h-8 flex justify-center items-center">
-                                <a href="{{   path('currency', {currency: 'czk'}   )}}">CZK</a>
+                                <a href="{{   path('currency', {currency: 'CZK'}   )}}">CZK</a>
                             </div>
                         </div>
                     </div>

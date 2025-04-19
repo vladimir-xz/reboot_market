@@ -1,5 +1,5 @@
 framework:
-    enabled_locales: ['en', 'cz']
+    enabled_locales: ['en', 'cs']
     set_locale_from_accept_language: true
     default_locale: en
     translator:

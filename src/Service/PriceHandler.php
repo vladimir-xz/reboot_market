@@ -8,9 +8,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class PriceHandler
 {
     private const RATES = [
-        'czk' => 1,
-        'usd' => 0.043,
-        'eur' => 0.040,
+        'CZK' => 1,
+        'USD' => 0.043,
+        'EUR' => 0.040,
     ];
 
     public function __construct(private RequestStack $requestStack)
@@ -25,7 +25,12 @@ class PriceHandler
 
     public function getActual()
     {
-        return $this->requestStack->getCurrentRequest()->getSession()->get('currency', 'czk');
+        return $this->requestStack->getCurrentRequest()->getSession()->get('currency', 'CZK');
+    }
+
+    public function getLocaleForPrice()
+    {
+        $this->requestStack->getCurrentRequest()->getSession()->get('currency', 'CZK');
     }
 
     public function convertToCurrency(int $figure, string $currency)
