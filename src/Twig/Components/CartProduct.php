@@ -39,24 +39,28 @@ final class CartProduct
     public function increment()
     {
         $quantity = $this->product->getQuantity();
-        if ($quantity + 1 < $this->product->getAvalible()) {
-            $this->product->setQuantity($quantity + 1);
-            $this->emitUp('increment', [
-                'product' => $this->product->getId()
-            ]);
+        if ($quantity + 1 > $this->product->getAvalible()) {
+            return;
         }
+
+        $this->product->setQuantity($quantity + 1);
+        $this->emitUp('increment', [
+            'product' => $this->product->getId()
+        ]);
     }
 
     #[LiveAction]
     public function decrement()
     {
         $quantity = $this->product->getQuantity();
-        if ($quantity > 0) {
-            $this->product->setQuantity($quantity - 1);
-            $this->emitUp('decrement', [
-                'product' => $this->product->getId()
-            ]);
+        if ($quantity - 1 < 1) {
+            return;
         }
+
+        $this->product->setQuantity($quantity - 1);
+        $this->emitUp('decrement', [
+            'product' => $this->product->getId()
+        ]);
     }
 
     #[LiveAction]

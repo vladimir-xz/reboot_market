@@ -13,7 +13,7 @@ class CartProductHandler
     {
     }
 
-    public function add(CartDto $cart, Product $product, int $quantity, LoggerInterface $log): ?CartDto
+    public function add(CartDto $cart, Product $product, int $quantity): CartDto
     {
         if ($product->getAmount() < $quantity) {
             throw new \Exception('Not enough amount in stock');
@@ -32,7 +32,7 @@ class CartProductHandler
         return $this->calculate($cart, $productInCart, fn($total, $new) => $total + $new, $quantity);
     }
 
-    public function increment(CartDto $cart, int $productId)
+    public function increment(CartDto $cart, int $productId): CartDto
     {
         $productInCart = $cart
             ->getProducts()
@@ -50,7 +50,7 @@ class CartProductHandler
         return $this->calculate($cart, $productInCart, fn($total, $new) => $total + $new);
     }
 
-    public function decrement(CartDto $cart, int $productId)
+    public function decrement(CartDto $cart, int $productId): CartDto
     {
         $productInCart = $cart
             ->getProducts()
@@ -69,7 +69,7 @@ class CartProductHandler
         return $this->calculate($cart, $productInCart, fn($total, $new) => $total - $new);
     }
 
-    public function delete(CartDto $cart, int $productId)
+    public function delete(CartDto $cart, int $productId): CartDto
     {
         $products = $cart->getProducts();
         $productInCart = $products
@@ -79,10 +79,10 @@ class CartProductHandler
         }
 
         $products->removeElement($productInCart);
-        $this->calculate($cart, $productInCart, fn($total, $new) => $total - $new, $productInCart->getQuantity());
+        return $this->calculate($cart, $productInCart, fn($total, $new) => $total - $new, $productInCart->getQuantity());
     }
 
-    public function changeAmount(CartDto $cart, int $productId, int $newAmount, $log)
+    public function changeAmount(CartDto $cart, int $productId, int $newAmount): CartDto
     {
         $productInCart = $cart
             ->getProducts()
@@ -106,7 +106,7 @@ class CartProductHandler
         }
     }
 
-    private function calculate(CartDto $cart, ProductCartDto $product, \Closure $action, int $amount = 1)
+    private function calculate(CartDto $cart, ProductCartDto $product, \Closure $action, int $amount = 1): CartDto
     {
         $productsPrice = $product->getPrice() * $amount;
         $productsWeight = $product->getWeight() * $amount;

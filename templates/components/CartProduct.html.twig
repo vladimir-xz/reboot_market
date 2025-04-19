@@ -20,8 +20,7 @@
                     max="{{ product.avalible }}"
                     data-action="change->live#action"
                     data-live-action-param="setAmount"
-                    data-model="product.quantity"
-                    id="product-{{   product.id   }}"
+                    data-model="on(change)|product.quantity"
                 />
                 <button
                     class="px-2 border-l-2 border-teal-900"

@@ -79,7 +79,8 @@ final class Cart
     public function delete(#[LiveArg] int $product)
     {
         try {
-            $cart = $this->cartHandler->delete($this->cart, $product);
+            $cart = $this->cartHandler->delete($this->cart, $product, $this->log);
+            $this->log->info('This is cart from cartHandler: ' . print_r($cart, true));
             $this->cart = $cart;
             $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
         } catch (\Exception $e) {
@@ -97,7 +98,7 @@ final class Cart
 
     public function getProducts()
     {
-        return $this->cart->getProducts()?->getValues() ?? 'Cart is emty';
+        return $this->cart?->getProducts()?->getValues() ?? 'Cart is emty';
     }
 
     public function getTotal()
