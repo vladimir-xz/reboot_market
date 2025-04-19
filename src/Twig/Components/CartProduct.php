@@ -25,12 +25,6 @@ final class CartProduct
     public ProductCartDto $product;
 
     #[LiveAction]
-    public function mount(ProductCartDto $product): void
-    {
-        $this->product = $product;
-    }
-
-    #[LiveAction]
     public function increment()
     {
         $quantity = $this->product->getQuantity();

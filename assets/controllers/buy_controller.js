@@ -9,7 +9,6 @@ export default class extends Controller {
 
   async initialize() {
     this.component = await getComponent(this.element);
-    this.wasShown = false;
     this.inputTarget.addEventListener('focusout', () => {
       this.checkInput()
     })
@@ -47,12 +46,15 @@ export default class extends Controller {
     }
   }
 
-  send(event) {
-    if (this.wasShown == false) {
-      // document.getElementById('cart-popup').classList.remove('hidden')
-      this.wasShown = true;
-    }
+  async send(event) {
     this.component.action('save', { amount: Number(this.inputTarget.value) });
+    const cartpop = document.getElementById('cart-popup');
+    await getComponent(cartpop.firstElementChild)
+      .then(component => {
+        if (component.valueStore.props.wasShown == false) {
+          cartpop.classList.remove('hidden')
+        }
+      })
   }
   
 }

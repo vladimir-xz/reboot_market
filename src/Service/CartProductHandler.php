@@ -34,8 +34,8 @@ class CartProductHandler
             $newAmount = $product->getAmount() - $productInCart->getQuantity();
             $productInCart->setQuantity($product->getAmount());
         } else {
-            $newAmount = $sum;
-            $productInCart->setQuantity($newAmount);
+            $newAmount = $quantity;
+            $productInCart->setQuantity($sum);
         }
 
         return $this->calculate($cart, $productInCart, fn($total, $new) => $total + $new, $newAmount);
