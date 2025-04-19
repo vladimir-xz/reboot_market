@@ -11,11 +11,11 @@
         </a>
     </div>
 
-    <div class="cart_menu absolute right-0 p-4 bg-neutral-100 text-black z-10 min-w-64 rounded-md drop-shadow-2xl">
+    <div class="cart_menu hidden absolute right-0 p-4 bg-neutral-100 text-black z-10 min-w-96 rounded-md drop-shadow-2xl">
         <p class="border-b text-lg font-[500]">Shopping cart preview:</p>
         <div class="border-b">
             {% for product in this.products %}
-                <twig:CartProduct
+                <twig:Cart:Product
                     :product="product"
                     id="product-{{ product.id }}-{{ product.quantity }}"
                 />

@@ -38,6 +38,6 @@ final class BuyButton
         $newCart = $this->cartProductHandler->add($cart, $this->product, $amount, $this->log);
         $session->set('cart', $newCart);
 
-        $this->emit('productAdded');
+        $this->emit('CartChanged');
     }
 }

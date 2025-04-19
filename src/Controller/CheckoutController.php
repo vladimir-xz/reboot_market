@@ -37,10 +37,10 @@ final class CheckoutController extends AbstractController
         LoggerInterface $log,
     ): Response {
         /** @var \App\Dto\CartDto $cart */
-        $cart = $request->getSession()->get('cart', null);
-        if (!$cart) {
+        $cart = $request->getSession()->get('cart', new CartDto());
+        if ($cart->getTotalPrice() === 0) {
             return $this->render('cart/index.html.twig', [
-                'products' => [],
+                'cart' => $cart,
                 'productsTotal' => null,
                 'treeMap' => [],
                 'idsAndAmounts' => [],
@@ -73,7 +73,7 @@ final class CheckoutController extends AbstractController
         }
 
         return $this->render('cart/index.html.twig', [
-            'products' => $cart->getIdsAndProducts(),
+            'cart' => $cart,
             'totalWeight' => $cart->getTotalWeight(),
             'productsTotal' => $productsTotal,
             'treeMap' => [],
@@ -116,7 +116,9 @@ final class CheckoutController extends AbstractController
         $collection = new ArrayCollection($productRepository->findSomeByIds(array_keys($products)));
         $productsAndPrices = $collection->map(function (Product $product) use ($cart, $currency, $priceHandler) {
             $amountInCart = $cart->getAmountOfProduct($product->getId());
-            $amount = $product->hasNotEnoughInStockOrNegative($amountInCart) ? $product->getAmount() : $amountInCart;
+            $amount = $product->getAmount() < $amountInCart || $amountInCart < 1
+                ? $product->getAmount()
+                : $amountInCart;
 
             return [
                 'price_data' => [

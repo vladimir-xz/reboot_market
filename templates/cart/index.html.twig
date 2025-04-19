@@ -2,17 +2,11 @@
 
 {% block title %}Hello CartController!{% endblock %}
 
-{% block content %}
+{% block body %}
 <div>
     <div class="flex gap-4">
         <div class="w-3/5">
-            {% if not products is empty %}
-                {%  for product in products  %}
-                    <twig:ProductInCart :product="product"/>
-                {%  endfor   %}
-            {%  else  %}
-                <p>No products in a cart</p>
-            {%  endif  %}
+            <twig:Cart:CheckoutList :cart="cart"/>
         </div>
         <div class="w-2/5 p-4">
             <twig:PurchaseForm

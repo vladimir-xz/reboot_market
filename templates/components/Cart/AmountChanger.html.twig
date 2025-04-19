@@ -1,0 +1,24 @@
+{%   props avalible = 1   %}
+
+<div {{ attributes.defaults({class: 'flex border-2 border-teal-900 rounded-md bg-none leading-none'})}} >
+    <button 
+        class="px-2 border-r-2 border-teal-900"
+        data-action="live#action"
+        data-live-action-param="decrement"
+    >-</button>
+
+    <input
+        class="bg-none border-0 p-1 w-8"
+        type="number"
+        min="1" 
+        max="{{ avalible }}"
+        data-action="change->live#action"
+        data-live-action-param="setAmount"
+        data-model="on(change)|product.quantity"
+    />
+    <button
+        class="px-2 border-l-2 border-teal-900"
+        data-action="live#action"
+        data-live-action-param="increment"
+    >+</button>
+</div>

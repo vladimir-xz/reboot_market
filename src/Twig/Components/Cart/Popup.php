@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Twig\Components;
+namespace App\Twig\Components\Cart;
 
 use App\Dto\CartDto;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
@@ -12,7 +11,7 @@ use Symfony\UX\LiveComponent\DefaultActionTrait;
 use Symfony\UX\LiveComponent\Attribute\PreReRender;
 
 #[AsLiveComponent]
-final class CartPopup extends AbstractController
+final class Popup
 {
     use DefaultActionTrait;
 

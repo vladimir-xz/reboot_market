@@ -2,6 +2,7 @@
 
 namespace App\Twig\Components;
 
+use App\Dto\CartDto;
 use App\Form\AddressType;
 use App\Entity\Address;
 use App\Entity\Country;
@@ -22,7 +23,9 @@ use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\ValidatableComponentTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\UX\LiveComponent\Attribute\LiveListener;
 
 #[AsLiveComponent]
 final class PurchaseForm extends AbstractController
@@ -65,8 +68,19 @@ final class PurchaseForm extends AbstractController
         private FreightCostGetter $freightCostGetter,
         private CountryRepository $countryRepository,
         private NormalizerInterface $serializer,
+        private RequestStack $requestStack,
         private LoggerInterface $log,
     ) {
+    }
+
+    #[LiveListener('CartChanged')]
+    public function changeWeightAndTotal()
+    {
+        $cart = $this->requestStack->getCurrentRequest()->getSession()->get('cart', new CartDto());
+        $this->totalWeight = $cart->getTotalWeight();
+        $this->productsTotal = $cart->getTotalPrice();
+
+        $this->onRelevantUpdate();
     }
 
     public function onIrrelevantUpdate()

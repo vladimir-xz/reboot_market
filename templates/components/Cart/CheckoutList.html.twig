@@ -1,0 +1,17 @@
+<div{{ attributes }} class="border-b bg-white-granular p-8">
+    <p class="border-b text-lg font-[500]">Shopping cart preview:</p>
+    <div class="border-b">
+        {% for product in this.products %}
+            <twig:Cart:Product
+                :product="product"
+                role="checkout"
+                id="product-{{ product.id }}-{{ product.quantity }}"
+            >
+                <p>Some long desciption, Some long desciption, Some long desciption, Some long desciption, </p>
+                <p>Price:
+                    {{  appCurrency.display(product.price)|format_currency(appCurrency.getActual)  }}
+                </p>
+            </twig:Cart:Product>
+        {% endfor %}
+    </div>
+</div>

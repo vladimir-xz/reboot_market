@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Twig\Components;
+namespace App\Twig\Components\Cart;
 
 use App\Dto\ProductCartDto;
 use App\Service\CartProductHandler;
@@ -16,7 +16,7 @@ use Symfony\UX\LiveComponent\Attribute\LiveListener;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
 #[AsLiveComponent]
-final class CartProduct
+final class Product
 {
     use DefaultActionTrait;
     use ComponentToolsTrait;

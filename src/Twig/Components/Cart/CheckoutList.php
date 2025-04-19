@@ -1,27 +1,24 @@
 <?php
 
-namespace App\Twig\Components;
+namespace App\Twig\Components\Cart;
 
-use App\Entity\Product;
 use App\Dto\CartDto;
-use App\Dto\ProductCartDto;
 use App\Service\CartProductHandler;
-use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveListener;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
+use Symfony\UX\LiveComponent\ComponentToolsTrait;
 
 #[AsLiveComponent]
-final class Cart
+final class CheckoutList
 {
     use DefaultActionTrait;
+    use ComponentToolsTrait;
 
     #[LiveProp]
     public ?CartDto $cart;
@@ -29,14 +26,8 @@ final class Cart
     public function __construct(
         private RequestStack $requestStack,
         private CartProductHandler $cartHandler,
-        private DenormalizerInterface&NormalizerInterface $serializer,
         private LoggerInterface $log
     ) {
-    }
-
-    public function mount(): void
-    {
-        $this->cart = $this->requestStack->getCurrentRequest()->getSession()->get('cart', new CartDto());
     }
 
     #[LiveListener('increment')]
@@ -46,6 +37,8 @@ final class Cart
             $cart = $this->cartHandler->increment($this->cart, $product);
             $this->cart = $cart;
             $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
+
+            $this->emit('CartChanged');
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
@@ -58,6 +51,8 @@ final class Cart
             $cart = $this->cartHandler->decrement($this->cart, $product);
             $this->cart = $cart;
             $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
+
+            $this->emit('CartChanged');
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
@@ -70,6 +65,8 @@ final class Cart
             $cart = $this->cartHandler->changeAmount($this->cart, $productId, $amount, $this->log);
             $this->cart = $cart;
             $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
+
+            $this->emit('CartChanged');
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
@@ -80,33 +77,17 @@ final class Cart
     {
         try {
             $cart = $this->cartHandler->delete($this->cart, $product, $this->log);
-            $this->log->info('This is cart from cartHandler: ' . print_r($cart, true));
             $this->cart = $cart;
             $this->requestStack->getCurrentRequest()->getSession()->set('cart', $cart);
+
+            $this->emit('CartChanged');
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
     }
 
-    #[LiveListener('productAdded')]
-    public function setNewCartDto()
-    {
-        $cart = $this->requestStack->getCurrentRequest()->getSession()->get('cart', new CartDto());
-
-        $this->cart = $cart;
-    }
-
     public function getProducts()
     {
         return $this->cart?->getProducts()?->getValues() ?? 'Cart is emty';
-    }
-
-    public function getTotal()
-    {
-        if ($this->cart === null) {
-            return 0;
-        }
-
-        return $this->cart->getTotalPrice();
     }
 }
