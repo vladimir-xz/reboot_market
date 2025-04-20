@@ -8,6 +8,7 @@
                         id="{{category.id}}" data-catalog-tree-target="node" 
                     >
                     <div class="flex items-center">
+                        <twig:ux:icon name="catalog:{{  category.name|u.camel.lower }}" class="w-4 h-4 mr-2" />
                         <p class="hover:underline font-upnormal">{{ category.name }}</p>
                         <div class="flex pl-4">
                             <label class="check_box included_box active_box">
@@ -22,7 +23,7 @@
                     </div>
                     </button>
                     {% if category.children is defined %}
-                        <twig:NavMenu :categories="category.children" offset="6" />
+                        <twig:NavMenu :categories="category.children" offset="10" />
                     {% endif %}
                 </li>
             {% endfor %}

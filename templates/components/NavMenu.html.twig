@@ -1,4 +1,4 @@
-{%   props offset = 6, categories = []   %}
+{%   props offset = 10, categories = []   %}
 
 <div class="hidden" {{ attributes }}>
     {% for category in categories %}
@@ -26,7 +26,7 @@
                 </div>
             </button>
             {% if category.children is defined %}
-                <twig:NavMenu :categories="category.children" offset="{{ offset + 3 }}"/>
+                <twig:NavMenu :categories="category.children" offset="{{ offset + 4 }}"/>
             {% endif %}
         </div>
     {% endfor %}
