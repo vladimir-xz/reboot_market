@@ -24,7 +24,6 @@ class ProductController extends AbstractController
 
         return $this->render('products/index.html.twig', [
             'product' => $product,
-            'treeMap' => [],
         ]);
     }
 }

@@ -43,7 +43,6 @@ class MainController extends AbstractController
         $recentlyAdded = $productRepository->getRecentlyAdded();
 
         return $this->render('homepage.html.twig', [
-            'treeMap' => [],
             'recents' => $recentlyAdded,
         ]);
     }

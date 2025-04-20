@@ -11,6 +11,7 @@ use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use Symfony\UX\LiveComponent\Attribute\LiveListener;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
+use Symfony\UX\LiveComponent\Attribute\PreReRender;
 use Symfony\UX\LiveComponent\ComponentToolsTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 use Symfony\UX\LiveComponent\Metadata\UrlMapping;
@@ -42,11 +43,37 @@ class ProductSearch extends AbstractController
     ) {
     }
 
+    #[PreReRender]
+    public function sendCategoriesForTree()
+    {
+        if (
+            $this->query === '' &&
+            empty($this->includedCategories) &&
+            empty($this->filters) &&
+            empty($this->excludedCategories)
+        ) {
+            $this->dispatchBrowserEvent('catalog:renew', [
+                'treeMap' => [],
+            ]);
+            return;
+        }
+
+        $allRecords = $this->productRepository->getAllProductsWithCategoryAndFilters($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
+        $result = $this->catalogHandler->prepareNewCatalogsForDrawing($allRecords, $this->includedCategories, $this->excludedCategories);
+
+        $this->dispatchBrowserEvent('catalog:renew', [
+            'treeMap' => $result['mappedCatalogs'],
+        ]);
+
+        $this->dispatchBrowserEvent('product:updateFilters', [
+            'filters' => $result['mappedRecords']
+        ]);
+    }
+
     #[LiveListener('receiveQuery')]
     public function receiveQuery(#[LiveArg] string $query)
     {
         $this->query = $query;
-        $this->sendCategoriesForTree();
     }
 
     // TODO: change values in catalog class
@@ -54,7 +81,6 @@ class ProductSearch extends AbstractController
     public function removeIncludedCategories()
     {
         $this->includedCategories = [];
-        $this->sendCategoriesForTree();
     }
 
     // TODO: change values in catalog class
@@ -62,7 +88,6 @@ class ProductSearch extends AbstractController
     public function removeExcludedCategories()
     {
         $this->excludedCategories = [];
-        $this->sendCategoriesForTree();
     }
 
     #[LiveListener('removeFilters')]
@@ -70,7 +95,6 @@ class ProductSearch extends AbstractController
     {
         $this->filters = [];
         $this->dispatchBrowserEvent('productFilters:remove');
-        $this->sendCategoriesForTree();
     }
 
     public function updateCategoriesAndLabels(array $newCategories)
@@ -85,6 +109,7 @@ class ProductSearch extends AbstractController
             ]);
         }
         $this->includedCategories = $newCategories['i'];
+
         if (empty($newCategories['e']) && $this->excludedCategories) {
             $this->emit('changeIfExcluded', [
                 'newValue' => false,
@@ -95,8 +120,6 @@ class ProductSearch extends AbstractController
             ]);
         }
         $this->excludedCategories = $newCategories['e'];
-
-        $this->sendCategoriesForTree();
     }
 
     #[LiveAction]
@@ -123,24 +146,6 @@ class ProductSearch extends AbstractController
                 'newValue' => !$ifNowEmpty,
             ]);
         }
-
-        $this->sendCategoriesForTree();
-    }
-
-    private function sendCategoriesForTree()
-    {
-        // TODO: refactor this when mapRecords return []
-        $allRecords = $this->productRepository->getAllProductsWithCategoryAndFilters($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
-
-        $result = $this->catalogHandler->prepareNewCatalogsForDrawing($allRecords, $this->includedCategories, $this->excludedCategories);
-
-        $this->dispatchBrowserEvent('catalog:renew', [
-            'treeMap' => $result['mappedCatalogs'],
-        ]);
-
-        $this->dispatchBrowserEvent('product:updateFilters', [
-            'filters' => $result['mappedRecords']
-        ]);
     }
 
     #[LiveAction]
@@ -148,7 +153,6 @@ class ProductSearch extends AbstractController
     {
         $result = $this->catalogHandler->revertCategories($newId, $this->includedCategories, $this->excludedCategories);
 
-        $this->logger->info('Here we have a revert result: ' . print_r($result, true));
         $this->updateCategoriesAndLabels($result);
     }
 

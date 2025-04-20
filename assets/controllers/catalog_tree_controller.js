@@ -11,14 +11,7 @@ export default class extends Controller {
     static targets = ['node']
 
     async initialize() {
-        console.log('catalog tree has been initalized')
         this.component = await getComponent(this.element);
-        console.log(this.component.valueStore.props)
-        if (this.component.valueStore.props.treeMap) {
-            const detail = this.component.valueStore.props
-            this.renew({ detail })
-            this.component.valueStore.props.treeMap = []
-        }
     }
 
     check(event) {
@@ -79,19 +72,20 @@ export default class extends Controller {
     }
 
     renew(event) {
-        // this.sendNewResult()
-        // this.setMax()
-        console.log(event)
         const treeMap = event.detail.treeMap
         this.nodeTargets.forEach((element) => {
             const elementId = Number(element.id)
             element.classList.remove("category_neutral", "category_included", "category_excluded", "category_active")
-            if (elementId in treeMap) {
+            if (treeMap.length === 0) {
+                element.classList.add("category_neutral")
+                this.open(element.nextElementSibling)
+                this.updateCheck(element)
+            } else if (elementId in treeMap) {
                 const newStatus = "category_" + treeMap[elementId].status
                 element.classList.add(newStatus)
                 this.open(element.nextElementSibling)
 
-                if (treeMap[elementId].isLastNode && treeMap[elementId].status != 'neutral') {
+                if (treeMap[elementId].isLastNode) {
                     this.updateCheck(element, false, treeMap[elementId].status)
                 } else {
                     this.updateCheck(element)

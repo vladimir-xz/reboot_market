@@ -42,7 +42,6 @@ final class CheckoutController extends AbstractController
             return $this->render('cart/index.html.twig', [
                 'cart' => $cart,
                 'productsTotal' => null,
-                'treeMap' => [],
                 'idsAndAmounts' => [],
                 'address' => new Address(),
                 'allMethods' => null,
@@ -76,7 +75,6 @@ final class CheckoutController extends AbstractController
             'cart' => $cart,
             'totalWeight' => $cart->getTotalWeight(),
             'productsTotal' => $productsTotal,
-            'treeMap' => [],
             'allMethods' => $allShippingMethods ?? null,
             'currentMethod' => $allShippingMethods[0] ?? null,
             'address' => $address,

@@ -18,8 +18,6 @@ final class CatalogTree
     use ComponentToolsTrait;
 
     public array $catalog;
-    #[LiveProp]
-    public array $treeMap = [];
 
     public function __construct(
         LoggerInterface $log,

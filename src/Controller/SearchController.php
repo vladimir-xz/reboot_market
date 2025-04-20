@@ -38,18 +38,11 @@ final class SearchController extends AbstractController
         $includedCategories = array_filter($i);
         $filers = array_filter($f);
 
-        if ($q !== '' || $excludedCategories !== [] || $includedCategories !== [] || $filers !== []) {
-            $allRecords = $this->productRep->getAllProductsWithCategoryAndFilters($q, $includedCategories, $excludedCategories, $filers);
-            $result = $this->catHandler->prepareNewCatalogsForDrawing($allRecords, $i, $e);
-        }
-
         return $this->render('search/index.html.twig', [
             'query' => $q,
             'included' => $includedCategories,
             'excluded' => $excludedCategories,
             'filter' => $filter,
-            'treeMap' => $result['mappedCatalogs'] ?? [],
-            'recordsMap' => $result['mappedRecords'] ?? [],
             'activeFilters' => $filers,
         ]);
     }
