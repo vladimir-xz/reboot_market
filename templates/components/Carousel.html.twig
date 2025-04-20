@@ -2,25 +2,28 @@
     <div class="flex" data-action="mouseenter->carousel#prolong mouseleave->carousel#shorten">
         <div class="w-1/6">
             <div class="w-full">
-                <div data-carousel-target="button" class="bg-neutral-300">
+                <div class="p-2">
                     <button 
-                    class="p-8" 
+                    class="text-teal-900 p-8 rounded-md border-2" 
+                    data-carousel-target="button"
                     data-action="carousel#switch" 
                     data-carousel-index-param="0"
                     >Shipping offer </button>
                 </div>
-                <div data-carousel-target="button" class="bg-neutral-300">
+                <div class="p-2">
                     <button 
-                    class="p-8" 
+                    class="text-teal-900 p-8 rounded-md border-2" 
                     data-action="carousel#switch" 
                     data-carousel-index-param="1"
+                    data-carousel-target="button"
                     >ProLiant 360 G7 </button>
                 </div>
-                <div data-carousel-target="button" class="bg-neutral-300">
+                <div class="p-2">
                     <button 
-                    class="p-8" 
+                    class="text-teal-900 p-8 rounded-md border-2" 
                     data-action="carousel#switch" 
                     data-carousel-index-param="2"
+                    data-carousel-target="button"
                     >About us </button>
                 </div>
             </div>
@@ -29,17 +32,17 @@
         <div class="w-full">
             <div data-carousel-target="slide">
                 <a href="">
-                    <img src="{{ asset('images/carousel/Delivery-GREY.jpg') }}" alt="Менеджер задач"/>
+                    <img src="{{ asset('images/carousel/delivery-en.png') }}" alt="Менеджер задач"/>
                 </a>
             </div>
             <div data-carousel-target="slide">
                 <a href="">
-                    <img src="{{ asset('images/carousel/Second-GREY.jpg') }}" alt="Менеджер задач"/>
+                    <img src="{{ asset('images/carousel/R630-en.png') }}" alt="Менеджер задач"/>
                 </a>
             </div>
             <div data-carousel-target="slide">
                 <a href="">
-                    <img src="{{ asset('images/carousel/First-FGREY.jpg') }}" alt="Менеджер задач"/>
+                    <img src="{{ asset('images/carousel/stock-en.png') }}" alt="Менеджер задач"/>
                 </a>
             </div>
         </div>

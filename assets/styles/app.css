@@ -31,7 +31,7 @@
 
 @layer components {
     .carousel__button {
-        @apply bg-teal-900 translate-x-6;
+        @apply !text-amber-600 translate-x-6 border-amber-600;
     }
 
     .category_neutral {

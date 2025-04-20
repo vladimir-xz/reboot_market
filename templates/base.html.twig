@@ -73,7 +73,7 @@
                     </div>
                 </div>
     
-                <div class="text-neutral-200 flex gap-4">
+                <div class="flex gap-4">
                     {%   if app.user   %}
                         <a class="btn btn-danger" value="Delete" href="{{ path('logout', {'token': csrf_token('authenticate') }) }}">
                             Log out
