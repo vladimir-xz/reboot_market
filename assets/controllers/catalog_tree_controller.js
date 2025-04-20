@@ -73,10 +73,11 @@ export default class extends Controller {
 
     renew(event) {
         const treeMap = event.detail.treeMap
+        const isMapEmpty = treeMap.length === 0;
         this.nodeTargets.forEach((element) => {
             const elementId = Number(element.id)
             element.classList.remove("category_neutral", "category_included", "category_excluded", "category_active")
-            if (treeMap.length === 0) {
+            if (isMapEmpty) {
                 element.classList.add("category_neutral")
                 this.open(element.nextElementSibling)
                 this.updateCheck(element)
