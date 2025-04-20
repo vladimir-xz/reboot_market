@@ -1,6 +1,10 @@
 <div {{ attributes.defaults(stimulus_controller('catalog-tree')) }} data-action="catalog:renew@window->catalog-tree#renew catalog:loadProducts->catalog#loadProducts">
-    <nav class="inline-block w-full bg-neutral-50 drop-shadow-2xl rounded-md text-nowrap">
-        <ul data-action="click->catalog-tree#onClick" class="text-base">
+    <nav class="inline-block w-full bg-neutral-50 drop-shadow-2xl rounded-md text-nowrap text-base" data-action="click->catalog-tree#onClick" >
+        <twig:NavMenu :categories="this.catalog" offset="3" />
+    </nav>
+    
+    {# <nav class="inline-block w-full bg-neutral-50 drop-shadow-2xl rounded-md text-nowrap">
+        <div data-action="click->catalog-tree#onClick" class="text-base">
             {% for category in this.catalog %}
                 <li >
                     <button 
@@ -27,6 +31,6 @@
                     {% endif %}
                 </li>
             {% endfor %}
-        </ul>
-    </nav>
+        </div>
+    </nav> #}
 </div>

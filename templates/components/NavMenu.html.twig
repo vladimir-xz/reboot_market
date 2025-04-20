@@ -1,32 +1,41 @@
-{%   props offset = 10, categories = []   %}
+{%   props offset = 3, categories = [], isMain = true   %}
 
-<div class="hidden" {{ attributes }}>
+{%  if offset == 3   %}
+    {%   set nextOffset = 12  %}
+{%  else  %}
+    {%   set nextOffset = offset + 4  %}
+{%  endif   %}
+
+<div class="{{ isMain ? '' : 'hidden'}}" {{ attributes }}>
     {% for category in categories %}
         <div>
             <button 
-                class="w-full flex items-center justify-between pl-{{ offset }} py-2 pr-3 transition hover:bg-neutral-100 hover:border-slate-400 hover:border-slate-300 {{ category.children is defined ? 'menu_parent' : '' }}"
-                data-catalog-tree-target="node" 
-                id="{{category.id}}"
+                class="w-full flex items-center justify-between {{  isMain ? 'p-3 border-b' : 'py-2 pr-3' }} pl-{{ offset }} transition hover:bg-neutral-100 hover:border-slate-300 {{ category.children is defined ? 'menu_parent' : '' }}"
             >
-                <div class="flex items-center">
-                    <p class="hover:underline">{{ category.name }}</p>
+                <div data-catalog-tree-target="node" id="{{category.id}}">
+                    <div class="flex items-center">
+                        {%   if isMain   %}
+                            <twig:ux:icon name="catalog:{{  category.name|u.camel.lower }}" class="w-4 h-4 mr-2" />
+                        {%   endif   %}   
+                        <p class="hover:underline">{{ category.name }}</p>
 
-                    <div class="flex pl-4 ">
+                        <div class="flex pl-4 ">
 
-                        <label class="check_box included_box active_box">
-                            <input type="checkbox" data-action="catalog-tree#check" data-catalog-tree-exclude-param="false" data-catalog-tree-id-param="{{ category.id }}">
-                            <span class="checkmark"></span>
-                        </label>
-                        <label class="check_box excluded_box">
-                            <input type="checkbox" data-action="catalog-tree#check" data-catalog-tree-exclude-param="true" data-catalog-tree-id-param="{{ category.id }}">
-                            <span class="checkmark"></span>
-                        </label>
+                            <label class="check_box included_box active_box">
+                                <input type="checkbox" data-action="catalog-tree#check" data-catalog-tree-exclude-param="false" data-catalog-tree-id-param="{{ category.id }}">
+                                <span class="checkmark"></span>
+                            </label>
+                            <label class="check_box excluded_box">
+                                <input type="checkbox" data-action="catalog-tree#check" data-catalog-tree-exclude-param="true" data-catalog-tree-id-param="{{ category.id }}">
+                                <span class="checkmark"></span>
+                            </label>
 
+                        </div>
                     </div>
                 </div>
             </button>
             {% if category.children is defined %}
-                <twig:NavMenu :categories="category.children" offset="{{ offset + 4 }}"/>
+                <twig:NavMenu :categories="category.children" offset="{{ nextOffset }}" :isMain="false"/>
             {% endif %}
         </div>
     {% endfor %}

@@ -5,7 +5,7 @@ module.exports = {
     "./templates/**/*.html.twig",
   ],
   safelist: [
-    'pl-10', 'pl-14', 'pl-18', 'pl-22', 'pl-26', 'w-48'
+    {pattern: /^category_/}, 'pl-3', 'pl-12', 'pl-16', 'pl-20', 'pl-24', 'w-48'
   ],
   theme: {
     extend: {

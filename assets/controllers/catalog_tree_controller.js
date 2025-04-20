@@ -48,13 +48,15 @@ export default class extends Controller {
             }
     }
 
-    open(nextElement) {
+    open(element) {
+        const nextElement = element.nextElementSibling
         if (nextElement && nextElement.tagName === 'DIV') {
             nextElement.classList.remove("hidden")
         }
     }
 
-    close(nextElement) {
+    close(element) {
+        const nextElement = element.nextElementSibling
         if (nextElement && nextElement.tagName === 'DIV') {
             nextElement.classList.add("hidden")
         }
@@ -76,15 +78,15 @@ export default class extends Controller {
         const isMapEmpty = treeMap.length === 0;
         this.nodeTargets.forEach((element) => {
             const elementId = Number(element.id)
-            element.classList.remove("category_neutral", "category_included", "category_excluded", "category_active")
+            element.className = ''
             if (isMapEmpty) {
                 element.classList.add("category_neutral")
-                this.open(element.nextElementSibling)
+                this.open(element.parentElement)
                 this.updateCheck(element)
             } else if (elementId in treeMap) {
                 const newStatus = "category_" + treeMap[elementId].status
                 element.classList.add(newStatus)
-                this.open(element.nextElementSibling)
+                this.open(element.parentElement)
 
                 if (treeMap[elementId].isLastNode) {
                     this.updateCheck(element, false, treeMap[elementId].status)
@@ -94,7 +96,7 @@ export default class extends Controller {
 
             } else {
                 this.updateCheck(element)
-                this.close(element.nextElementSibling)
+                this.close(element.parentElement)
             }
         })
     }

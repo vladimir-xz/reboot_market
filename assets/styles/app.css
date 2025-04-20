@@ -35,20 +35,21 @@
     }
 
     .category_neutral {
-        @apply underline
+        @apply underline;
     }
 
     .category_active {
-        @apply underline text-amber-600
+        @apply underline text-amber-600;
     }
 
     .category_included {
-        @apply underline text-amber-600 text-opacity-50
+        @apply underline text-amber-600 text-opacity-50;
     }
 
     .category_excluded {
-        @apply line-through text-gray-600
+        @apply line-through text-gray-600;
     }
+
 /* Customize the label (the check_box) */
 .check_box {
     display: block;
