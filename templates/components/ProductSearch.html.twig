@@ -17,7 +17,7 @@
     <span data-loading class="loader"></span>
 
     <div data-loading="addClass(blur)">
-        <div class="flex flex-wrap gap-4" >
+        <div class="flex flex-wrap justify-center gap-4" >
             {% for product in paginator.currentPageResults %}
                 <twig:Card :product="product"/>
                 {% else %}
