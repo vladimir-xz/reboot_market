@@ -1,10 +1,10 @@
 <div {{ attributes.defaults(stimulus_controller('carousel', { refreshInterval: 2500 })) }}>
     <div class="flex" data-action="mouseenter->carousel#prolong mouseleave->carousel#shorten">
         <div class="w-1/6">
-            <div class="w-full">
+            <div class="w-full dark:text-neutral-200 text-teal-900 ">
                 <div class="p-2">
                     <button 
-                    class="text-teal-900 h-32 p-8 rounded-md border-y-4 border-l-4 carousel__label relative" 
+                    class="h-32 p-8 rounded-md border-y-4 border-l-4 carousel__label relative" 
                     data-carousel-target="button"
                     data-action="carousel#switch" 
                     data-carousel-index-param="0"
@@ -12,7 +12,7 @@
                 </div>
                 <div class="p-2">
                     <button 
-                    class="text-teal-900 h-32 p-8 rounded-md border-y-4 border-l-4 carousel__label relative" 
+                    class="h-32 p-8 rounded-md border-y-4 border-l-4 carousel__label relative" 
                     data-action="carousel#switch" 
                     data-carousel-index-param="1"
                     data-carousel-target="button"
@@ -20,7 +20,7 @@
                 </div>
                 <div class="p-2">
                     <button 
-                    class="text-teal-900 h-32 p-8 rounded-md border-y-4 border-l-4 carousel__label relative" 
+                    class="h-32 p-8 rounded-md border-y-4 border-l-4 carousel__label relative" 
                     data-action="carousel#switch" 
                     data-carousel-index-param="2"
                     data-carousel-target="button"

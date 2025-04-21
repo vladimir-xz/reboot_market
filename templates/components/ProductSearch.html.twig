@@ -17,12 +17,14 @@
     <span data-loading class="loader"></span>
 
     <div data-loading="addClass(blur)">
-        <div class="flex flex-wrap justify-center gap-4" >
-            {% for product in paginator.currentPageResults %}
-                <twig:Card :product="product"/>
-                {% else %}
-                <p>No products found.</p> 
-            {% endfor %}
+        <div class="flex justify-between m-auto">
+            <div class="flex flex-wrap gap-4 m-auto" >
+                {% for product in paginator.currentPageResults %}
+                    <twig:Card :product="product"/>
+                    {% else %}
+                    <p>No products found.</p> 
+                {% endfor %}
+            </div>
         </div>
         {# <div id="product_scroll" data-product-target="scroll" class="flex flex-wrap gap-4">
             

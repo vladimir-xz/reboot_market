@@ -1,17 +1,17 @@
-<div{{ attributes }} class="flex-auto w-60 bg-neutral-50 snap-start" data-cards-snap-target="card">
+<div{{ attributes }} class="flex-none w-52 bg-zinc-50 snap-start dark:text-teal-900 rounded" data-cards-snap-target="card">
     <a href="{{ path('product.index', {id: product.id}) }}">
-        <img class="h-40 object-contain" src="{{ asset(product.mainImagePath ?? '') }}" alt="Server">
+        <img class="h-40 w-64 object-contain" src="{{ asset(product.mainImagePath ?? '') }}" alt="Server">
     </a>
 
-    <div class="p-4">
-        <div>
+    <div class="flex flex-col gap-2 p-4">
+        <div class="font-[500] text-lg">
             <a href="{{ path('product.index', {id: product.id}) }}">
                 <span>{{    product.name    }}</span>
             </a>
 
         </div>
         <div class="">In stock: {{  product.amount  }}</div>
-        <div class="">
+        <div class="font-[500]">
             {{  appCurrency.display(product.price)|format_currency(appCurrency.getActual)  }}
         </div>
     </div>
