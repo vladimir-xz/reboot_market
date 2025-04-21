@@ -33,8 +33,17 @@
         </div>
     </div>
 
-    <div class="my-8">
-        <twig:CardsShowcase :cards="recents"/>
+    <twig:CardsShowcase :cards="recents"/>
+
+
+    <div class="flex gap-12 pr-32">
+        <div class="w-4/6 leading-loose italic">
+            <p class="text-left">Need reliable hardware without the high price tag? We sell used servers, switches, storage arrays, and parts that came from our own data center. We took them apart with care, checked every piece, and kept only the gear that works like new.</p>
+            <p class="mt-12 text-right">Pick what you need—servers, network switches, drives, memory, cables, and more. Everything is clean, tested, and ready to ship. Get solid equipment, honest details, and friendly help, all in one place.</p>
+        </div>
+        <div class="w-2/6">
+            <img class="cloud" src="{{ asset('images/guy-on-cloud.png') }}" alt="">
+        </div>
     </div>
 
 

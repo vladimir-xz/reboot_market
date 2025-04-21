@@ -68,6 +68,23 @@
         @apply line-through text-gray-600;
     }
 
+    @keyframes float {
+      0% {
+        transform: translatey(0px);
+      }
+      50% {
+        transform: translatey(-20px);
+      }
+      100% {
+        transform: translatey(0px);
+      }
+    }
+
+    .cloud {
+      transform: translatey(0px);
+      animation: float 2s ease-in-out infinite;
+    }
+
 /* Customize the label (the check_box) */
 .check_box {
     display: block;
