@@ -34,6 +34,24 @@
         @apply !text-amber-600 translate-x-6 border-amber-600;
     }
 
+    .carousel__label::after {
+      content: '';
+      position: absolute;
+        position: absolute;
+      top: 0;
+      right: 0;
+      --s: 4px; /* control the shape (can be percentage) */
+    
+      height: 124px;
+      aspect-ratio: 0.5/5;
+      clip-path: polygon(100% 0,calc(100% - var(--s)) 0,0 50%,calc(100% - var(--s)) 100%,100% 100%,var(--s) 50%);
+      background: #e5e7eb;
+    }
+
+    .carousel__button::after {
+      @apply bg-amber-600;
+    }
+
     .category_neutral {
         @apply underline;
     }
