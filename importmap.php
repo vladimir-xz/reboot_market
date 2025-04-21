@@ -16,17 +16,17 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
-    '@hotwired/stimulus' => [
-        'version' => '3.2.2',
-    ],
     '@symfony/stimulus-bundle' => [
         'path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js',
     ],
-    '@hotwired/turbo' => [
-        'version' => '7.3.0',
-    ],
     '@symfony/ux-live-component' => [
         'path' => './vendor/symfony/ux-live-component/assets/dist/live_controller.js',
+    ],
+    '@hotwired/stimulus' => [
+        'version' => '3.2.2',
+    ],
+    '@hotwired/turbo' => [
+        'version' => '8.0.13',
     ],
     '@tailwindcss/forms' => [
         'version' => '0.5.10',
@@ -35,27 +35,27 @@ return [
         'version' => '1.4.4',
     ],
     'tailwindcss/plugin' => [
-        'version' => '3.4.17',
+        'version' => '4.1.4',
     ],
     'tailwindcss/defaultTheme' => [
-        'version' => '3.4.17',
+        'version' => '4.1.4',
     ],
     'tailwindcss/colors' => [
-        'version' => '3.4.17',
+        'version' => '4.1.4',
     ],
     'picocolors' => [
         'version' => '1.1.1',
     ],
     '@stripe/stripe-js' => [
-        'version' => '6.1.0',
+        'version' => '7.1.0',
     ],
     'unplugin-fonts' => [
         'version' => '1.3.1',
     ],
     'unplugin' => [
-        'version' => '2.0.0-beta.1',
+        'version' => '2.3.2',
     ],
     'fast-glob' => [
-        'version' => '3.3.2',
+        'version' => '3.3.3',
     ],
 ];
