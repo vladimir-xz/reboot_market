@@ -30,6 +30,9 @@ module.exports = {
       fontFamily: {
         roboto: ['Roboto', 'sans-serif'],
       },
+      rotate: {
+        '17': '17deg',
+      }
     },
     fontWeight: {
       upnormal: '450'
