@@ -19,7 +19,11 @@ ENV LOG_CHANNEL stderr
 # Allow composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN apk --no-cache add autoconf
+RUN apk --no-cache add --virtual .build-deps \
+      $PHPIZE_DEPS \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del .build-deps
 
 RUN pecl install redis
 
