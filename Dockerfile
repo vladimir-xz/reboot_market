@@ -19,13 +19,12 @@ ENV LOG_CHANNEL stderr
 # Allow composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN wget http://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.gz
-RUN tar -xf autoconf-2.71.tar.gz
-RUN ./autoconf-2.71/configure --prefix=$HOME/.local
-RUN ./make
-RUN ./make install
-RUN echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
-RUN source ~/.bashrc
+RUN RUN apk --no-cache add pcre-dev ${PHPIZE_DEPS} \ 
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && apk del pcre-dev ${PHPIZE_DEPS}
+
+RUN pecl install redis
 
 RUN composer install --working-dir=/var/www/html
 
