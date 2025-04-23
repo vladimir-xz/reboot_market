@@ -9,7 +9,9 @@
             >
                 <p>Some long desciption, Some long desciption, Some long desciption, Some long desciption, </p>
                 <p>Price:
-                    {{  appCurrency.display(product.price)|format_currency(appCurrency.getActual)  }}
+                    {%   if not product.price is null   %}
+                        {{  appCurrency.display(product.price)|format_currency(appCurrency.getActual)  }}
+                    {%   endif   %}
                 </p>
             </twig:Cart:Product>
         {% endfor %}

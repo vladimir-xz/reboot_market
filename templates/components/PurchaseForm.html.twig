@@ -78,7 +78,9 @@
     <div class="mb-6">
         <div class="">
             Products price: 
-            {{  appCurrency.display(productsTotal)|format_currency(appCurrency.getActual)  }}
+            {%   if not productsTotal is null %}
+                {{  appCurrency.display(productsTotal)|format_currency(appCurrency.getActual)  }}
+            {%   endif   %}
         </div>
         <div class="">
             Shipping price: {%   if this.freightCostSet   %}

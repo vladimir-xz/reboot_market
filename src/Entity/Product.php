@@ -269,7 +269,7 @@ class Product
             }
         }
 
-        return $this->images[0]->getPath();
+        return $this->images[0]?->getPath();
     }
 
     public function addImage(Image $image): static

@@ -78,15 +78,4 @@ final class SearchController extends AbstractController
 
         return $this->redirect($url . '?q=' . $query . '&' . $decodedArray);
     }
-
-    // #[Route('/_filter_options', name: 'filter_options')]
-    // public function getFilterOptions(Request $request, MapAllRecords $mapAllRecords)
-    // {
-    //     $allProducts = $this->productRep->getAllWithSpecs();
-
-    //     $result = $mapAllRecords->mapRecords($allProducts);
-    //     return $this->render('static/_filterFrame.html.twig', [
-    //         'filter' => $result,
-    //     ]);
-    // }
 }
