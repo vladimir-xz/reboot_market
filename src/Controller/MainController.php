@@ -44,8 +44,6 @@ class MainController extends AbstractController
 
         $recentlyAdded = $productRepository->getRecentlyAdded();
 
-        dump($cache);
-
         return $this->render('homepage.html.twig', [
             'recents' => $recentlyAdded,
         ]);
