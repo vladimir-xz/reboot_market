@@ -19,9 +19,13 @@ ENV LOG_CHANNEL stderr
 # Allow composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN wget http://archive.ubuntu.com/ubuntu/pool/main/a/autoconf/autoconf_2.69-11_all.deb
-RUN dpkg -i autoconf_2.69-11_all.deb
-RUN pecl install redis
+RUN wget http://ftp.gnu.org/gnu/autoconf/autoconf-2.71.tar.gz
+RUN tar -xf autoconf-2.71.tar.gz
+RUN ./autoconf-2.71/configure --prefix=$HOME/.local
+RUN ./make
+RUN ./make install
+RUN echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc
+RUN source ~/.bashrc
 
 RUN composer install --working-dir=/var/www/html
 
