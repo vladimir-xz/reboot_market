@@ -29,7 +29,7 @@ class ProductSearch extends AbstractController
     public int $nextPage = 2;
     #[LiveProp]
     public string $query = '';
-    #[LiveProp(writable: true, url: new UrlMapping(as: 'i'), onUpdated: 'doingThis')]
+    #[LiveProp(writable: true, url: new UrlMapping(as: 'i'))]
     public array $includedCategories = [];
     #[LiveProp(writable: true, url: new UrlMapping(as: 'f'))]
     public array $filters = [];

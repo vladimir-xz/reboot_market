@@ -6,6 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Psr\Log\LoggerInterface;
 use App\Repository\CategoryRepository;
 use App\Service\MapAllRecords;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class CatalogHandler
 {
@@ -13,73 +15,114 @@ class CatalogHandler
     private array $children;
     private array $parents;
 
-    public function __construct(private LoggerInterface $loggerInterface, private MapAllRecords $mapAllRecords, CategoryRepository $categoryRepository,)
-    {
-        $rawArr = $categoryRepository->getRawTree();
-        $treeOfChildren = [];
-        $treeOfParents = [];
-        $mainNode = [];
-        foreach ($rawArr as $index => $data) {
-            $parentId = $data['parent_id'];
-            if ($parentId === null) {
-                $mainNode[$index] = $index;
-            } else {
-                $treeOfChildren[$parentId][] = $index;
-                $treeOfParents[$index] = $parentId;
-            }
-        }
-
-        $lastNodesAndParents = $this->mapLastNodesAndParents($mainNode, $treeOfChildren);
-
-        $buildCatalog = function ($array) use ($rawArr, $treeOfChildren, &$buildCatalog) {
-            return array_map(function ($index) use ($rawArr, $treeOfChildren, $buildCatalog) {
-                $result = $rawArr[$index];
-                $result['id'] = $index;
-
-                if (array_key_exists($index, $treeOfChildren)) {
-                    $result['children'] = $buildCatalog($treeOfChildren[$index]);
-                }
-
-                return $result;
-            }, $array);
-        };
-
-        $treeToDisplay = $buildCatalog($mainNode);
-
-        $this->catalog = $treeToDisplay;
-        $this->children = $lastNodesAndParents['lastChildren'];
-        $this->parents = $treeOfParents;
-    }
-
-    private function mapLastNodesAndParents(
-        array $array,
-        array $treeOfChildren,
-        array $predecesors = [],
+    public function __construct(
+        private LoggerInterface $loggerInterface,
+        private MapAllRecords $mapAllRecords,
+        CategoryRepository $categoryRepository,
+        CacheInterface $catalogCache
     ) {
-        $collection = new ArrayCollection($array);
-        return $collection->reduce(function ($acc, $index) use ($treeOfChildren, $predecesors) {
-            if (array_key_exists($index, $treeOfChildren)) {
-                $newPredecesors = [$index => $index] + $predecesors;
-
-                $result = $this->mapLastNodesAndParents(
-                    $treeOfChildren[$index],
-                    $treeOfChildren,
-                    $newPredecesors,
-                );
-
-                $acc['lastChildren'] = array_replace_recursive($acc['lastChildren'], $result['lastChildren']);
-                $acc['lastNodeParents'] += $result['lastNodeParents'];
-            } else {
-                $lastNodeParents = [$index => $predecesors];
-                $newLastChildren = array_map(fn($children) => [$index => $index], $predecesors);
-
-                $acc['lastNodeParents'] += $lastNodeParents;
-                $acc['lastChildren'] = array_replace_recursive($acc['lastChildren'], $newLastChildren);
+        $result = $catalogCache->get('catalog', function (ItemInterface $item) use ($categoryRepository): array {
+            $rawArr = $categoryRepository->getRawTree();
+            $treeOfChildren = [];
+            $treeOfParents = [];
+            $mainNode = [];
+            foreach ($rawArr as $index => $data) {
+                $parentId = $data['parent_id'];
+                if ($parentId === null) {
+                    $mainNode[$index] = $index;
+                } else {
+                    $treeOfChildren[$parentId][] = $index;
+                    $treeOfParents[$index] = $parentId;
+                }
             }
 
-            return $acc;
-        }, ['lastNodeParents' => [], 'lastChildren' => []]);
+            $mapLastNodesAndParents = function (
+                array $array,
+                array $treeOfChildren,
+                array $predecesors
+            ) use (&$mapLastNodesAndParents) {
+                $collection = new ArrayCollection($array);
+                return $collection->reduce(function ($acc, $index) use ($treeOfChildren, $predecesors, $mapLastNodesAndParents) {
+                    if (array_key_exists($index, $treeOfChildren)) {
+                        $newPredecesors = [$index => $index] + $predecesors;
+
+                        $result = $mapLastNodesAndParents(
+                            $treeOfChildren[$index],
+                            $treeOfChildren,
+                            $newPredecesors,
+                        );
+
+                        $acc['lastChildren'] = array_replace_recursive($acc['lastChildren'], $result['lastChildren']);
+                        $acc['lastNodeParents'] += $result['lastNodeParents'];
+                    } else {
+                        $lastNodeParents = [$index => $predecesors];
+                        $newLastChildren = array_map(fn($children) => [$index => $index], $predecesors);
+
+                        $acc['lastNodeParents'] += $lastNodeParents;
+                        $acc['lastChildren'] = array_replace_recursive($acc['lastChildren'], $newLastChildren);
+                    }
+
+                    return $acc;
+                }, ['lastNodeParents' => [], 'lastChildren' => []]);
+            };
+
+            $lastNodesAndParents = $mapLastNodesAndParents($mainNode, $treeOfChildren, []);
+
+            $buildCatalog = function ($array) use ($rawArr, $treeOfChildren, &$buildCatalog) {
+                return array_map(function ($index) use ($rawArr, $treeOfChildren, $buildCatalog) {
+                    $result = $rawArr[$index];
+                    $result['id'] = $index;
+
+                    if (array_key_exists($index, $treeOfChildren)) {
+                        $result['children'] = $buildCatalog($treeOfChildren[$index]);
+                    }
+
+                    return $result;
+                }, $array);
+            };
+
+            $treeToDisplay = $buildCatalog($mainNode);
+            return [
+                'treeToDisplay' => $treeToDisplay,
+                'lastChildren' => $lastNodesAndParents['lastChildren'],
+                'parents' => $treeOfParents,
+            ];
+        });
+
+        $this->catalog = $result['treeToDisplay'];
+        $this->children = $result['lastChildren'];
+        $this->parents = $result['parents'];
     }
+
+    // private function mapLastNodesAndParents(
+    //     array $array,
+    //     array $treeOfChildren,
+    //     array $predecesors = [],
+    // ) {
+    //     $collection = new ArrayCollection($array);
+    //     return $collection->reduce(function ($acc, $index) use ($treeOfChildren, $predecesors) {
+    //         if (array_key_exists($index, $treeOfChildren)) {
+    //             $newPredecesors = [$index => $index] + $predecesors;
+
+    //             $result = $this->mapLastNodesAndParents(
+    //                 $treeOfChildren[$index],
+    //                 $treeOfChildren,
+    //                 $newPredecesors,
+    //             );
+
+    //             $acc['lastChildren'] = array_replace_recursive($acc['lastChildren'], $result['lastChildren']);
+    //             $acc['lastNodeParents'] += $result['lastNodeParents'];
+    //         } else {
+    //             $lastNodeParents = [$index => $predecesors];
+    //             $newLastChildren = array_map(fn($children) => [$index => $index], $predecesors);
+
+    //             $acc['lastNodeParents'] += $lastNodeParents;
+    //             $acc['lastChildren'] = array_replace_recursive($acc['lastChildren'], $newLastChildren);
+    //         }
+
+    //         return $acc;
+    //     }, ['lastNodeParents' => [], 'lastChildren' => []]);
+    // }
 
     public function buildMapWithStatusesFromLastNodes(array $ids, string $status)
     {

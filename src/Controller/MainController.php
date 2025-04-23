@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Translation\LocaleSwitcher;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class MainController extends AbstractController
 {
@@ -37,10 +38,13 @@ class MainController extends AbstractController
         Request $request,
         CatalogHandler $builder,
         ProductRepository $productRepository,
+        CacheInterface $cache,
         LoggerInterface $logger
     ): Response {
 
         $recentlyAdded = $productRepository->getRecentlyAdded();
+
+        dump($cache);
 
         return $this->render('homepage.html.twig', [
             'recents' => $recentlyAdded,
