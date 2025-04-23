@@ -176,20 +176,12 @@ class CatalogHandler
     {
         $mappedRecords = $this->mapAllRecords->mapRecords($allRecords, true);
 
-        if ($includedCategories) {
-            $onlyIncluded = array_diff_key($includedCategories, $mappedRecords['categories']);
-            $activeCategories = $this->buildMapWithStatusesFromLastNodes($mappedRecords['categories'], 'active');
-            $includedCategories = $this->buildMapWithStatusesFromLastNodes($onlyIncluded, 'included');
-            $excludedCategories = $this->buildMapWithStatusesFromLastNodes($excludedCategories, 'excluded');
+        $onlyIncluded = array_diff_key($includedCategories, $mappedRecords['categories']);
+        $activeCategories = $this->buildMapWithStatusesFromLastNodes($mappedRecords['categories'], 'active');
+        $includedCategories = $this->buildMapWithStatusesFromLastNodes($onlyIncluded, 'included');
+        $excludedCategories = $this->buildMapWithStatusesFromLastNodes($excludedCategories, 'excluded');
 
-            $mappedCatalogRecords = $activeCategories + $excludedCategories + $includedCategories;
-        } else {
-            // neutral
-            $neutralCategories = $this->buildMapWithStatusesFromLastNodes($mappedRecords['categories'], 'neutral');
-            $excludedCategories = $this->buildMapWithStatusesFromLastNodes($excludedCategories, 'excluded');
-
-            $mappedCatalogRecords = $neutralCategories + $excludedCategories;
-        }
+        $mappedCatalogRecords = $activeCategories + $excludedCategories + $includedCategories;
 
         return ['mappedCatalogs' => $mappedCatalogRecords, 'mappedRecords' => $mappedRecords];
     }

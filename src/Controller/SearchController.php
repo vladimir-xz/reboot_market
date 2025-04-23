@@ -67,9 +67,11 @@ final class SearchController extends AbstractController
                 default:
                     throw new Exception('Unknown action to handle the catalog');
             }
-        }
 
-        $decodedArray = urldecode(http_build_query($result));
+            $decodedArray = urldecode(http_build_query($result));
+        } else {
+            $decodedArray = '';
+        }
 
 
         $url = $this->generateUrl('search');

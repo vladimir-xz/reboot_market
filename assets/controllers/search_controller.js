@@ -9,7 +9,9 @@ import { getComponent } from '@symfony/ux-live-component';
 export default class extends Controller {
     async initialize() {
         window.addEventListener('search:checkPath', (event) => {
-            if (window.location.pathname != '/search') {
+            const lastSegment = window.location.pathname.substring(window.location.pathname.lastIndexOf('/') + 1)
+            console.log(lastSegment)
+            if (lastSegment != 'search') {
                 Turbo.visit('/_new_search?q=' + event.detail.query)
             }
         });
