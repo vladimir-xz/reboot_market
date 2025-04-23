@@ -29,6 +29,7 @@
 </div>
 
 {% macro placeholder(props) %}
-    {# This content will (only) be rendered as loading content #}
-    <span class="loader"></span>
+    <div class="relative">
+        <span class="loader"></span>
+    </div>
 {% endmacro %}
