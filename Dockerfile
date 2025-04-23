@@ -19,7 +19,7 @@ ENV LOG_CHANNEL stderr
 # Allow composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN RUN apk --no-cache add \
+RUN apk --no-cache add \
         pcre-dev \
         ${PHPIZE_DEPS} \
         linux-headers \
