@@ -19,7 +19,7 @@ ENV LOG_CHANNEL stderr
 # Allow composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
-RUN RUN apk --no-cache add pcre-dev ${PHPIZE_DEPS} \ 
+RUN apk --no-cache add pcre-dev ${PHPIZE_DEPS} \ 
     && pecl install xdebug \
     && docker-php-ext-enable xdebug \
     && apk del pcre-dev ${PHPIZE_DEPS}
