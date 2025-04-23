@@ -25,6 +25,8 @@ RUN apk --no-cache add --virtual .build-deps \
     && docker-php-ext-enable redis \
     && apk del .build-deps
 
+COPY session.ini /usr/local/etc/php/conf.d/session.ini
+
 RUN composer install --working-dir=/var/www/html
 
 
