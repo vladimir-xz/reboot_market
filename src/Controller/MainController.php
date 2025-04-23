@@ -34,18 +34,8 @@ class MainController extends AbstractController
     }
 
     #[Route('/{_locale}/', name: 'homepage', methods: ['GET', 'HEAD'])]
-    public function homepage(
-        Request $request,
-        CatalogHandler $builder,
-        ProductRepository $productRepository,
-        CacheInterface $cache,
-        LoggerInterface $logger
-    ): Response {
-
-        $recentlyAdded = $productRepository->getRecentlyAdded();
-
-        return $this->render('homepage.html.twig', [
-            'recents' => $recentlyAdded,
-        ]);
+    public function homepage(): Response
+    {
+        return $this->render('homepage.html.twig');
     }
 }
