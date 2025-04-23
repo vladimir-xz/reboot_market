@@ -25,8 +25,6 @@ RUN apk --no-cache add --virtual .build-deps \
     && docker-php-ext-enable redis \
     && apk del .build-deps
 
-RUN pecl install redis
-
 RUN composer install --working-dir=/var/www/html
 
 
