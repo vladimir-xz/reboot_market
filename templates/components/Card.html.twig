@@ -1,7 +1,7 @@
 <div{{ attributes }} class="flex-auto w-56 max-w-56 h-80 bg-white-granular text-teal-900 shadow-xl rounded">
-    <div class="flex justify-center bg-white">
+    <div class="flex justify-center bg-white rounded">
         <a href="{{ path('product.index', {id: product.id}) }}">
-            <img class="h-40 object-cover" src="{{ asset(product.mainImagePath) }}" alt="Server">
+            <img class="h-40 object-cover rounded" src="{{ asset(product.mainImagePath) }}" alt="Server">
         </a>
     </div>
 

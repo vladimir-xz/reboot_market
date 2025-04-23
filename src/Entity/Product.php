@@ -261,23 +261,15 @@ class Product
         return $this->images;
     }
 
-    #[ORM\PostLoad]
-    public function setMainImagePath(): void
+    public function getMainImagePath(): ?string
     {
         foreach ($this->images as $image) {
             if ($image->isMain()) {
-                $this->mainImage = $image->getPath();
+                return $image->getPath();
             }
         }
 
-        if ($this->mainImage === null) {
-            $this->mainImage = $this->images[0]->getPath();
-        }
-    }
-
-    public function getMainImagePath(): ?string
-    {
-        return $this->mainImage;
+        return $this->images[0]->getPath();
     }
 
     public function addImage(Image $image): static

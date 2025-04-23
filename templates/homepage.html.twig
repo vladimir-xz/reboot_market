@@ -37,24 +37,30 @@
 
 
     <div class="flex gap-12 pr-32">
-        <div class="w-4/6 leading-loose italic text-lg">
+        <div class="w-4/6 leading-loose text-lg flex m-auto justify-between align-center">
             <p class="text-left">Need reliable hardware without the high price tag? We sell used servers, switches, storages, and parts that came from our own data center. We treated them with care, checked every piece, and kept only the gear that works like new.</p>
-            <p class="mt-12 text-right">Pick what you need — servers, network switches, drives, memory, cables, and more. Everything is clean, tested, and ready to ship. Get solid equipment, honest details, and friendly help, all in one place.</p>
         </div>
         <div class="w-2/6">
             <img class="cloud" src="{{ asset('images/guy-on-cloud.png') }}" alt="">
         </div>
     </div>
 
-    <div class="relative h-[700px] -rotate-17">
-        <div class="ml-[138px] mt-[180px] text-xl font-[500] leading-loose flex gap-12">
+    <div class="flex gap-8 divide-x divide-slate-700 justify-center leading-loose text-lg text-center px-12">
+        <p>If the equipment doesn’t work, we’ll ship you a replacement immediately.</p>
+        <p class="pl-6">You may choose one of our delivery options, arrange your own transport, or collect the order in person at our warehouse.</p>
+        <p class="pl-6">Buying in bulk? Contact us and we’ll arrange a special price for you.</p>
+    </div>
+
+    <div class="relative h-[700px] -rotate-17 max-w-[100vw-70px]">
+        <div class="ml-[138px] mt-[178px] text-xl font-[500] leading-loose flex gap-12 mr-20">
             <img class="block w-[calc(100vw-80px)] max-w-56 max-h-56 rounded-full" src="{{asset('images/my-image.jpg')}}" alt="">
             <div class="flex flex-col w-48 gap-8">
                 <p class="">Got questions or ideas? We’re all ears and all smiles — drop us a message anytime!</p>
                 <a href="">Contact us</a>
             </div>
         </div>
-        <img class="absolute top-0 left-0 w-[820px]" src="{{ asset('images/working-card.png') }}" alt="">
+        <img src="{{ asset('images/strip.png')}}" alt="" class="absolute -top-8 left-16 max-w-96">
+        <img class="absolute top-0 left-0 w-[820px] max-w-[820px]" src="{{ asset('images/working-card7.png') }}" alt="">
     </div>
 
 
