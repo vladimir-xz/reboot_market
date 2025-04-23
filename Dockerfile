@@ -19,6 +19,8 @@ ENV LOG_CHANNEL stderr
 # Allow composer to run as root
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/a/autoconf/autoconf_2.69-11_all.deb
+
 RUN composer install --working-dir=/var/www/html
 
 
