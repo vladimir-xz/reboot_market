@@ -17,6 +17,7 @@ use Symfony\UX\LiveComponent\DefaultActionTrait;
 use Symfony\UX\LiveComponent\Metadata\UrlMapping;
 use App\Service\MapAllRecords;
 use App\Service\CatalogHandler;
+use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
 use Psr\Log\LoggerInterface;
 
@@ -35,11 +36,13 @@ class ProductSearch extends AbstractController
     public array $filters = [];
     #[LiveProp(writable: true, url: new UrlMapping(as: 'e'))]
     public array $excludedCategories = [];
+    public Pagerfanta $products;
 
     public function __construct(
         private ProductRepository $productRepository,
         private LoggerInterface $logger,
         private CatalogHandler $catalogHandler,
+        private $maxPerPage = 12
     ) {
     }
 
@@ -55,18 +58,23 @@ class ProductSearch extends AbstractController
             $this->dispatchBrowserEvent('catalog:renew', [
                 'treeMap' => [],
             ]);
+            $this->products = $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
             return;
         }
 
         $allRecords = $this->productRepository->getAllProductsWithCategoryAndFilters($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
-        $result = $this->catalogHandler->prepareNewCatalogsForDrawing($allRecords, $this->includedCategories, $this->excludedCategories);
+        $map = $this->catalogHandler->prepareNewCatalogsForDrawing($allRecords, $this->includedCategories, $this->excludedCategories);
+        $adapter = new ArrayAdapter($allRecords);
+        $pagerfanta = new Pagerfanta($adapter);
+        $pagerfanta->setMaxPerPage($this->maxPerPage);
+        $this->products = $pagerfanta;
 
         $this->dispatchBrowserEvent('catalog:renew', [
-            'treeMap' => $result['mappedCatalogs'],
+            'treeMap' => $map['mappedCatalogs'],
         ]);
 
         $this->dispatchBrowserEvent('product:updateFilters', [
-            'filters' => $result['mappedRecords']
+            'filters' => $map['mappedRecords']
         ]);
     }
 
@@ -170,10 +178,5 @@ class ProductSearch extends AbstractController
         $result = $this->catalogHandler->includeCategories($newId, $this->includedCategories, $this->excludedCategories);
 
         $this->updateCategoriesAndLabels($result);
-    }
-
-    public function getProducts()
-    {
-        return $this->productRepository->getPaginatedValues($this->query, $this->includedCategories, $this->excludedCategories, $this->filters);
     }
 }
