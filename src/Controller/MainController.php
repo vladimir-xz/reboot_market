@@ -34,9 +34,8 @@ class MainController extends AbstractController
     }
 
     #[Route('/{_locale}/', name: 'homepage', methods: ['GET', 'HEAD'])]
-    public function homepage(CacheInterface $cache): Response
+    public function homepage(): Response
     {
-        dump($cache);
         return $this->render('homepage.html.twig');
     }
 }

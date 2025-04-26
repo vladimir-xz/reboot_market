@@ -34,5 +34,6 @@ RUN composer install --working-dir=/var/www/html
 RUN php bin/console tailwind:init
 RUN php bin/console tailwind:build
 RUN php bin/console asset-map:compile
+RUN composer dump-env prod
 
 CMD ["/start.sh"]
