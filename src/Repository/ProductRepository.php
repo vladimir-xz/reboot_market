@@ -86,7 +86,7 @@ class ProductRepository extends ServiceEntityRepository
             ->leftJoin('p.category', 'c')
             ->leftJoin('p.specifications', "s")
             ->leftJoin('p.images', 'i')
-            ->select('p', 'c', 's');
+            ->select('p', 'c', 's', 'i');
 
         if ($query !== '') {
             $qb = $this->addQuerySearch($qb, $query);
