@@ -4,10 +4,15 @@
 
 
 {% extends 'layout.html.twig' %}
-{# 
+
+
+{% block title %}Explore our top pre-owned equipment picks.{% endblock %}
+
 {% block meta %}
-    <meta name="turbo-cache-control" content="no-cache">
-{% endblock %} #}
+    {{ parent() }}
+    {# <meta name="turbo-cache-control" content="no-cache"> #}
+    <meta name="description" content="Large stock of tested, fully functional used equipment, ready for fast shipping. We've developed our own catalog to offer you a better search experience.">
+{% endblock %}
 
 {% block content %}
 

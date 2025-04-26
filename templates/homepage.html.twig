@@ -1,5 +1,13 @@
 {% extends 'layout.html.twig' %}
 
+{% block title %}Reboot market - affordable and reliable servers, switches and IT components.{% endblock %}
+
+{% block meta %}
+    {# <meta name="turbo-cache-control" content="no-cache"> #}
+    {{ parent() }}
+    <meta name="description" content="Get your low-price, high-quality used network equipment with fast shipping across Europe">
+{% endblock %}
+
 {% block content %}
 
     {# {{  render_esi(controller('App\\Controller\\ProductFilterController::getAllFilters', {brands: brands})) }} #}

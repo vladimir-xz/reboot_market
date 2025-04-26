@@ -85,6 +85,7 @@ class ProductRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.category', 'c')
             ->leftJoin('p.specifications', "s")
+            ->leftJoin('p.images', 'i')
             ->select('p', 'c', 's');
 
         if ($query !== '') {
