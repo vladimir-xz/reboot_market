@@ -27,6 +27,7 @@ RUN apk --no-cache add --virtual .build-deps \
 
 COPY session.ini /usr/local/etc/php/conf.d/session.ini
 COPY build/php-fpm/www.conf  /usr/local/etc/php-fpm.d/www.conf
+COPY .env.local ./
 
 RUN composer install --working-dir=/var/www/html
 
