@@ -41,14 +41,14 @@ class CategoryRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getRawTree(): array
-    {
-        $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT * FROM category';
-        $stmt = $conn->prepare($sql);
-        $result = $stmt->executeQuery();
-        return $result->fetchAllAssociativeIndexed();
-    }
+    // public function getRawTree(): array
+    // {
+    //     $conn = $this->getEntityManager()->getConnection();
+    //     $sql = 'SELECT * FROM category';
+    //     $stmt = $conn->prepare($sql);
+    //     $result = $stmt->executeQuery();
+    //     return $result->fetchAllAssociativeIndexed();
+    // }
 
     public function getCategoriesFromSearch(string $query = '', array $catInclude = [], array $catExclude = [], array $filters = []): array
     {
